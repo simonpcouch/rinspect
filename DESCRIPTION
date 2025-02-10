@@ -18,3 +18,5 @@ Imports:
     jsonlite,
     rlang,
     withr
+URL: https://github.com/simonpcouch/rinspect
+BugReports: https://github.com/simonpcouch/rinspect/issues
