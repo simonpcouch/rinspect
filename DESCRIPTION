@@ -14,5 +14,7 @@ RoxygenNote: 7.3.2
 Imports: 
     cli,
     ellmer,
+    httpuv,
+    jsonlite,
     rlang,
     withr
