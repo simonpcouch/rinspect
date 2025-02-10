@@ -6,3 +6,4 @@
 .quarto
 .env
 __pycache__/
+docs

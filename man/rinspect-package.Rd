@@ -12,6 +12,7 @@ What the package does (one paragraph).
 Useful links:
 \itemize{
   \item \url{https://github.com/simonpcouch/rinspect}
+  \item \url{https://simonpcouch.github.io/rinspect/}
   \item Report bugs at \url{https://github.com/simonpcouch/rinspect/issues}
 }
 
