@@ -10,10 +10,13 @@
 #' example_eval_log <- read_eval_log(file)
 #'
 #' example_eval_log
+#' @export
 read_eval_log <- function(file) {
   structure(jsonlite::read_json(file), class = c("eval_log", "list"))
 }
 
+#' @rdname read_eval_log
+#' @export
 write_eval_log <- function(x = eval_log_new(), dir = "inst/logs/") {
   jsonlite::write_json(
     x = structure(x, class = "list"),

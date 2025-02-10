@@ -2,9 +2,12 @@
 % Please edit documentation in R/log.R
 \name{read_eval_log}
 \alias{read_eval_log}
+\alias{write_eval_log}
 \title{Read and write evaluation logs}
 \usage{
 read_eval_log(file)
+
+write_eval_log(x = eval_log_new(), dir = "inst/logs/")
 }
 \description{
 Read and write evaluation logs
