@@ -1,3 +1,16 @@
+eval_log <- function(task, ..., result) {
+  task_env <- as.list(environment(task))
+  task_dataset <- task_env$dataset
+  task_solver <- task_env$solver
+  task_solver_chat <- task_env$solver_chat
+  task_scorer <- task_env$scorer
+  task_name <- task_env$name
+
+  # TODO: situate these objects inside of `eval_log_new()`...
+
+  result
+}
+
 eval_log_new <- function(
     eval = eval_log_eval(),
     plan = eval_log_plan(),
