@@ -190,8 +190,15 @@ inspect_view <- function(
   )
 
   url <- sprintf("http://%s:%d", host, port)
-  cli::cli_alert_success("Inspect Viewer running at: {.url {url}}")
-  utils::browseURL(url)
+  cli::cli_inform(
+    c("v" = "Inspect Viewer running at: {.url {url}}"),
+    class = "rinspect_viewer_start"
+  )
+
+  if (interactive() && !is_testing()) {
+    utils::browseURL(url)
+  }
+
   invisible(server)
 }
 
