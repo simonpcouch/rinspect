@@ -13,8 +13,17 @@ inspect_view <- function(
 ) {
   dist_dir <- system.file("dist", package = "rinspect")
 
+  tryCatch({
+    existing_server <- httpuv::listServers()
+    if (length(existing_server) > 0) {
+      httpuv::stopServer(existing_server[[1]])
+    }
+  }, error = function(cnd) {
+    cli::cli_abort("Unable to terminate the existing server.", parent = cnd)
+  })
+
   if (!dir.exists(log_dir)) {
-    cli::cli_abort("Log directory not found: {.file {log_dir}}")
+    cli::cli_abort("Log directory {.file {log_dir}} not found.")
   }
 
   server <- httpuv::startServer(
