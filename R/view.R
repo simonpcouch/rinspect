@@ -71,7 +71,12 @@ inspect_view <- function(
             # GET /api/log-headers
             if (req$PATH_INFO == "/api/log-headers") {
               if (!is.null(query$file)) {
-                files <- if (is.character(query$file)) list(query$file) else query$file
+                files <- if (is.character(query$file) && length(query$file) == 1) {
+                  list(query$file)
+                } else {
+                  as.list(query$file)
+                }
+                
                 headers <- lapply(files, function(f) {
                   file_path <- file.path(log_dir, f)
                   if (file.exists(file_path)) {
