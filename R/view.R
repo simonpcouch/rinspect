@@ -69,6 +69,13 @@ inspect_view <- function(
             }
 
             # GET /api/log-headers
+            log_headers <- list(
+              status = 200,
+              headers = list(
+                'Content-Type' = 'application/json',
+                'Cache-Control' = 'no-cache'
+              )
+            )
             if (req$PATH_INFO == "/api/log-headers") {
               if (!is.null(query$file)) {
                 files <- if (is.character(query$file) && length(query$file) == 1) {
@@ -93,16 +100,14 @@ inspect_view <- function(
                   }
                 })
 
-                return(list(
-                  status = 200,
-                  headers = list(
-                    'Content-Type' = 'application/json',
-                    'Cache-Control' = 'no-cache'
-                  ),
-                  body = jsonlite::toJSON(headers, auto_unbox = TRUE, null = "null")
-                ))
+                log_headers$body <- 
+                  jsonlite::toJSON(headers, auto_unbox = TRUE, null = "null")
+                return(log_headers)
               }
-              return(list(status = 400, body = "Missing 'file' parameter"))
+
+              log_headers$body <- 
+                jsonlite::toJSON(list(), auto_unbox = TRUE, null = "null")
+              return(log_headers)
             }
 
             # GET /api/logs/{filename}
