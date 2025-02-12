@@ -61,16 +61,19 @@
 #'   list(result = res, chat = ch)
 #' }
 #' 
-#' task_new(
+#' tsk <- task_new(
+#'   name = "simple_addition",
 #'   dataset = dataset,
 #'   solver = solver,
 #'   scorer = scorer
 #' )
+#' 
+#' task_evaluate(tsk)
 #' }
 #' @aliases task
 #' @export
 # TODO: add task options (https://inspect.ai-safety-institute.org.uk/tasks.html#task-options)
-task_new <- function(dataset, solver, scorer, ..., name = generate_id()) {
+task_new <- function(name, dataset, solver, scorer, ...) {
   check_data_frame(dataset)
   if (!is_missing(solver) && inherits(solver, "Chat")) {
     solver <- ellmer_chat_to_solver(solver)
@@ -128,11 +131,12 @@ print.task <- function(x, ...) {
 
 #' @rdname task_new
 task_evaluate <- function(task, ...) {
+  time_start <- Sys.time()
   check_inherits(task, "task")
 
   result <- task(...)
 
-  eval_log(task = task, ..., result = result)
+  eval_log(task = task, ..., result = result, time_start = time_start)
 
   result
 }

@@ -6,7 +6,7 @@
 \alias{task_evaluate}
 \title{Evaluation tasks}
 \usage{
-task_new(dataset, solver, scorer, ..., name = generate_id())
+task_new(name, dataset, solver, scorer, ...)
 
 task_evaluate(task, ...)
 }
@@ -75,10 +75,13 @@ scorer <- function(input, target, output) {
   list(result = res, chat = ch)
 }
 
-task_new(
+tsk <- task_new(
+  name = "simple_addition",
   dataset = dataset,
   solver = solver,
   scorer = scorer
 )
+
+task_evaluate(tsk)
 }
 }
