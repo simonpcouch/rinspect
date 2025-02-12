@@ -5,7 +5,12 @@
 #> ── assistant ────────────────────────────────────────────────────────────
 #> 2+2=4
 example_ellmer_solver <- function() {
-  load("inst/sandbox/solver.rda")
+  load(
+    system.file(
+      "sandbox/solver.rda",
+      package = "rinspect"
+    )
+  )
 
   solver
 }
