@@ -1,22 +1,22 @@
 # TODO: `sample` should actually be the corresponding row of the dataset
 # (with an id slot), not the index
-translate_to_sample_events <- function(chat, sample = 1L) {
+translate_to_events <- function(chat, sample = 1L) {
   turns <- chat$get_turns()
   events <- list()
   
   for (i in seq_along(turns)) {
     turn <- turns[[i]]
     if (turn@role == "assistant") {
-      events[[i]] <- translate_to_sample_events_assistant(turn)
+      events[[i]] <- translate_to_events_assistant(turn)
     } else {
-      events[[i]]<- translate_to_sample_events_user(turn, sample)
+      events[[i]]<- translate_to_events_user(turn, sample)
     }
   }
   
   events
 }
 
-translate_to_sample_events_user <- function(turn, sample) {
+translate_to_events_user <- function(turn, sample) {
   list(
     # TODO: grab these from ellmer when available?
     timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"),
@@ -48,7 +48,7 @@ translate_to_sample_events_user <- function(turn, sample) {
   )
 }
 
-translate_to_sample_events_assistant <- function(turn) {
+translate_to_events_assistant <- function(turn) {
   list(
     # TODO: grab these from ellmer when available?
     timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"),
