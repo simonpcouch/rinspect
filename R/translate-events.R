@@ -1,6 +1,6 @@
 # TODO: `sample` should actually be the corresponding row of the dataset
 # (with an id slot), not the index
-translate_to_events <- function(chat, sample = 1L) {
+translate_to_events <- function(chat, sample) {
   turns <- chat$get_turns()
   events <- list()
   
@@ -18,14 +18,12 @@ translate_to_events <- function(chat, sample = 1L) {
 
 translate_to_events_user <- function(turn, sample) {
   list(
-    # TODO: grab these from ellmer when available?
-    timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"),
+    timestamp = attr(turn, "time_completed"),
     event = "sample_init",
-    # TODO: grab these from the sample when available
     sample = list(
-      input = turn@text,
-      target = NULL, 
-      id = sample
+      input = sample$input,
+      target = sample$target, 
+      id = sample$id
     ),
     state = list(
       messages = list(
@@ -50,8 +48,7 @@ translate_to_events_user <- function(turn, sample) {
 
 translate_to_events_assistant <- function(turn) {
   list(
-    # TODO: grab these from ellmer when available?
-    timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"),
+    timestamp = attr(turn, "time_completed"),
     event = "model",
     model = turn@json$model,
     input = list(list(

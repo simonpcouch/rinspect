@@ -1,12 +1,9 @@
 eval_log <- function(task, ..., result) {
-  task_env <- as.list(environment(task))
-  task_dataset <- task_env$dataset
-  task_solver <- task_env$solver
-  task_solver_chat <- task_env$solver_chat
-  task_scorer <- task_env$scorer
-  task_name <- task_env$name
+  eval_log <- eval_log_new(
+    samples = eval_log_samples(result)
+  )
 
-  # TODO: situate these objects inside of `eval_log_new()`...
+  write_eval_log(eval_log)
 
   result
 }
@@ -16,7 +13,7 @@ eval_log_new <- function(
     plan = eval_log_plan(),
     results = eval_log_results(),
     stats = eval_log_stats(),
-    samples = list(eval_log_sample(), eval_log_sample(id = 2)),
+    samples,
     reductions = eval_log_reductions()
 ) {
   res <-
@@ -143,63 +140,42 @@ eval_log_stats <- function(
   )
 }
 
-
-eval_log_sample <- function(
-  id = 1,
-  # TODO: implement with epochs
-  epoch = 1,
-  input = "input message",
-  target = "target response",
-  messages = list(
-    eval_log_message(),
-    eval_log_message(source = "generate", role = "assistant")
-  ),
-  output = list(
-    model = "TODO-describe-ellmer-provider-model",
-    choices = list(
-      list(
-        message = eval_log_message(),
-        stop_reason = "stop"
-      )
-    ),
-    usage = eval_log_model_usage(),
-    # TODO: this needs to line up with the Sys.time() + 60 entry elsewhere
-    time = 60
-  ),
-  scores = list(
-    model_graded_qa = eval_log_score()
-  ),
-  metadata = list(),
-  store = list(),
-  # TODO: a bunch of elements list(timestamp = , event = ) here
-  events = list(),
-  model_usage = list(
-    "TODO-describe-ellmer-provider-model" = eval_log_model_usage()
-  ),
-  # TODO: these seem to be prompts passed to the judges
-  attachments = list()
-) {
-list(
-  id = id,
-  epoch = epoch,
-  input = input,
-  target = target,
-  messages = messages,
-  output = output,
-  scores = scores,
-  metadata = metadata,
-  store = store,
-  events = events,
-  model_usage = model_usage,
-  attachments = attachments
-)
+eval_log_samples <- function(dataset) {
+  res <- list()
+  for (i in seq_len(nrow(dataset))) {
+    sample <- dataset[i, , drop = FALSE]
+    res[[i]] <- eval_log_sample(sample)
+  }
+  res
 }
+
+eval_log_sample <- function(sample) {
+  chat <- sample$solver[[1]]
+  turns <- chat$get_turns()
+  list(
+    id = sample$id,
+      # TODO: implement with epochs
+    epoch = 1,
+    input = sample$input,
+    target = sample$target,
+    messages = translate_to_messages(turns),
+    output = translate_to_output(turns),
+    # TODO: not implemented
+    scores = list(
+      model_graded_qa = eval_log_score()
+    ),
+    metadata = list(),
+    store = list(),
+    events = translate_to_events(chat, sample = sample),
+    model_usage = translate_to_model_usage(turns),
+    # TODO: these seem to be prompts passed to the judges
+    attachments = list()
+  )
+} 
 
 eval_log_reductions <- function(
     scorer = character(),
-    samples = list(
-      eval_log_sample(), eval_log_sample(id = 2)
-    )
+    samples = list()
 ) {
   list(
     list(
@@ -297,4 +273,3 @@ eval_log_filename <- function(eval_log) {
     eval_log$eval$task_id, ".json"
   )
 }
-

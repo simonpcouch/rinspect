@@ -6,8 +6,11 @@
 #' 
 #' @param dataset A tibble with, minimally, columns `input` and `target`.
 #' @param solver A function that takes an element of `dataset$input` as input
-#' and returns a value approximating `dataset$target` or an [ellmer::Chat]
-#' object.
+#' and determines a value approximating `dataset$target`. Its return value should
+#' be a list with elements `result` (the final response) and `chat` (an ellmer
+#' chat used to solve the problem, or a list of them).
+#' 
+#' Alternatively, just supply an [ellmer::Chat] object!
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`.
 #' @param ... Named task parameters. The resulting `task` will accept any of 
@@ -27,17 +30,19 @@
 #' )
 #'
 #' # requires an ANTHROPIC_API_KEY
-#' solver <- function(input, ch = chat_claude()) {
-#'   ch$clone()$chat(input)
+#' solver <- function(input, chat = chat_claude()) {
+#'   ch <- chat$clone()
+#'   res <- ch$chat(input)
+#' 
+#'   list(result = res, chat = ch)
 #' }
 #' 
-#' # or, for more metadata...
-# TODO: we probably actually need to figure to detect when a `$chat()` method is
-# triggered and hook into it so that users can supply arbitrarily complex solvers
+#' # or, equivalently
 #' solver <- chat_claude()
 #'
 #' scorer <- function(input, target, output) {
-#'   res <- chat_claude()$chat(glue::glue(
+#'   ch <- chat_claude()
+#'   response <- ch$chat(glue::glue(
 #'     "An assistant was asked the following: {input}\n",
 #'     "The answer is: {target}.\n",
 #'     "The assistant responded: {output}.\n",
@@ -45,13 +50,15 @@
 #'     "End your response with 'Answer: Yes' if yes, 'Answer: No' if no."
 #'   ))
 #'
-#'   if (grepl("Answer: Yes", res)) {
-#'     return(TRUE)
-#'   } else if (grepl("Answer: No", res)) {
-#'     return(FALSE)
+#'   if (grepl("Answer: Yes", response)) {
+#'     res <- TRUE
+#'   } else if (grepl("Answer: No", response)) {
+#'     res <- FALSE
 #'   } else {
-#'     return(NA)
+#'     res <- NA
 #'   }
+#' 
+#'   list(result = res, chat = ch)
 #' }
 #' 
 #' task_new(
@@ -66,10 +73,8 @@
 task_new <- function(dataset, solver, scorer, ..., name = generate_id()) {
   check_data_frame(dataset)
   if (!is_missing(solver) && inherits(solver, "Chat")) {
-    solver_chat <- solver
-    solver <- function(input) {solver_chat$clone()$chat(input)}
+    solver <- ellmer_chat_to_solver(solver)
   } else {
-    solver_chat <- NA
     check_function(solver)
   }
   check_function(scorer)
@@ -77,23 +82,37 @@ task_new <- function(dataset, solver, scorer, ..., name = generate_id()) {
   res <- carrier::crate(
     function(...) {
       dataset$output <- character(nrow(dataset))
-      dataset$scores <- logical(nrow(dataset))
+      dataset$solver <- vector("list", nrow(dataset))
+      dataset$score <- logical(nrow(dataset))
+      dataset$scorer <- vector("list", nrow(dataset))
+      dataset$id <- seq_len(nrow(dataset))
+
       for (i in seq_len(nrow(dataset))) {
         sample <- dataset[i, , drop = FALSE]
-        dataset$output[i] <- solver(sample$input, ...)
-        dataset$scores[i] <- scorer(
+
+        # execute and log results for the solver
+        solver_res <- solver(
+          sample$input,
+          ...
+        )
+        dataset$output[i] <- solver_res$result
+        dataset$solver[i] <- list(solver_res$chat)
+
+        # execute and log results for the scorer
+        scorer_res <- scorer(
           input = sample$input,
           target = sample$target,
           output = dataset$output[i],
           ...
         )
+        dataset$score[i] <- scorer_res$result
+        dataset$scorer[i] <- list(scorer_res$chat)
       }
     
       dataset
     },
     dataset = dataset,
     solver = solver,
-    solver_chat = solver_chat,
     scorer = scorer,
     name = name
   )
@@ -113,7 +132,7 @@ task_evaluate <- function(task, ...) {
 
   result <- task(...)
 
-  # eval_log(task = task, ..., result = result)
+  eval_log(task = task, ..., result = result)
 
   result
 }

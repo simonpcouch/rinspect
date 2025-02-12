@@ -14,8 +14,11 @@ task_evaluate(task, ...)
 \item{dataset}{A tibble with, minimally, columns \code{input} and \code{target}.}
 
 \item{solver}{A function that takes an element of \code{dataset$input} as input
-and returns a value approximating \code{dataset$target} or an \link[ellmer:Chat]{ellmer::Chat}
-object.}
+and determines a value approximating \code{dataset$target}. Its return value should
+be a list with elements \code{result} (the final response) and \code{chat} (an ellmer
+chat used to solve the problem, or a list of them).
+
+Alternatively, just supply an \link[ellmer:Chat]{ellmer::Chat} object!}
 
 \item{scorer}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}.}
@@ -41,15 +44,19 @@ dataset <- tibble(
 )
 
 # requires an ANTHROPIC_API_KEY
-solver <- function(input, ch = chat_claude()) {
-  ch$clone()$chat(input)
+solver <- function(input, chat = chat_claude()) {
+  ch <- chat$clone()
+  res <- ch$chat(input)
+
+  list(result = res, chat = ch)
 }
 
-# or, for more metadata...
+# or, equivalently
 solver <- chat_claude()
 
 scorer <- function(input, target, output) {
-  res <- chat_claude()$chat(glue::glue(
+  ch <- chat_claude()
+  response <- ch$chat(glue::glue(
     "An assistant was asked the following: {input}\n",
     "The answer is: {target}.\n",
     "The assistant responded: {output}.\n",
@@ -57,13 +64,15 @@ scorer <- function(input, target, output) {
     "End your response with 'Answer: Yes' if yes, 'Answer: No' if no."
   ))
 
-  if (grepl("Answer: Yes", res)) {
-    return(TRUE)
-  } else if (grepl("Answer: No", res)) {
-    return(FALSE)
+  if (grepl("Answer: Yes", response)) {
+    res <- TRUE
+  } else if (grepl("Answer: No", response)) {
+    res <- FALSE
   } else {
-    return(NA)
+    res <- NA
   }
+
+  list(result = res, chat = ch)
 }
 
 task_new(
