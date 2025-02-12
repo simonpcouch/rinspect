@@ -1,6 +1,6 @@
-test_that("translate_model_usage works with example turns", {
+test_that("translate_to_model_usage works with example turns", {
   ellmer_turns <- example_ellmer_solver()$get_turns()
-  ellmer_usage <- translate_model_usage(turns)
+  ellmer_usage <- translate_to_model_usage(turns)
 
   inspect_usage <- example_inspect_log()[["samples"]][[1]][["model_usage"]]
   
