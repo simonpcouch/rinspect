@@ -19,5 +19,7 @@ Imports:
     rlang,
     tibble,
     withr
+Remotes:
+    simonpcouch/ellmer#1
 URL: https://github.com/simonpcouch/rinspect, https://simonpcouch.github.io/rinspect/
 BugReports: https://github.com/simonpcouch/rinspect/issues
