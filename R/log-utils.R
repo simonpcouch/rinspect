@@ -14,8 +14,7 @@ eval_log <- function(task, ..., result, time_start) {
     stats = eval_log_stats(
       started_at = time_start,
       completed_at = Sys.time(),
-      # TODO: sum across all of the solvers
-      model_usage = translate_to_model_usage(result$solver[[1]]$get_turns())
+      model_usage = sum_model_usage(result$solver)
     ),
     samples = eval_log_samples(result)
   )
@@ -288,5 +287,19 @@ eval_log_filename <- function(eval_log) {
     gsub(":", "-", eval_log$eval$created), "_",
     gsub("_", "-", eval_log$eval$task), "_",
     eval_log$eval$task_id, ".json"
+  )
+}
+
+# given the list of solvers in a dataset, sum across all of their token usage
+sum_model_usage <- function(solvers) {
+  usage_per_solver <- lapply(
+    solvers,
+    function(chat) {translate_to_model_usage(chat$get_turns())[[1]]}
+  )
+  res <- Reduce(function(x, y) Map(`+`, x, y), usage_per_solver)
+
+  # TODO: ultimately, this needs to be per-model
+  dots_list(
+    !!.turn_model(.last_assistant_turn(solvers[[1]]$get_turns())) := res
   )
 }
