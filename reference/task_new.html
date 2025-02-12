@@ -56,8 +56,10 @@ tools.</p>
 
 <dt id="arg-solver">solver<a class="anchor" aria-label="anchor" href="#arg-solver"></a></dt>
 <dd><p>A function that takes an element of <code>dataset$input</code> as input
-and returns a value approximating <code>dataset$target</code> or an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a>
-object.</p></dd>
+and determines a value approximating <code>dataset$target</code>. Its return value should
+be a list with elements <code>result</code> (the final response) and <code>chat</code> (an ellmer
+chat used to solve the problem, or a list of them).</p>
+<p>Alternatively, just supply an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> object!</p></dd>
 
 
 <dt id="arg-scorer">scorer<a class="anchor" aria-label="anchor" href="#arg-scorer"></a></dt>
@@ -86,15 +88,19 @@ changing its source code.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># requires an ANTHROPIC_API_KEY</span></span></span>
-<span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">ch</span> <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">ch</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">chat</span> <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="va">chat</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="va">res</span>, chat <span class="op">=</span> <span class="va">ch</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># or, for more metadata...</span></span></span>
+<span class="r-in"><span><span class="co"># or, equivalently</span></span></span>
 <span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">scorer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">target</span>, <span class="va">output</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">response</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">"An assistant was asked the following: {input}\n"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"The answer is: {target}.\n"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"The assistant responded: {output}.\n"</span>,</span></span>
@@ -102,13 +108,15 @@ changing its source code.</p></dd>
 <span class="r-in"><span>    <span class="st">"End your response with 'Answer: Yes' if yes, 'Answer: No' if no."</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Answer: Yes"</span>, <span class="va">res</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Answer: No"</span>, <span class="va">res</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Answer: Yes"</span>, <span class="va">response</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">res</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Answer: No"</span>, <span class="va">response</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">res</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">res</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="va">res</span>, chat <span class="op">=</span> <span class="va">ch</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">task_new</span><span class="op">(</span></span></span>
