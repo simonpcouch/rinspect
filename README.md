@@ -25,8 +25,10 @@ evaluation logs to the same file format.
 
 > **Important**
 >
-> 🚧 Under construction! 🚧 rinspect is highly experimental and much of
-> its documentation is aspirational.
+> 🚧 Under construction! 🚧
+>
+> rinspect is highly experimental and much of its documentation is
+> aspirational.
 
 ## Installation
 
