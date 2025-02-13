@@ -4,9 +4,9 @@
 \name{rinspect-package}
 \alias{rinspect}
 \alias{rinspect-package}
-\title{rinspect: What the Package Does (One Line, Title Case)}
+\title{rinspect: Large Language Model Evaluation for R}
 \description{
-What the package does (one paragraph).
+A port of 'Inspect', a widely adopted 'Python' framework for large language model evaluation. Specifically aimed at 'ellmer' users who want to measure the effectiveness of their LLM-based apps, the package includes facilities for prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.
 }
 \seealso{
 Useful links:
@@ -18,7 +18,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Simon Couch \email{simon.couch@posit.co} (\href{https://orcid.org/0000-0001-5676-5107}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Posit Software, PBC [copyright holder, funder]
+}
 
 }
 \keyword{internal}

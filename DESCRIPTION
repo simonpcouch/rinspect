@@ -1,9 +1,16 @@
 Package: rinspect
-Title: What the Package Does (One Line, Title Case)
+Title: Large Language Model Evaluation for R
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-5676-5107")),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
+  )
+Description: A port of 'Inspect', a widely adopted 'Python' framework for 
+    large language model evaluation. Specifically aimed at 'ellmer' users who 
+    want to measure the effectiveness of their LLM-based apps, the package
+    includes facilities for prompt engineering, tool usage, multi-turn dialog,
+    and model graded evaluations.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
