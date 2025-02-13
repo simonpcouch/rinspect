@@ -15,7 +15,7 @@ rinspect is a framework for large language model evaluation in R. It’s
 specifically aimed at ellmer users who want to measure the effectiveness
 of their LLM-based apps.
 
-rinspect is an R port of the widely adopted Python framework
+The package is an R port of the widely adopted Python framework
 [Inspect](https://inspect.ai-safety-institute.org.uk/). While the
 package doesn’t integrate with Inspect directly, it allows users to
 interface with the [Inspect Log
@@ -40,4 +40,4 @@ pak::pak("simonpcouch/rinspect")
 
 ## Example
 
-<img src="inst/figs/rinspect.gif" alt="A screencast of a Positron session. A script called sandbox.R is open in the editor with evaluation code for a 'simple addition' task. Executing `task_evaluate()` performs the evaluation, and the resulting eval is explored in the Inspect Log Viewer with `inspect_view()`." width="100%" />
+<img src="https://github.com/simonpcouch/rinspect/blob/4949c1e00a1c429f147c3dbda6a656f7260620f4/inst/figs/rinspect.gif?raw=true" alt="A screencast of a Positron session. A script called sandbox.R is open in the editor with evaluation code for a 'simple addition' task. Executing `task_evaluate()` performs the evaluation, and the resulting eval is explored in the Inspect Log Viewer with `inspect_view()`." width="100%" />
