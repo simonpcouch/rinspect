@@ -59,7 +59,8 @@ tools.</p>
 and determines a value approximating <code>dataset$target</code>. Its return value should
 be a list with elements <code>result</code> (the final response) and <code>chat</code> (an ellmer
 chat used to solve the problem, or a list of them).</p>
-<p>Alternatively, just supply an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> object!</p></dd>
+<p>The rinspect package supplies a number of pre-built solvers; you might
+start off with <code><a href="generate.html">generate()</a></code>.</p></dd>
 
 
 <dt id="arg-scorer">scorer<a class="anchor" aria-label="anchor" href="#arg-scorer"></a></dt>
@@ -88,15 +89,8 @@ changing its source code.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># requires an ANTHROPIC_API_KEY</span></span></span>
-<span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">chat</span> <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="va">chat</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="va">res</span>, chat <span class="op">=</span> <span class="va">ch</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># or, equivalently</span></span></span>
-<span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># The `generate()` solver just passes the input as-is to an ellmer chat.</span></span></span>
+<span class="r-in"><span><span class="va">solver</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate.html">generate</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">scorer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">target</span>, <span class="va">output</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span></span>
