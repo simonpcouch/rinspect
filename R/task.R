@@ -1,123 +1,192 @@
+# creation -------------------------------------------------------------------
 #' Evaluation tasks
 #'
 #' @description
 #' Evaluation `tasks` provide a flexible data structure for evaluating LLM-based
 #' tools.
-#' 
+#'
+#' 1) **Datasets** contain a set of labelled samples. Datasets are just a
+#' tibble with columns `input` and `target`, where `input` is a prompt
+#' and `target` is either literal value(s) or grading guidance. Situate datasets
+#' inside of a task with `task_create()`.
+#' 2) Solvers evaluate the input in the dataset and produce a final result.
+#' The simplest solver is just an ellmer chat---evaluate a task with a solver
+#' using `task_solve()`.
+#' 3) Scorers evaluate the final output of solvers. They may use text
+#' comparisons, model grading (like [model_graded_qa()]), or other custom
+#' schemes. Score solver results using `task_score()`.
+#'
 #' @param dataset A tibble with, minimally, columns `input` and `target`.
 #' @param solver A function that takes an element of `dataset$input` as input
 #' and determines a value approximating `dataset$target`. Its return value should
 #' be a list with elements `result` (the final response) and `chat` (an ellmer
-#' chat used to solve the problem, or a list of them).
-#' 
-#' The rinspect package supplies a number of pre-built solvers; you might
-#' start off with [generate()].
-#' 
+#' chat used to solve the problem, or a list of them). Or, just supply an
+#' ellmer chat.
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`.
-#' @param ... Named task parameters. The resulting `task` will accept any of 
-#' these parameters allowing for easily running variants of the task without
-#' changing its source code.
+#'
+#' @returns
+#' Each of these functions return a `task`, which is a subclass of a tibble.
+#'
+#' * `task_create()` appends column `id`.
+#' * `task_solve()` appends columns `output` and `solver`.
+#' * `task_score()` appends columns `score` and `scorer`.
 #'
 #' @examples
 #' if (interactive()) {
+#'   library(ellmer)
+#'   library(tibble)
 #'
-#' library(ellmer)
-#' library(tibble)
-#' library(glue)
+#'   simple_addition <- tibble(
+#'     input = c("What's 2+2?", "What's 2+3?"),
+#'     target = c("4", "5")
+#'   )
 #'
-#' dataset <- tibble(
-#'   input = c("What's 2+2?", "What's 2+3?"),
-#'   target = c("4", "5")
-#' )
-#' 
-#' tsk <- task_new(
-#'   name = "simple_addition",
-#'   dataset = dataset,
-#'   solver = generate(),
-#'   scorer = model_graded_qa())
-#' )
-#' 
-#' task_evaluate(tsk)
+#'   tsk <- task_create(dataset = simple_addition)
+#'   tsk
+#'
+#'   tsk <- task_solve(tsk, solver = chat_claude())
+#'   tsk
+#'
+#'   tsk <- task_score(tsk, scorer = model_graded_qa())
+#'   tsk
 #' }
-#' @aliases task
+#'
 #' @export
-# TODO: add task options (https://inspect.ai-safety-institute.org.uk/tasks.html#task-options)
-task_new <- function(name, dataset, solver, scorer, ...) {
+#' @name task
+task_create <- function(
+    dataset,
+    name = deparse(substitute(dataset)),
+    dir = eval_log_dir()
+) {
+  force(name)
   check_data_frame(dataset)
-  if (!is_missing(solver) && inherits(solver, "Chat")) {
+  # TODO: check that it has the appropriate columns
+
+  dataset$id <- seq_len(nrow(dataset))
+
+  res <-
+    structure(
+      dataset,
+      class = c("task", class(tibble::new_tibble(list())))
+    )
+
+  attr(res, "name") <- name
+  attr(res, "dir") <- dir
+
+  res
+}
+
+# solving -------------------------------------------------------------------
+#' @export
+#' @rdname task
+task_solve <- function(task, solver) {
+  if (inherits(solver, "Chat")) {
     solver <- ellmer_chat_to_solver(solver)
   } else {
     check_function(solver)
   }
-  check_function(scorer)
 
-  res <- carrier::crate(
-    function(...) {
-      dataset$output <- character(nrow(dataset))
-      dataset$solver <- vector("list", nrow(dataset))
-      dataset$score <- logical(nrow(dataset))
-      dataset$scorer <- vector("list", nrow(dataset))
-      dataset$id <- seq_len(nrow(dataset))
+  check_inherits(task, "task")
 
-      for (i in seq_len(nrow(dataset))) {
-        sample <- dataset[i, , drop = FALSE]
+  res <- task_solve_impl(task = task, solver = solver)
 
-        # execute and log results for the solver
-        solver_res <- solver(
-          sample$input,
-          ...
-        )
-        dataset$output[i] <- solver_res$result
-        dataset$solver[i] <- list(solver_res$chat)
+  task_structure(res)
+}
 
-        # execute and log results for the scorer
-        scorer_res <- scorer(
-          input = sample$input,
-          target = sample$target,
-          output = dataset$output[i],
-          ...
-        )
-        dataset$score[i] <- scorer_res$result
-        dataset$scorer[i] <- list(scorer_res$chat)
-      }
-    
-      dataset
+task_solve_impl <- function(task, solver, ...) {
+  task$output <- character(nrow(task))
+  task$solver <- vector("list", nrow(task))
+
+  for (i in seq_len(nrow(task))) {
+    sample <- task[i, , drop = FALSE]
+
+    # execute and log results for the solver
+    solver_res <- solver(sample$input)
+    task$output[i] <- solver_res$result
+    task$solver[i] <- list(solver_res$chat)
+  }
+
+  task
+}
+
+ellmer_chat_to_solver <- function(chat) {
+  carrier::crate(
+    function(input) {
+      ch <- chat$clone()
+      res <- ch$chat(input)
+
+      list(result = res, chat = ch)
     },
-    dataset = dataset,
-    solver = solver,
-    scorer = scorer,
-    name = name
+    chat = chat
   )
+}
 
-  structure(res, class = c("task", class(res)))
+# scoring -------------------------------------------------------------------
+#' @export
+#' @rdname task
+task_score <- function(task, scorer) {
+  check_inherits(task, "task")
+  # TODO: check that it's been solved
+
+  res <- task_score_impl(task, scorer)
+
+  task_structure(res)
+}
+
+task_score_impl <- function(task, scorer) {
+  task$score <- logical(nrow(task))
+  task$scorer <- vector("list", nrow(task))
+
+  for (i in seq_len(nrow(task))) {
+    sample <- task[i, , drop = FALSE]
+
+    # execute and log results for the scorer
+    scorer_res <- scorer(
+      input = sample$input,
+      target = sample$target,
+      output = task$output[i]
+    )
+    task$score[i] <- scorer_res$result
+    task$scorer[i] <- list(scorer_res$chat)
+  }
+
+  task
+}
+
+# helpers -------------------------------------------------------------------
+task_structure <- function(x) {
+  structure(
+    x,
+    class = c("task", class(tibble::new_tibble(list())))
+  )
 }
 
 #' @export
 print.task <- function(x, ...) {
-  # TODO: add "with parameters..."
-  cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')}."))
-}
+  cli::cat_line(cli::format_inline(
+    "{cli::col_grey('# Evaluation task')} {.field {(attr(x, 'name'))}}."
+  ))
 
-#' @rdname task_new
-task_evaluate <- function(task, ..., dir = eval_log_dir()) {
-  time_start <- Sys.time()
-  check_inherits(task, "task")
+  print(structure(x, class = class(tibble::new_tibble(list()))))
 
-  result <- task(...)
-
-  eval_log_res <- eval_log(
-    task = task,
-    ...,
-    result = result,
-    time_start = time_start,
-    dir = dir
-  )
-
-  eval_log_loc <- file.path(dir, eval_log_filename(eval_log_res))
   if (interactive()) {
-    inspect_view(dir = dir)
+    dir <- attr(x, "dir")
+    cli::cat_line(cli::format_inline(
+      "{cli::col_grey('# View with')} {.run [inspect_view()](rinspect::inspect_view(dir = dir)))}."
+    ))
   }
 
-  invisible(eval_log_loc)
+  invisible(x)
 }
+
+# task_log <- function(task) {
+#   # TODO: these arguments need pushed around
+#   eval_log(
+#     task = task,
+#     ...,
+#     result = result,
+#     time_start = time_start,
+#     dir = dir
+#   )
+# }

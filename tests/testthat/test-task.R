@@ -1,24 +1,30 @@
-test_that("basic task_new -> task_evaluate works", {
+test_that("basic task_create -> task_solve -> task_score works", {
   skip_if(identical("ANTHROPIC_API_KEY", ""))
-  withr::local_envvar(INSPECT_LOG_DIR = test_path("logs"))
   library(ellmer)
 
-  dataset <- tibble::tibble(
+  simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
   
-  tsk <- task_new(
-    name = "simple_addition",
-    dataset = dataset,
-    solver = generate(chat = chat_claude()),
-    scorer = model_graded_qa(chat = chat_claude())
+  tsk <- task_create(dataset = simple_addition)
+  tsk
+
+  expect_s3_class(tsk, "task")
+  expect_snapshot(tsk)
+  
+  tsk <- task_solve(tsk, solver = chat_claude())
+  tsk
+
+  expect_s3_class(tsk, "task")
+  expect_named(tsk, c("input", "target", "id", "output", "solver"))
+    
+  tsk <- task_score(tsk, scorer = model_graded_qa())
+  tsk
+  
+  expect_s3_class(tsk, "task")
+  expect_named(
+    tsk,
+    c("input", "target", "id", "output", "solver", "score", "scorer")
   )
-  
-  eval_log_file <- task_evaluate(tsk)
-  withr::defer(unlink(eval_log_file))
-  expect_true(file.exists(eval_log_file))
-  
-  # INSPECT_LOG_DIR is respected
-  expect_match(eval_log_file, Sys.getenv("INSPECT_LOG_DIR"), fixed = TRUE)
 })
