@@ -8,3 +8,5 @@
 ^docs$
 ^pkgdown$
 inst/log_dump
+inst/inspect_ai
+.continue/
