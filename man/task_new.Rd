@@ -44,36 +44,11 @@ dataset <- tibble(
   target = c("4", "5")
 )
 
-# requires an ANTHROPIC_API_KEY
-# The `generate()` solver just passes the input as-is to an ellmer chat.
-solver <- generate()
-
-scorer <- function(input, target, output) {
-  ch <- chat_claude()
-  response <- ch$chat(glue::glue(
-    "An assistant was asked the following: {input}\n",
-    "The answer is: {target}.\n",
-    "The assistant responded: {output}.\n",
-    "Was the assistant correct?\n",
-    "End your response with 'Answer: Yes' if yes, 'Answer: No' if no."
-  ))
-
-  if (grepl("Answer: Yes", response)) {
-    res <- TRUE
-  } else if (grepl("Answer: No", response)) {
-    res <- FALSE
-  } else {
-    res <- NA
-  }
-
-  list(result = res, chat = ch)
-}
-
 tsk <- task_new(
   name = "simple_addition",
   dataset = dataset,
-  solver = solver,
-  scorer = scorer
+  solver = generate(),
+  scorer = model_graded_qa())
 )
 
 task_evaluate(tsk)
