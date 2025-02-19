@@ -6,18 +6,6 @@ is_testing <- function() {
   identical(Sys.getenv("TESTTHAT"), "true")
 }
 
-ellmer_chat_to_solver <- function(chat) {
-  carrier::crate(
-    function(input) {
-      ch <- chat$clone()
-      res <- ch$chat(input)
-  
-      list(result = res, chat = ch)
-    },
-    chat = chat
-  )
-}
-
 # ad-hoc check functions
 check_inherits <- function(x, cls, x_arg = caller_arg(x), call = caller_env()) {
   if (!inherits(x, cls)) {
