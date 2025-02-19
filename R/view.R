@@ -34,7 +34,7 @@ inspect_view <- function(
       call = function(req) {
         tryCatch({
           # parse query parameters
-          query <- parseQueryString(req$QUERY_STRING)
+          query <- parse_query_string(req$QUERY_STRING)
 
           # handle API routes first
           if (startsWith(req$PATH_INFO, "/api/")) {
@@ -212,8 +212,7 @@ inspect_view <- function(
   invisible(server)
 }
 
-# Helper function to parse query string
-parseQueryString <- function(query_string) {
+parse_query_string <- function(query_string) {
   if (is.null(query_string) || query_string == "") {
     return(list())
   }
