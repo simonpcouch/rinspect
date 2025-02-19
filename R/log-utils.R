@@ -1,4 +1,4 @@
-eval_log <- function(task, ..., result, time_start) {
+eval_log <- function(task, ..., result, time_start, dir) {
   task_env <- environment(task)
 
   eval_log <- eval_log_new(
@@ -19,7 +19,7 @@ eval_log <- function(task, ..., result, time_start) {
     samples = eval_log_samples(result)
   )
 
-  write_eval_log(eval_log)
+  eval_log_write(eval_log, dir = log_dir)
 
   result
 }

@@ -25,12 +25,12 @@ test_that("inspect_view() handles nonexistent log directory", {
   expect_snapshot(inspect_view(log_dir = log_dir), error = TRUE)
 })
 
-test_that("viewer works with default write_eval_log directory", {
+test_that("viewer works with default eval_log_write directory", {
   log_dir <- file.path("test_logs")
   if (!dir.exists(log_dir)) dir.create(log_dir)
   withr::defer(unlink(log_dir, recursive = TRUE))
 
-  write_eval_log(eval_log_new(), dir = log_dir)
+  eval_log_write(eval_log_new(), dir = log_dir)
 
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })

@@ -8,19 +8,19 @@ test_that("inspect_view() works with read + written eval file", {
     "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
     package = "rinspect"
   )
-  eval_log <- read_eval_log(file)
-  write_eval_log(x = eval_log, dir = log_dir)
+  eval_log <- eval_log_read(file)
+  eval_log_write(x = eval_log, dir = log_dir)
 
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })
 
-test_that("inspect_view() works with template write_eval_log()", {
+test_that("inspect_view() works with template eval_log_write()", {
   log_dir <- tempdir()
   if (!dir.exists(log_dir)) dir.create(log_dir)
   withr::defer(unlink(log_dir, recursive = TRUE))
 
   # generated from rinspect defaults
-  write_eval_log(dir = log_dir)
+  eval_log_write(dir = log_dir)
 
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })

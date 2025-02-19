@@ -8,7 +8,7 @@
 \usage{
 task_new(name, dataset, solver, scorer, ...)
 
-task_evaluate(task, ...)
+task_evaluate(task, ..., dir = eval_log_dir())
 }
 \arguments{
 \item{dataset}{A tibble with, minimally, columns \code{input} and \code{target}.}

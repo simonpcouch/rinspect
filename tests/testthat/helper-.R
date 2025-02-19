@@ -17,7 +17,7 @@ example_ellmer_solver <- function() {
 
 # a log actually written by Python Inspect
 example_inspect_log <- function() {
-  read_eval_log(
+  eval_log_read(
     system.file(
       "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
       package = "rinspect"

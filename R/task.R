@@ -100,7 +100,7 @@ print.task <- function(x, ...) {
 }
 
 #' @rdname task_new
-task_evaluate <- function(task, ...) {
+task_evaluate <- function(task, ..., dir = eval_log_dir()) {
   time_start <- Sys.time()
   check_inherits(task, "task")
 

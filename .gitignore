@@ -7,3 +7,4 @@
 .env
 __pycache__/
 docs
+inst/log_dump
