@@ -1,3 +1,29 @@
+test_that("is_positron works", {
+  # default when unset
+  withr::local_envvar(POSITRON = "")
+  expect_false(is_positron())
+
+  # explicit values
+  withr::local_envvar(POSITRON = "1")
+  expect_true(is_positron())
+
+  withr::local_envvar(POSITRON = "0")
+  expect_false(is_positron())
+})
+
+test_that("is_testing works", {
+  # reflects current testing status
+  expect_equal(is_testing(), identical(Sys.getenv("TESTTHAT"), "true"))
+
+  # can be overridden
+  withr::local_envvar(TESTTHAT = "true")
+  expect_true(is_testing())
+
+  withr::local_envvar(TESTTHAT = "false")
+  expect_false(is_testing())
+
+})
+
 test_that("check_inherits works", {
   # errors informatively with wrong class
   expect_snapshot(check_inherits(1, "list"), error = TRUE)
