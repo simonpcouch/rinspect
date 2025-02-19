@@ -19,6 +19,10 @@ eval_log_read <- function(file) {
 #' @rdname eval_log
 #' @export
 eval_log_write <- function(x = eval_log_new(), dir = eval_log_dir()) {
+  if (!dir.exists(dir)) {
+    dir.create(dir, showWarnings = FALSE, recursive = TRUE)
+  }
+  
   jsonlite::write_json(
     x = structure(x, class = "list"),
     path = file.path(dir, eval_log_filename(x))
