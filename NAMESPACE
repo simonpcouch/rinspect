@@ -2,6 +2,7 @@
 
 S3method(print,eval_log)
 S3method(print,task)
+export(generate)
 export(inspect_view)
 export(read_eval_log)
 export(task_new)

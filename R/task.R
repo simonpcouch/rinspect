@@ -10,7 +10,9 @@
 #' be a list with elements `result` (the final response) and `chat` (an ellmer
 #' chat used to solve the problem, or a list of them).
 #' 
-#' Alternatively, just supply an [ellmer::Chat] object!
+#' The rinspect package supplies a number of pre-built solvers; you might
+#' start off with [generate()].
+#' 
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`.
 #' @param ... Named task parameters. The resulting `task` will accept any of 
@@ -30,15 +32,9 @@
 #' )
 #'
 #' # requires an ANTHROPIC_API_KEY
-#' solver <- function(input, chat = chat_claude()) {
-#'   ch <- chat$clone()
-#'   res <- ch$chat(input)
-#' 
-#'   list(result = res, chat = ch)
-#' }
-#' 
-#' # or, equivalently
-#' solver <- chat_claude()
+# TODO: remove this comment if there's a default ellmer chat at some point
+#' # The `generate()` solver just passes the input as-is to an ellmer chat.
+#' solver <- generate()
 #'
 #' scorer <- function(input, target, output) {
 #'   ch <- chat_claude()
