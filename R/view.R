@@ -1,13 +1,13 @@
 #' Launch the Inspect Log Viewer
 #'
-#' @param log_dir Path to directory containing eval logs.
+#' @param dir Path to directory containing eval logs.
 #' Defaults to package example logs.
 #' @param host Host to serve on. Defaults to "127.0.0.1",
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
 #' @export
 inspect_view <- function(
-    log_dir = system.file("logs", package = "rinspect"),
+    dir = eval_log_dir(),
     host = "127.0.0.1",
     port = 7576
 ) {
@@ -22,8 +22,8 @@ inspect_view <- function(
     cli::cli_abort("Unable to terminate the existing server.", parent = cnd)
   })
 
-  if (!dir.exists(log_dir)) {
-    cli::cli_abort("Log directory {.file {log_dir}} not found.")
+  if (!dir.exists(dir)) {
+    cli::cli_abort("Log directory {.file {dir}} not found.")
   }
 
   server <- httpuv::startServer(
@@ -41,9 +41,9 @@ inspect_view <- function(
 
             # GET /api/logs
             if (req$PATH_INFO == "/api/logs") {
-              files <- list.files(log_dir, pattern = "\\.json$", recursive = TRUE)
+              files <- list.files(dir, pattern = "\\.json$", recursive = TRUE)
               log_files <- lapply(files, function(f) {
-                file_path <- file.path(log_dir, f)
+                file_path <- file.path(dir, f)
                 info <- file.info(file_path)
 
                 list(
@@ -54,7 +54,7 @@ inspect_view <- function(
               })
 
               resp <- list(
-                log_dir = normalizePath(log_dir),
+                dir = normalizePath(dir),
                 files = log_files
               )
 
@@ -85,7 +85,7 @@ inspect_view <- function(
                 }
                 
                 headers <- lapply(files, function(f) {
-                  file_path <- file.path(log_dir, f)
+                  file_path <- file.path(dir, f)
                   if (file.exists(file_path)) {
                     content <- jsonlite::fromJSON(file_path)
                     # Extract just the metadata/header portion
@@ -114,7 +114,7 @@ inspect_view <- function(
             if (startsWith(req$PATH_INFO, "/api/logs/")) {
               file <- substr(req$PATH_INFO, 11, nchar(req$PATH_INFO))
               file <- utils::URLdecode(file)
-              file_path <- file.path(log_dir, file)
+              file_path <- file.path(dir, file)
 
               if (file.exists(file_path)) {
                 # read the file content first

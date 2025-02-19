@@ -4,14 +4,10 @@
 \alias{inspect_view}
 \title{Launch the Inspect Log Viewer}
 \usage{
-inspect_view(
-  log_dir = system.file("logs", package = "rinspect"),
-  host = "127.0.0.1",
-  port = 7576
-)
+inspect_view(dir = eval_log_dir(), host = "127.0.0.1", port = 7576)
 }
 \arguments{
-\item{log_dir}{Path to directory containing eval logs.
+\item{dir}{Path to directory containing eval logs.
 Defaults to package example logs.}
 
 \item{host}{Host to serve on. Defaults to "127.0.0.1",}

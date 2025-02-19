@@ -106,7 +106,18 @@ task_evaluate <- function(task, ..., dir = eval_log_dir()) {
 
   result <- task(...)
 
-  eval_log(task = task, ..., result = result, time_start = time_start)
+  eval_log_res <- eval_log(
+    task = task,
+    ...,
+    result = result,
+    time_start = time_start,
+    dir = dir
+  )
 
-  result
+  eval_log_loc <- file.path(dir, eval_log_filename(eval_log_res))
+  if (interactive()) {
+    inspect_view(dir = dir)
+  }
+
+  invisible(eval_log_loc)
 }
