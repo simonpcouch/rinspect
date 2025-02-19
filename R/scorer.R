@@ -1,20 +1,22 @@
 #' Scorer: Evaluate a response using a model
-#' 
+#'
 #' @param template Grading template to use--a `glue()` string which will take
 #' substitutions `input`, `answer`, `target`, `instructions`.
 #' @param instructions Grading instructions.
-#' @param grade_pattern A regex pattern to extract the final grade from the 
+#' @param grade_pattern A regex pattern to extract the final grade from the
 #' judge model's response.
 #' @param partial_credit Whether to allow partial credit.
 #' @param chat An ellmer chat used to grade the model output.
 # in Inspect, "by default, the model being evaluated is used"
-#' 
-#' @returns 
+#'
+#' @returns
 #' A function that will grade model responses according to the given instructions.
-#' 
+#'
 #' @examples
-#' model_graded_qa()
-#' 
+#' if (interactive()) {
+#'   model_graded_qa()
+#' }
+#'
 #' @family scorers
 #' @export
 model_graded_qa <- function(
@@ -22,7 +24,7 @@ model_graded_qa <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = chat_claude()
+  chat = ellmer::chat_claude()
 ) {
   # TODO: type check
   function(input, target, output) {
@@ -85,7 +87,7 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
   )[[1]][2]
 
   if (is.na(grade_letter)) return(NA)
-  
+
   switch(
     toupper(grade_letter),
     "C" = 1.0,
@@ -98,11 +100,11 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
 qa_default_instructions <- function(partial_credit = FALSE) {
   partial_letter <- if(partial_credit) ", P, or " else " or "
   partial_prompt <- if (partial_credit) '"P" for partially correct answers,' else ""
-  
+
   glue::glue(
-    "After assessing the submitted answer, reply with 'GRADE: $LETTER' where 
+    "After assessing the submitted answer, reply with 'GRADE: $LETTER' where
     LETTER is one of C{partial_letter}I.
-    Please choose ONE option: either 'C' for correct answers, {partial_prompt} 
+    Please choose ONE option: either 'C' for correct answers, {partial_prompt}
     or 'I' for incorrect answers.
     First explain your reasoning, then end with GRADE: $LETTER."
   )

@@ -20,7 +20,7 @@
 #' changing its source code.
 #'
 #' @examples
-#' \dontrun{
+#' if (interactive()) {
 #'
 #' library(ellmer)
 #' library(tibble)

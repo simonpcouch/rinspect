@@ -20,6 +20,8 @@ replicating the \code{target}. \code{generate()} is the most basic solver in rin
 and just calls the model with the input and collects the output.
 }
 \examples{
-generate()
+if (interactive()) {
+  generate()
+}
 }
 \concept{solvers}

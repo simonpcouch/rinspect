@@ -33,7 +33,7 @@ Evaluation \code{tasks} provide a flexible data structure for evaluating LLM-bas
 tools.
 }
 \examples{
-\dontrun{
+if (interactive()) {
 
 library(ellmer)
 library(tibble)

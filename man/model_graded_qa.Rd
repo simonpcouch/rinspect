@@ -9,7 +9,7 @@ model_graded_qa(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = chat_claude()
+  chat = ellmer::chat_claude()
 )
 }
 \arguments{
@@ -32,7 +32,9 @@ A function that will grade model responses according to the given instructions.
 Scorer: Evaluate a response using a model
 }
 \examples{
-model_graded_qa()
+if (interactive()) {
+  model_graded_qa()
+}
 
 }
 \concept{scorers}
