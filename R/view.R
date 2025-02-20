@@ -29,7 +29,7 @@ inspect_view.task <- function(x, host = "127.0.0.1", port = 7576, ...) {
   dir.create(dir)
   
   task_log(x, dir = dir)
-  inspect_view_impl(dir = dir, host = host, port = port)
+  server <- inspect_view_impl(dir = dir, host = host, port = port)
   
   reg.finalizer(server, function(e) {
     if (dir.exists(dir)) {

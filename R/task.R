@@ -162,10 +162,12 @@ task_score_impl <- function(task, scorer) {
 
 # helpers -------------------------------------------------------------------
 task_structure <- function(x) {
-  structure(
+  res <- structure(
     x,
     class = c("task", class(tibble::new_tibble(list())))
   )
+  .stash_last_task(res)
+  res
 }
 
 #' @export
@@ -176,10 +178,9 @@ print.task <- function(x, ...) {
 
   print(structure(x, class = class(tibble::new_tibble(list()))))
 
-  if (interactive()) {
-    dir <- attr(x, "dir")
+  if (interactive() && has_last_task()) {
     cli::cat_line(cli::format_inline(
-      "{cli::col_grey('# View with')} {.run [inspect_view()](rinspect::inspect_view(dir = dir)))}."
+      "{cli::col_grey('# View with')} {.run rinspect::inspect_view(.last_task)}."
     ))
   }
 
@@ -214,4 +215,19 @@ task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
   eval_log_write(eval_log, dir = dir)
 
   eval_log
+}
+
+# .last_task -------------------------------------------------------------------
+.stash_last_task <- function(x) {
+  if (! "pkg:rinspect" %in% search()) {
+    do.call("attach", list(new.env(), pos = length(search()),
+                           name = "pkg:rinspect"))
+  }
+  env <- as.environment("pkg:rinspect")
+  env$.last_task <- x
+  invisible(NULL)
+}
+
+has_last_task <- function() {
+  exists(".last_task", as.environment("pkg:rinspect"))
 }
