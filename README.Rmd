@@ -67,7 +67,7 @@ tsk <- task_solve(tsk, solver = chat_claude())
 tsk
 ```
 
-Scorers evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using `task_score()`:
+**Scorers** evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using `task_score()`:
 
 ```{r}
 tsk <- task_score(tsk, scorer = model_graded_qa())

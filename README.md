@@ -87,7 +87,7 @@ tsk
 #> 3 What's 2+4? 6          3 2+4 = 6 <Chat>
 ```
 
-Scorers evaluate the final output of solvers. They may use text
+**Scorers** evaluate the final output of solvers. They may use text
 comparisons, model grading, or other custom schemes. Score solver output
 using `task_score()`:
 
