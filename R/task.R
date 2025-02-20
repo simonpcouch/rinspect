@@ -192,7 +192,7 @@ print.task <- function(x, ...) {
 
   print(structure(x, class = class(tibble::new_tibble(list()))))
 
-  if (interactive() && has_last_task()) {
+  if (interactive() && has_last_task() && "scorer" %in% colnames(x)) {
     cli::cat_line(cli::format_inline(
       "{cli::col_grey('# View with')} {.run rinspect::inspect_view(.last_task)}."
     ))
