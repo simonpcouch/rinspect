@@ -9,10 +9,10 @@
 #' tibble with columns `input` and `target`, where `input` is a prompt
 #' and `target` is either literal value(s) or grading guidance. Situate datasets
 #' inside of a task with `task_create()`.
-#' 2) Solvers evaluate the input in the dataset and produce a final result.
+#' 2) **Solvers** evaluate the `input` in the dataset and produce a final result.
 #' The simplest solver is just an ellmer chat---evaluate a task with a solver
 #' using `task_solve()`.
-#' 3) Scorers evaluate the final output of solvers. They may use text
+#' 3) **Scorers** evaluate the final output of solvers. They may use text
 #' comparisons, model grading (like [model_graded_qa()]), or other custom
 #' schemes. Score solver results using `task_score()`.
 #'
@@ -31,7 +31,10 @@
 #' * `task_create()` appends column `id`.
 #' * `task_solve()` appends columns `output` and `solver`.
 #' * `task_score()` appends columns `score` and `scorer`.
-#'
+#'  
+#' @seealso [task_log()] and [inspect_view()] for writing results to
+#' file and interfacing with the Inspect Log Viewer.
+#' 
 #' @examples
 #' if (interactive()) {
 #'   library(ellmer)
@@ -50,6 +53,8 @@
 #'
 #'   tsk <- task_score(tsk, scorer = model_graded_qa())
 #'   tsk
+#' 
+#'   inspect_view(tsk)
 #' }
 #'
 #' @export
@@ -57,6 +62,7 @@
 task_create <- function(
     dataset,
     name = deparse(substitute(dataset)),
+    # TODO: maybe it doesn't need to be associated with a dir at all?
     dir = eval_log_dir()
 ) {
   force(name)
@@ -180,13 +186,32 @@ print.task <- function(x, ...) {
   invisible(x)
 }
 
-# task_log <- function(task) {
-#   # TODO: these arguments need pushed around
-#   eval_log(
-#     task = task,
-#     ...,
-#     result = result,
-#     time_start = time_start,
-#     dir = dir
-#   )
-# }
+#' @rdname inspect_view
+#' @export
+task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
+  eval_log <- eval_log_new(
+    eval = eval_log_eval(
+      task = attr(task, "name"),
+      dataset = list(samples = nrow(task), sample_ids = seq_len(nrow(task))),
+      model = .turn_model(.last_assistant_turn(task$solver[[1]]$get_turns()))
+    ),
+    results = eval_log_results(
+      total_samples = nrow(task),
+      completed_samples = nrow(task)
+    ),
+    # TODO: the wonkiness of the started and completed at times
+    # here is a side effect of splitting the solving and scoring up
+    # into two. will probably want to take those values independently
+    # for those two steps and then subtract out the intermediate time.
+    stats = eval_log_stats(
+      started_at = time_start,
+      completed_at = Sys.time(),
+      model_usage = sum_model_usage(task$solver)
+    ),
+    samples = eval_log_samples(task)
+  )
+
+  eval_log_write(eval_log, dir = dir)
+
+  eval_log
+}

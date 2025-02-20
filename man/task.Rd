@@ -41,10 +41,10 @@ tools.
 tibble with columns \code{input} and \code{target}, where \code{input} is a prompt
 and \code{target} is either literal value(s) or grading guidance. Situate datasets
 inside of a task with \code{task_create()}.
-\item Solvers evaluate the input in the dataset and produce a final result.
+\item \strong{Solvers} evaluate the \code{input} in the dataset and produce a final result.
 The simplest solver is just an ellmer chat---evaluate a task with a solver
 using \code{task_solve()}.
-\item Scorers evaluate the final output of solvers. They may use text
+\item \strong{Scorers} evaluate the final output of solvers. They may use text
 comparisons, model grading (like \code{\link[=model_graded_qa]{model_graded_qa()}}), or other custom
 schemes. Score solver results using \code{task_score()}.
 }
@@ -67,6 +67,12 @@ if (interactive()) {
 
   tsk <- task_score(tsk, scorer = model_graded_qa())
   tsk
+
+  inspect_view(tsk)
 }
 
+}
+\seealso{
+\code{\link[=task_log]{task_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
+file and interfacing with the Inspect Log Viewer.
 }

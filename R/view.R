@@ -1,12 +1,47 @@
-#' Launch the Inspect Log Viewer
+#' The Inspect Log Viewer
 #'
-#' @param dir Path to directory containing eval logs.
-#' Defaults to package example logs.
+#' @param x Either a path to a directory containing a task eval log or a 
+#' task itself. If a task, the function will log the task to a temporary
+#' directory and open that directory in the viewer.
 #' @param host Host to serve on. Defaults to "127.0.0.1",
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
+#' @name inspect_view
 #' @export
-inspect_view <- function(
+inspect_view <- function(x, host = "127.0.0.1", port = 7576, ...) {
+  UseMethod("inspect_view")
+}
+
+#' @rdname inspect_view
+#' @export
+inspect_view.character <- function(x, host = "127.0.0.1", port = 7576, ...) {
+  inspect_view_impl(dir = x, host = host, port = port)
+}
+
+#' @rdname inspect_view
+#' @export
+inspect_view.task <- function(x, host = "127.0.0.1", port = 7576, ...) {
+  # can't use the usual withr::local_tempdir as withr doesn't recognize
+  # R6 objects as environments. we want to associate cleanup with the
+  # server rather than the execution env of the function.
+  # TODO: if there's an existing server, add x to that dir and then open it up?
+  dir <- tempfile("rinspect-")
+  dir.create(dir)
+  
+  dir <- withr::local_tempdir(.local_envir = x)
+  task_log(x, dir = dir)
+  inspect_view_impl(dir = dir, host = host, port = port)
+  
+  reg.finalizer(server, function(e) {
+    if (dir.exists(dir)) {
+      unlink(dir, recursive = TRUE)
+    }
+  })
+  
+  invisible(server)
+}
+
+inspect_view_impl <- function(
     dir = eval_log_dir(),
     host = "127.0.0.1",
     port = 7576
