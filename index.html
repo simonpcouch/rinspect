@@ -100,7 +100,7 @@
 <span><span class="co">#&gt; 1 What's 2+2? 4          1 2+2 = 4 &lt;Chat&gt;</span></span>
 <span><span class="co">#&gt; 2 What's 2+3? 5          2 2+3 = 5 &lt;Chat&gt;</span></span>
 <span><span class="co">#&gt; 3 What's 2+4? 6          3 2+4 = 6 &lt;Chat&gt;</span></span></code></pre></div>
-<p>Scorers evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using <code><a href="reference/task.html">task_score()</a></code>:</p>
+<p><strong>Scorers</strong> evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using <code><a href="reference/task.html">task_score()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task.html">task_score</a></span><span class="op">(</span><span class="va">tsk</span>, scorer <span class="op">=</span> <span class="fu"><a href="reference/model_graded_qa.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Scoring ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%</span></span>
