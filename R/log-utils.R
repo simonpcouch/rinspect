@@ -176,9 +176,12 @@ eval_log_sample <- function(sample) {
     target = sample$target,
     messages = translate_to_messages(turns),
     output = translate_to_output(turns),
-    # TODO: not implemented
     scores = list(
-      model_graded_qa = eval_log_score()
+      model_graded_qa = eval_log_score(
+        output = sample$output[[1]],
+        score = sample$score[[1]],
+        scorer = sample$scorer[[1]]
+      )
     ),
     metadata = list(),
     store = list(),
@@ -230,45 +233,32 @@ eval_log_metrics <- function(
   )
 }
 
-# TODO: this should actually be a function that converts ellmer Turns
-# to this list format
-eval_log_message <- function(
-    content = list(eval_log_message_content()),
-    source = "input", # or "generate"
-    role = "user" # or "assistant"
-) {
+eval_log_score <- function(output, score, scorer) {
+  value <- if (score == 1) "C" else "I"
+  
+  turns <- scorer$get_turns()
+  explanation <- .last_assistant_turn(turns)@text
+  
   list(
-    content = content,
-    source = source,
-    role = role
+    value = value,
+    answer = output,
+    explanation = explanation,
+    metadata = list(
+      grading = lapply(turns, eval_log_metadata_grading)
+    )
   )
 }
 
-eval_log_message_content <- function(
-  type = "text",
-  text = "input message"
-) {
-list(
-  type = type,
-  text = text
-)
-}
-
-eval_log_score <- function(
-    value = "C",
-    answer = "Some answer.",
-    explanation = "Some raw response.",
-    # TODO: need to inline some turns here as well, this time from the judge
-    metadata = list(grading = list(
-      eval_log_message(),
-      eval_log_message(source = "generate", role = "assistant")
-    ))
-) {
+eval_log_metadata_grading <- function(turn) {
   list(
-    value = value,
-    answer = answer,
-    explanation = explanation,
-    metadata = metadata
+    content = list(
+      list(
+        type = "text",
+        text = turn@text
+      )
+    ),
+    source = if(turn@role == "user") "input" else "generate", 
+    role = turn@role
   )
 }
 

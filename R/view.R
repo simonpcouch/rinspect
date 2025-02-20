@@ -28,7 +28,6 @@ inspect_view.task <- function(x, host = "127.0.0.1", port = 7576, ...) {
   dir <- tempfile("rinspect-")
   dir.create(dir)
   
-  dir <- withr::local_tempdir(.local_envir = x)
   task_log(x, dir = dir)
   inspect_view_impl(dir = dir, host = host, port = port)
   
