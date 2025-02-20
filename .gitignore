@@ -10,3 +10,5 @@ docs
 inst/log_dump
 inst/inspect_ai
 .continue/
+
+/.quarto/
