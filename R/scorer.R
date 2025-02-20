@@ -56,7 +56,7 @@ model_graded_qa_impl <- function(
 
   prompt <- qa_format_prompt(template, input, output, target, instructions)
   chat <- chat$clone()
-  response <- chat$chat(prompt)
+  response <- chat$chat(prompt, echo = FALSE)
 
   result <- qa_extract_grade(response, grade_pattern, partial_credit)
 

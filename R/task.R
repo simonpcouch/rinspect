@@ -31,10 +31,10 @@
 #' * `task_create()` appends column `id`.
 #' * `task_solve()` appends columns `output` and `solver`.
 #' * `task_score()` appends columns `score` and `scorer`.
-#'  
+#'
 #' @seealso [task_log()] and [inspect_view()] for writing results to
 #' file and interfacing with the Inspect Log Viewer.
-#' 
+#'
 #' @examples
 #' if (interactive()) {
 #'   library(ellmer)
@@ -53,7 +53,7 @@
 #'
 #'   tsk <- task_score(tsk, scorer = model_graded_qa())
 #'   tsk
-#' 
+#'
 #'   inspect_view(tsk)
 #' }
 #'
@@ -104,6 +104,11 @@ task_solve_impl <- function(task, solver, ...) {
   task$output <- character(nrow(task))
   task$solver <- vector("list", nrow(task))
 
+  withr::local_options(
+    cli.progress_show_after = 0,
+    cli.progress_clear = FALSE
+  )
+  cli::cli_progress_bar("Solving", total = nrow(task))
   for (i in seq_len(nrow(task))) {
     sample <- task[i, , drop = FALSE]
 
@@ -111,7 +116,9 @@ task_solve_impl <- function(task, solver, ...) {
     solver_res <- solver(sample$input)
     task$output[i] <- solver_res$result
     task$solver[i] <- list(solver_res$chat)
+    cli::cli_progress_update()
   }
+  cli::cli_progress_done()
 
   task
 }
@@ -120,7 +127,7 @@ ellmer_chat_to_solver <- function(chat) {
   carrier::crate(
     function(input) {
       ch <- chat$clone()
-      res <- ch$chat(input)
+      res <- ch$chat(input, echo = FALSE)
 
       list(result = res, chat = ch)
     },
@@ -144,6 +151,11 @@ task_score_impl <- function(task, scorer) {
   task$score <- logical(nrow(task))
   task$scorer <- vector("list", nrow(task))
 
+  withr::local_options(
+    cli.progress_show_after = 0,
+    cli.progress_clear = FALSE
+  )
+  cli::cli_progress_bar("Scoring", total = nrow(task))
   for (i in seq_len(nrow(task))) {
     sample <- task[i, , drop = FALSE]
 
@@ -155,7 +167,9 @@ task_score_impl <- function(task, scorer) {
     )
     task$score[i] <- scorer_res$result
     task$scorer[i] <- list(scorer_res$chat)
+    cli::cli_progress_update()
   }
+  cli::cli_progress_done()
 
   task
 }
@@ -219,9 +233,11 @@ task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
 
 # .last_task -------------------------------------------------------------------
 .stash_last_task <- function(x) {
-  if (! "pkg:rinspect" %in% search()) {
-    do.call("attach", list(new.env(), pos = length(search()),
-                           name = "pkg:rinspect"))
+  if (!"pkg:rinspect" %in% search()) {
+    do.call(
+      "attach",
+      list(new.env(), pos = length(search()), name = "pkg:rinspect")
+    )
   }
   env <- as.environment("pkg:rinspect")
   env$.last_task <- x
@@ -229,5 +245,9 @@ task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
 }
 
 has_last_task <- function() {
+  if (!"pkg:rinspect" %in% search()) {
+    return(FALSE)
+  }
+
   exists(".last_task", as.environment("pkg:rinspect"))
 }
