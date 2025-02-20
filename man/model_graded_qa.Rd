@@ -14,7 +14,7 @@ model_graded_qa(
 }
 \arguments{
 \item{template}{Grading template to use--a \code{glue()} string which will take
-substitutions \code{input}, \code{answer}, \code{target}, \code{instructions}.}
+substitutions \code{input}, \code{answer}, \code{criterion}, \code{instructions}.}
 
 \item{instructions}{Grading instructions.}
 

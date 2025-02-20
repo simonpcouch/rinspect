@@ -1,7 +1,7 @@
 #' Scorer: Evaluate a response using a model
 #'
 #' @param template Grading template to use--a `glue()` string which will take
-#' substitutions `input`, `answer`, `target`, `instructions`.
+#' substitutions `input`, `answer`, `criterion`, `instructions`.
 #' @param instructions Grading instructions.
 #' @param grade_pattern A regex pattern to extract the final grade from the
 #' judge model's response.
@@ -76,7 +76,7 @@ qa_format_prompt <- function(template, input, output, target, instructions) {
     template,
     input = input,
     answer = output,
-    target = target,
+    criterion = target,
     instructions = instructions
   )
 }
@@ -113,14 +113,14 @@ qa_default_instructions <- function(partial_credit = FALSE) {
 
 # based on https://github.com/UKGovernmentBEIS/inspect_ai/blob/f60a6ff8502fa43ef1b9a7a905eab2a21608f1c1/src/inspect_ai/scorer/_model.py#L206
 qa_default_template <- function() {
-  "You are assessing a submitted answer on a given task based on a target response.
+  "You are assessing a submitted answer on a given task based on a criterion.
   [BEGIN DATA]
   ***
   [Task]: {input}
   ***
   [Submission]: {answer}
   ***
-  [Target response]: {target}
+  [Criterion]: {criterion}
   ***
   [END DATA]
   Does the submission meet the criterion?
