@@ -104,10 +104,7 @@ task_solve_impl <- function(task, solver, ...) {
   task$output <- character(nrow(task))
   task$solver <- vector("list", nrow(task))
 
-  withr::local_options(
-    cli.progress_show_after = 0,
-    cli.progress_clear = FALSE
-  )
+  withr::local_options(cli.progress_show_after = 0)
   cli::cli_progress_bar("Solving", total = nrow(task))
   for (i in seq_len(nrow(task))) {
     sample <- task[i, , drop = FALSE]
@@ -151,10 +148,7 @@ task_score_impl <- function(task, scorer) {
   task$score <- logical(nrow(task))
   task$scorer <- vector("list", nrow(task))
 
-  withr::local_options(
-    cli.progress_show_after = 0,
-    cli.progress_clear = FALSE
-  )
+  withr::local_options(cli.progress_show_after = 0)
   cli::cli_progress_bar("Scoring", total = nrow(task))
   for (i in seq_len(nrow(task))) {
     sample <- task[i, , drop = FALSE]
