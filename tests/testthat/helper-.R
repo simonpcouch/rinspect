@@ -25,13 +25,26 @@ example_inspect_log <- function() {
   )
 }
 
-example_task <- function() {
+example_task <- function(solved = TRUE, scored = TRUE) {
   load(
     system.file(
       "sandbox/example-task.rda",
       package = "rinspect"
     )
   )
+
+  # if it's not solved, it can't be scored!
+  if (!solved) {
+    return(tsk[
+      !colnames(tsk) %in% c("result", "solver", "score", "scorer")
+    ])
+  }
+
+  if (!scored) {
+    return(tsk[
+      !colnames(tsk) %in% c("score", "scorer")
+    ])
+  }
 
   tsk
 }

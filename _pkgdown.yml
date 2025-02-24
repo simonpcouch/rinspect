@@ -11,6 +11,7 @@ reference:
 - title: "Scorers"
   contents:
   - starts_with("model_graded_")
+  - starts_with("detect_")
 
 - title: "Utilities for evaluation logs"
   contents:

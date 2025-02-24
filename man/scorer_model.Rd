@@ -103,3 +103,6 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 }
 
 }
+\seealso{
+\link{scorer_detect} for string detection-based scoring.
+}

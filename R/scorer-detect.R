@@ -1,0 +1,263 @@
+#' Scoring with string detection
+#'
+#' @description
+#' Functions for string pattern detection in model outputs:
+#'
+#' - `detect_includes()`: Determine whether the `target` from the sample 
+#' appears anywhere inside the model output. Can be case sensitive or 
+#' insensitive (defaults to the latter).
+#' - `detect_match()`: Determine whether the `target` from the sample appears 
+#' at the beginning or end of model output (defaults to looking at the end). 
+#' Has options for ignoring case, white-space, and punctuation 
+#' (all are ignored by default).
+#' - `detect_pattern()`: Extract matches of a pattern from the model response
+#' and determine whether those matches also appear in `target`.
+#' - `detect_answer()`: Scorer for model output that precedes answers with 
+#' "ANSWER: ". Can extract letters, words, or the remainder of the line.
+#' - `detect_exact()`: Scorer which will normalize the text of the answer and 
+#' target(s) and perform an exact matching comparison of the text. This 
+#' scorer will return `CORRECT` when the answer is an exact match to one 
+#' or more targets.
+#'
+#' @param case_sensitive Logical, whether comparisons are case sensitive.
+#' @param location Where to look for match: one of `"begin"`, `"end"`, 
+#' `"any"`, or `"exact"`. Defaults to `"end"`.
+#' @param pattern Regular expression pattern to extract answer.
+#' @param all Logical: for multiple captures, whether all must match.
+#' @param format What to extract after `"ANSWER:"`: `"letter"`, `"word"`, 
+#' or `"line"`. Defaults to `"line"`.
+#' 
+#' @seealso [model_graded_qa()] and [model_graded_fact()] for model-based 
+#' scoring.
+#' 
+#' @returns
+#' A function that scores model output based on string matching. Pass the
+#' returned value to [task_score()].
+#'
+#' @examples
+#' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   library(ellmer)
+#'   library(tibble)
+#'
+#'   simple_addition <- tibble(
+#'     input = c("What's 2+2?", "What's 2+3?"),
+#'     target = c("4", "5")
+#'   )
+#'
+#'   # Requires an API key:
+#'   tsk <- task_create(dataset = simple_addition)
+#'   tsk <- task_solve(tsk, solver = chat_claude())
+#' 
+#'   # Does not require an API key:
+#'   tsk <- task_score(tsk, scorer = detect_includes())
+#'   tsk
+#'
+#'   if (interactive()) {
+#'     inspect_view(tsk)
+#'   }
+#' }
+#' 
+#' @name scorer_detect
+#' @export
+detect_includes <- function(case_sensitive = FALSE) {
+  check_bool(case_sensitive)
+
+  function(sample) {
+    detect_includes_impl(sample = sample, case_sensitive = case_sensitive)
+  }
+}
+
+detect_includes_impl <- function(sample, case_sensitive) {
+  answer <- sample$output
+  target <- sample$target
+
+  if (!case_sensitive) {
+    answer <- tolower(answer)
+    target <- tolower(target)
+  }
+
+  result <- as.numeric(grepl(target, answer, fixed = TRUE))
+
+  list(
+    result = result,
+    scorer = "includes",
+    metadata = list(
+      matched = result == 1,
+      answer = answer
+    )
+  )
+}
+
+#' @rdname scorer_detect
+#' @export
+detect_match <- function(
+    location = c("end", "begin", "end", "any"),
+    case_sensitive = FALSE
+) {
+  location <- arg_match(location)
+  check_bool(case_sensitive)
+
+  function(sample) {
+    detect_match_impl(
+      sample = sample,
+      location = location,
+      case_sensitive = case_sensitive
+    )
+  }
+}
+
+detect_match_impl <- function(sample, location, case_sensitive) {
+  answer <- trimws(sample$output)
+  target <- trimws(sample$target)
+
+  if (!case_sensitive) {
+    answer <- tolower(answer)
+    target <- tolower(target)
+  }
+
+  result <- switch(location,
+    begin = startsWith(answer, target),
+    end = endsWith(answer, target),
+    any = grepl(target, answer, fixed = TRUE),
+    exact = answer == target,
+    FALSE
+  )
+
+  list(
+    result = as.numeric(result),
+    scorer = "match",
+    metadata = list(
+      matched = result,
+      answer = answer
+    )
+  )
+}
+
+#' @rdname scorer_detect
+#' @export
+detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
+  check_string(pattern)
+  check_bool(case_sensitive)
+  check_bool(all)
+
+  function(sample) {
+    detect_pattern_impl(
+      sample = sample,
+      pattern = pattern,
+      case_sensitive = case_sensitive,
+      all = all
+    )
+  }
+}
+
+detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
+  flags <- if (!case_sensitive) ignore.case = TRUE else NULL
+  matches <- regexec(pattern, sample$output, perl = TRUE, flags)
+  if (matches[[1]][1] == -1) {
+    return(list(
+      result = 0,
+      scorer = "pattern",
+      metadata = list(
+        matched = FALSE,
+        answer = NA
+      )
+    ))
+  }
+
+  groups <- regmatches(sample$output, matches)[[1]][-1]
+  target <- sample$target
+
+  if (!case_sensitive) {
+    groups <- tolower(groups)
+    target <- tolower(target)
+  }
+
+  matched <- if (all) {
+    all(groups %in% target)
+  } else {
+    any(groups %in% target)
+  }
+
+  list(
+    result = as.numeric(matched),
+    scorer = "pattern",
+    metadata = list(
+      matched = matched,
+      answer = groups[1]
+    )
+  )
+}
+
+#' @rdname scorer_detect
+#' @export
+detect_exact <- function(case_sensitive = FALSE) {
+  check_bool(case_sensitive)
+
+  function(sample) {
+    detect_exact_impl(sample = sample, case_sensitive = case_sensitive)
+  }
+}
+
+detect_exact_impl <- function(sample, case_sensitive) {
+  answer <- trimws(gsub("[[:punct:]]", "", sample$output))
+  target <- trimws(gsub("[[:punct:]]", "", sample$target))
+
+  if (!case_sensitive) {
+    answer <- tolower(answer)
+    target <- tolower(target)
+  }
+
+  matched <- answer == target
+
+  list(
+    result = as.numeric(matched),
+    scorer = "exact",
+    metadata = list(
+      matched = matched,
+      answer = answer
+    )
+  )
+}
+
+#' @rdname scorer_detect
+#' @export
+detect_answer <- function(format = c("line", "word", "letter")) {
+  format <- arg_match(format)
+
+  function(sample) {
+    detect_answer_impl(sample = sample, format = format)
+  }
+}
+
+detect_answer_impl <- function(sample, format) {
+  pattern <- switch(format,
+    letter = "ANSWER:\\s*([A-Za-z])",
+    word = "ANSWER:\\s*(\\w+)",
+    line = "ANSWER:\\s*(.+)$",
+    "ANSWER:\\s*(.+)$"
+  )
+
+  matches <- regexec(pattern, sample$output, perl = TRUE)
+  if (matches[[1]][1] == -1) {
+    return(list(
+      result = 0,
+      scorer = "answer",
+      metadata = list(
+        matched = FALSE,
+        answer = NA
+      )
+    ))
+  }
+
+  answer <- regmatches(sample$output, matches)[[1]][2]
+  matched <- tolower(trimws(answer)) == tolower(trimws(sample$target))
+
+  list(
+    result = as.numeric(matched),
+    scorer = "answer",
+    metadata = list(
+      matched = matched,
+      answer = answer
+    )
+  )
+}

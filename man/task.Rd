@@ -61,8 +61,8 @@ inside of a task with \code{task_create()}.
 The simplest solver is just an ellmer chat---evaluate a task with a solver
 using \code{task_solve()}.
 \item \strong{Scorers} evaluate the final output of solvers. They may use text
-comparisons, model grading (like \code{\link[=model_graded_qa]{model_graded_qa()}}), or other custom
-schemes. Score solver results using \code{task_score()}.
+comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (like \code{\link[=model_graded_qa]{model_graded_qa()}}),
+or other custom schemes. Score solver results using \code{task_score()}.
 }
 }
 \examples{

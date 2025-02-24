@@ -23,6 +23,8 @@
 #' A function that will grade model responses according to the given instructions.
 #' This can be passed directly to [task_score()].
 #'
+#' @seealso [scorer_detect] for string detection-based scoring.
+#' 
 #' @examples
 #' # Quality assurance -----------------------------
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -126,7 +128,7 @@ model_graded_qa_impl <- function(
 
   list(
     result = result,
-    chat = chat,
+    scorer = chat,
     metadata = list(
       prompt = prompt,
       response = response,

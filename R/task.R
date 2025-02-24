@@ -13,8 +13,8 @@
 #' The simplest solver is just an ellmer chat---evaluate a task with a solver
 #' using `task_solve()`.
 #' 3) **Scorers** evaluate the final output of solvers. They may use text
-#' comparisons, model grading (like [model_graded_qa()]), or other custom
-#' schemes. Score solver results using `task_score()`.
+#' comparisons (like [detect_match()]), model grading (like [model_graded_qa()]),
+#' or other custom schemes. Score solver results using `task_score()`.
 #'
 #' @param dataset A tibble with, minimally, columns `input` and `target`.
 #' @param name A name for the evaluation task. Defaults to
@@ -184,7 +184,7 @@ task_score_impl <- function(task, scorer) {
     # execute and log results for the scorer
     scorer_res <- scorer(sample)
     task$score[i] <- scorer_res$result
-    task$scorer[i] <- list(scorer_res$chat)
+    task$scorer[i] <- list(scorer_res$scorer)
     cli::cli_progress_update()
   }
   cli::cli_progress_done()
