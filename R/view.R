@@ -7,7 +7,7 @@
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
 #'
-#' @inherit task examples
+#' @inherit task_create examples
 #'
 #' @name inspect_view
 #' @export

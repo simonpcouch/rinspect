@@ -1,5 +1,5 @@
 # creation -------------------------------------------------------------------
-#' Evaluation tasks
+#' Creating tasks
 #'
 #' @description
 #' Evaluation `tasks` provide a flexible data structure for evaluating LLM-based
@@ -8,40 +8,29 @@
 #' 1) **Datasets** contain a set of labelled samples. Datasets are just a
 #' tibble with columns `input` and `target`, where `input` is a prompt
 #' and `target` is either literal value(s) or grading guidance. Situate datasets
-#' inside of a task with `task_create()`.
+#' inside of a task with [task_create()].
 #' 2) **Solvers** evaluate the `input` in the dataset and produce a final result.
 #' The simplest solver is just an ellmer chat---evaluate a task with a solver
-#' using `task_solve()`.
+#' using [task_solve()].
 #' 3) **Scorers** evaluate the final output of solvers. They may use text
 #' comparisons (like [detect_match()]), model grading (like [model_graded_qa()]),
-#' or other custom schemes. Score solver results using `task_score()`.
+#' or other custom schemes. Score solver results using [task_score()].
 #'
 #' @param dataset A tibble with, minimally, columns `input` and `target`.
 #' @param name A name for the evaluation task. Defaults to
 #' `deparse(substitute(dataset))`.
-# TODO: does this need to be associated with a task?
-#' @param task An evaluation task created with `task_create()`.
-#' @param dir A directory to write evaluation logs to.
-#' @param solver A function that takes an element of `dataset$input` as input
-#' and determines a value approximating `dataset$target`. Its return value should
-#' be a list with elements `result` (the final response) and `chat` (an ellmer
-#' chat used to solve the problem, or a list of them). Or, just supply an
-#' ellmer chat.
-#' @param scorer A function that evaluates how well the solver's return value
-#' approximates the corresponding elements of `dataset$target`. See
-#' [model-based scoring][scorer_model] for examples.
-#' @param epochs The number of times to repeat each sample. Evaluate each sample
-#' multiple times to measure variation. Optional, defaults to `1L`.
-#' @param time_start TODO: remove.
 #'
 #' @returns
-#' Each of these functions return a `task`, which is a subclass of a tibble.
+#' A `task` object, which is a subclass of a tibble. 
+#' `task_create()` appends column `id` to its input.
 #'
-#' * `task_create()` appends column `id`.
-#' * `task_solve()` appends columns `output` and `solver`.
-#' * `task_score()` appends columns `score` and `scorer`.
-#'
-#' @seealso [task_log()] and [inspect_view()] for writing results to
+#' @seealso 
+#' A typical evaluation with rinspect calls three functions in sequence:
+#' * Create an evaluation task with [task_create()].
+#' * Generate solutions with [task_solve()].
+#' * Grade solutions with [task_score()].
+#' 
+#' Then, see [task_log()] and [inspect_view()] for writing results to
 #' file and interfacing with the Inspect Log Viewer.
 #'
 #' @examples
@@ -69,7 +58,6 @@
 #' }
 #'
 #' @export
-#' @name task
 task_create <- function(
     dataset,
     name = deparse(substitute(dataset)),
@@ -95,8 +83,27 @@ task_create <- function(
 }
 
 # solving -------------------------------------------------------------------
+#' Solving tasks
+#' 
+#' @inherit task_create description
+#' 
+#' @param task An evaluation task created with `task_create()`.
+#' @param solver A function that takes an element of `dataset$input` as input
+#' and determines a value approximating `dataset$target`. Its return value should
+#' be a list with elements `result` (the final response) and `chat` (an ellmer
+#' chat used to solve the problem, or a list of them). Or, just supply an
+#' ellmer chat.
+#' @param epochs The number of times to repeat each sample. Evaluate each sample
+#' multiple times to measure variation. Optional, defaults to `1L`.
+#'
+#' @returns 
+#' A `task` object, which is a subclass of a tibble. 
+#' `task_solve()` appends columns `output`, `solver`, and (if not equal to `1L`)
+#' `epoch` to its input.
+#' 
+#' @inherit task_create seealso
+#' @inherit task_create examples
 #' @export
-#' @rdname task
 task_solve <- function(task, solver, epochs = 1L) {
   if (inherits(solver, "Chat")) {
     solver <- ellmer_chat_to_solver(solver)
@@ -161,8 +168,22 @@ join_epochs <- function(task, epochs) {
 }
 
 # scoring -------------------------------------------------------------------
+#' Scoring tasks
+#' 
+#' @inherit task_create description
+#' 
+#' @param scorer A function that evaluates how well the solver's return value
+#' approximates the corresponding elements of `dataset$target`. See
+#' [model-based scoring][scorer_model] for examples.
+#' 
+#' @returns
+#' A `task` object, which is a subclass of a tibble. 
+#' `task_score()` appends columns `score` and `scorer` to its input.
+#' 
+#' @inherit task_create seealso
+#' @inherit task_create examples
+#' 
 #' @export
-#' @rdname task
 task_score <- function(task, scorer) {
   check_inherits(task, "task")
   # TODO: check that it's been solved
@@ -219,7 +240,9 @@ print.task <- function(x, ...) {
   invisible(x)
 }
 
-#' @rdname task
+#' Write a task to an eval log
+#' 
+#' @param time_start TODO: remove.
 #' @export
 task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
   eval_log <- eval_log_new(

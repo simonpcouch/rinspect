@@ -33,7 +33,7 @@ detect_answer(format = c("line", "word", "letter"))
 \item{all}{Logical: for multiple captures, whether all must match.}
 
 \item{format}{What to extract after \code{"ANSWER:"}: \code{"letter"}, \code{"word"},
-or \code{"line"}.}
+or \code{"line"}. Defaults to \code{"line"}.}
 }
 \value{
 A function that scores model output based on string matching. Pass the
@@ -49,9 +49,9 @@ insensitive (defaults to the latter).
 at the beginning or end of model output (defaults to looking at the end).
 Has options for ignoring case, white-space, and punctuation
 (all are ignored by default).
-\item \code{detect_pattern()}: Extract the answer from model output using a regular
-expression.
-\item \code{detect_answer()}: Scorer for model output that preceded answers with
+\item \code{detect_pattern()}: Extract matches of a pattern from the model response
+and determine whether those matches also appear in \code{target}.
+\item \code{detect_answer()}: Scorer for model output that precedes answers with
 "ANSWER: ". Can extract letters, words, or the remainder of the line.
 \item \code{detect_exact()}: Scorer which will normalize the text of the answer and
 target(s) and perform an exact matching comparison of the text. This

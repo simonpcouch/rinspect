@@ -5,6 +5,9 @@ template:
 reference:
 - title: "Evaluation tasks"
   contents:
+  - task_create
+  - task_solve
+  - task_score
   - starts_with("task_")
   - inspect_view
 
