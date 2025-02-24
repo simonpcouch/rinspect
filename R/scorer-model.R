@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' # Quality assurance -----------------------------
-#' if (!identical("ANTHROPIC_API_KEY", "")) {
+#' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -49,7 +49,7 @@
 #' }
 #'
 #' # Factual response -------------------------------
-#' if (!identical("ANTHROPIC_API_KEY", "")) {
+#' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 #'   library(ellmer)
 #'   library(tibble)
 #'

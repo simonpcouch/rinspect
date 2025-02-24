@@ -52,7 +52,7 @@ default \code{template} to evaluate correctness.
 }
 \examples{
 # Quality assurance -----------------------------
-if (!identical("ANTHROPIC_API_KEY", "")) {
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   library(ellmer)
   library(tibble)
 
@@ -76,7 +76,7 @@ if (!identical("ANTHROPIC_API_KEY", "")) {
 }
 
 # Factual response -------------------------------
-if (!identical("ANTHROPIC_API_KEY", "")) {
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   library(ellmer)
   library(tibble)
 

@@ -1,5 +1,5 @@
 test_that("basic task_create -> task_solve -> task_score works", {
-  skip_if(identical("ANTHROPIC_API_KEY", ""))
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_options(cli.default_handler = function(...) { })
   library(ellmer)
 
@@ -7,22 +7,22 @@ test_that("basic task_create -> task_solve -> task_score works", {
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   tsk <- task_create(dataset = simple_addition)
   tsk
 
   expect_s3_class(tsk, "task")
   expect_snapshot(tsk)
-  
+
   tsk <- task_solve(tsk, solver = chat_claude())
   tsk
 
   expect_s3_class(tsk, "task")
   expect_named(tsk, c("input", "target", "id", "output", "solver"))
-    
+
   tsk <- task_score(tsk, scorer = model_graded_qa())
   tsk
-  
+
   expect_s3_class(tsk, "task")
   expect_named(
     tsk,
@@ -31,20 +31,20 @@ test_that("basic task_create -> task_solve -> task_score works", {
 })
 
 test_that("task_solve(epochs) works", {
-  skip_if(identical("ANTHROPIC_API_KEY", ""))
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_options(cli.default_handler = function(...) { })
-  
+
   library(ellmer)
 
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   tsk <- task_create(dataset = simple_addition)
   tsk <- task_solve(tsk, solver = chat_claude(), epochs = 2)
   tsk <- task_score(tsk, scorer = model_graded_qa())
-  
+
   expect_s3_class(tsk, "task")
   expect_named(
     tsk,
@@ -56,7 +56,7 @@ test_that("task_solve(epochs) works", {
 test_that("join_epochs() works", {
   task <- data.frame(something = "here", id = 1:3)
   expect_equal(join_epochs(task, 1), task)
-  
+
   joined <- join_epochs(task, 2)
   expect_equal(nrow(joined), nrow(task) * 2)
   expect_equal(joined$epoch, rep(1:3, 2))
