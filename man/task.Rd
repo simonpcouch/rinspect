@@ -9,7 +9,7 @@
 \usage{
 task_create(dataset, name = deparse(substitute(dataset)), dir = eval_log_dir())
 
-task_solve(task, solver)
+task_solve(task, solver, epochs = 1L)
 
 task_score(task, scorer)
 }
@@ -21,6 +21,9 @@ and determines a value approximating \code{dataset$target}. Its return value sho
 be a list with elements \code{result} (the final response) and \code{chat} (an ellmer
 chat used to solve the problem, or a list of them). Or, just supply an
 ellmer chat.}
+
+\item{epochs}{The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to \code{1L}.}
 
 \item{scorer}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}.}

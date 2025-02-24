@@ -170,8 +170,7 @@ eval_log_sample <- function(sample) {
   turns <- chat$get_turns()
   list(
     id = sample$id,
-      # TODO: implement with epochs
-    epoch = 1,
+    epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {1},
     input = sample$input,
     target = sample$target,
     messages = translate_to_messages(turns),

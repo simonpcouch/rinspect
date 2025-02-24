@@ -9,5 +9,4 @@
       * <chr>       <chr>  <int>
       1 What's 2+2? 4          1
       2 What's 2+3? 5          2
-      # View with `inspect_view()`.
 

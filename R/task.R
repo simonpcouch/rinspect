@@ -24,6 +24,8 @@
 #' ellmer chat.
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`.
+#' @param epochs The number of times to repeat each sample. Evaluate each sample
+#' multiple times to measure variation. Optional, defaults to `1L`.
 #'
 #' @returns
 #' Each of these functions return a `task`, which is a subclass of a tibble.
@@ -86,21 +88,23 @@ task_create <- function(
 # solving -------------------------------------------------------------------
 #' @export
 #' @rdname task
-task_solve <- function(task, solver) {
+task_solve <- function(task, solver, epochs = 1L) {
   if (inherits(solver, "Chat")) {
     solver <- ellmer_chat_to_solver(solver)
   } else {
     check_function(solver)
   }
-
   check_inherits(task, "task")
+  check_number_whole(epochs, min = 1)
 
-  res <- task_solve_impl(task = task, solver = solver)
+  res <- task_solve_impl(task = task, solver = solver, epochs = epochs)
 
   task_structure(res)
 }
 
-task_solve_impl <- function(task, solver, ...) {
+task_solve_impl <- function(task, solver, epochs, ...) {
+  task <- join_epochs(task, epochs)
+
   task$output <- character(nrow(task))
   task$solver <- vector("list", nrow(task))
 
@@ -129,6 +133,21 @@ ellmer_chat_to_solver <- function(chat) {
       list(result = res, chat = ch)
     },
     chat = chat
+  )
+}
+
+join_epochs <- function(task, epochs) {
+  if (abs(epochs - 1) < .1) {
+    return(task)
+  }
+
+  dplyr::inner_join(
+    task,
+    data.frame(
+      id = rep(seq_len(nrow(task)), each = epochs),
+      epoch = rep(seq_len(nrow(task)), times = epochs)
+    ),
+    by = "id"
   )
 }
 
