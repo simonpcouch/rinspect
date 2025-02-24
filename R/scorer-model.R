@@ -1,5 +1,15 @@
-#' Scorer: Evaluate a response using a model
+#' Model-based scoring
 #'
+#' @description
+#' Model-based scoring makes use of a model to score output from a solver.
+#' 
+#' * `model_graded_qa()` scores how well a solver answers a question/answer task.
+#' * `model_graded_fact()` determines whether a solver includes a given fact
+#' in its response.
+#' 
+#' The two scorers are quite similar in their implementation, but use a different
+#' default `template` to evaluate correctness.
+#' 
 #' @param template Grading template to use--a `glue()` string which will take
 #' substitutions `input`, `answer`, `criterion`, `instructions`.
 #' @param instructions Grading instructions.
@@ -11,13 +21,61 @@
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
+#' This can be passed directly to [task_score()].
 #'
 #' @examples
-#' if (interactive()) {
-#'   model_graded_qa()
+#' # Quality assurance -----------------------------
+#' if (!identical("ANTHROPIC_API_KEY", "")) {
+#'   library(ellmer)
+#'   library(tibble)
+#'   
+#'   simple_addition <- tibble(
+#'     input = c("What's 2+2?", "What's 2+3?"),
+#'     target = c("4", "5")
+#'   )
+#'   
+#'   tsk <- task_create(dataset = simple_addition)
+#'   tsk
+#' 
+#'   tsk <- task_solve(tsk, solver = chat_claude())
+#'   tsk
+#' 
+#'   tsk <- task_score(tsk, scorer = model_graded_qa())
+#'   tsk
+#' 
+#'   if (interactive()) {
+#'     inspect_view(tsk)
+#'   }
+#' }
+#' 
+#' # Factual response -------------------------------
+#' if (!identical("ANTHROPIC_API_KEY", "")) {
+#'   library(ellmer)
+#'   library(tibble)
+#'   
+#'   r_history <- tibble(
+#'     input = c(
+#'       "Who created the R programming language?", 
+#'       "In what year was version 1.0 of R released?"
+#'     ),
+#'     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
+#'   )
+#'   
+#'   tsk <- task_create(dataset = r_history)
+#'   tsk
+#' 
+#'   tsk <- task_solve(tsk, solver = chat_claude())
+#'   tsk
+#' 
+#'   tsk <- task_score(tsk, scorer = model_graded_fact())
+#'   tsk
+#' 
+#'   if (interactive()) {
+#'     inspect_view(tsk)
+#'   }
 #' }
 #'
-#' @family scorers
+#' @name scorer_model
 #' @export
 model_graded_qa <- function(
   template = NULL,
@@ -124,5 +182,38 @@ qa_default_template <- function() {
   ***
   [END DATA]
   Does the submission meet the criterion?
+  {instructions}"
+}
+
+model_graded_fact <- function(
+  template = NULL,
+  instructions = NULL,
+  grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
+  partial_credit = FALSE,
+  chat = ellmer::chat_claude()
+) {
+  model_graded_qa(
+    template = template %||% fact_default_template(),
+    instructions = instructions,
+    grade_pattern = grade_pattern,
+    partial_credit = partial_credit,
+    chat = chat
+  )
+}
+
+fact_default_template <- function() {
+  "You are comparing a submitted answer to an expert answer on a given question.
+  [BEGIN DATA]
+  ************
+  [Question]: {input}
+  ************
+  [Expert]: {criterion}
+  ************
+  [Submission]: {answer}
+  ************
+  [END DATA]
+  Compare the factual content of the submitted answer with the expert answer.
+  Ignore any differences in style, grammar, or punctuation.
+  Does the submission contain the content in the expert answer?
   {instructions}"
 }

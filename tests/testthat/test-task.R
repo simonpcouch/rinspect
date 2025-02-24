@@ -1,5 +1,6 @@
 test_that("basic task_create -> task_solve -> task_score works", {
   skip_if(identical("ANTHROPIC_API_KEY", ""))
+  withr::local_options(cli.default_handler = function(...) { })
   library(ellmer)
 
   simple_addition <- tibble::tibble(
@@ -31,6 +32,8 @@ test_that("basic task_create -> task_solve -> task_score works", {
 
 test_that("task_solve(epochs) works", {
   skip_if(identical("ANTHROPIC_API_KEY", ""))
+  withr::local_options(cli.default_handler = function(...) { })
+  
   library(ellmer)
 
   simple_addition <- tibble::tibble(
