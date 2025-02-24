@@ -72,14 +72,14 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/simonpcouch/rinspect" class="external-link">rinspect</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></code></pre></div>
-<p><strong>Datasets</strong> are a set of labelled samples where <code>input</code> is a prompt and <code>target</code> is either literal value(s) or grading guidance. Situate a dataset inside of a task with <code><a href="reference/task.html">task_create()</a></code>:</p>
+<p><strong>Datasets</strong> are a set of labelled samples where <code>input</code> is a prompt and <code>target</code> is either literal value(s) or grading guidance. Situate a dataset inside of a task with <code><a href="reference/task_create.html">task_create()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simple_addition</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"What's 2+2?"</span>, <span class="st">"What's 2+3?"</span>, <span class="st">"What's 2+4?"</span><span class="op">)</span>,</span>
 <span>  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"4"</span>, <span class="st">"5"</span>, <span class="st">"6"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task.html">task_create</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="va">simple_addition</span><span class="op">)</span></span>
+<span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task_create.html">task_create</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="va">simple_addition</span><span class="op">)</span></span>
 <span><span class="va">tsk</span></span>
 <span><span class="co">#&gt; # Evaluation task simple_addition.</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
@@ -88,9 +88,9 @@
 <span><span class="co">#&gt; 1 What's 2+2? 4          1</span></span>
 <span><span class="co">#&gt; 2 What's 2+3? 5          2</span></span>
 <span><span class="co">#&gt; 3 What's 2+4? 6          3</span></span></code></pre></div>
-<p><strong>Solvers</strong> evaluate the <code>input</code> in the dataset and produce a final result (hopefully) resembling <code>target</code>. The simplest example of a solver is a plain ellmer chat—evaluate a solver on a task with <code><a href="reference/task.html">task_solve()</a></code>:</p>
+<p><strong>Solvers</strong> evaluate the <code>input</code> in the dataset and produce a final result (hopefully) resembling <code>target</code>. The simplest example of a solver is a plain ellmer chat—evaluate a solver on a task with <code><a href="reference/task_solve.html">task_solve()</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task.html">task_solve</a></span><span class="op">(</span><span class="va">tsk</span>, solver <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task_solve.html">task_solve</a></span><span class="op">(</span><span class="va">tsk</span>, solver <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solving ■■■■■■■■■■■                       33% | ETA:  2s</span></span>
 <span><span class="co">#&gt; Solving ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  1s</span></span>
 <span><span class="co">#&gt; Solving ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s</span></span>
@@ -102,9 +102,9 @@
 <span><span class="co">#&gt; 1 What's 2+2? 4          1 2+2=4   &lt;Chat&gt;</span></span>
 <span><span class="co">#&gt; 2 What's 2+3? 5          2 2+3 = 5 &lt;Chat&gt;</span></span>
 <span><span class="co">#&gt; 3 What's 2+4? 6          3 2+4 = 6 &lt;Chat&gt;</span></span></code></pre></div>
-<p><strong>Scorers</strong> evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using <code><a href="reference/task.html">task_score()</a></code>:</p>
+<p><strong>Scorers</strong> evaluate the final output of solvers. They may use text comparisons, model grading, or other custom schemes. Score solver output using <code><a href="reference/task_score.html">task_score()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task.html">task_score</a></span><span class="op">(</span><span class="va">tsk</span>, scorer <span class="op">=</span> <span class="fu"><a href="reference/scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/task_score.html">task_score</a></span><span class="op">(</span><span class="va">tsk</span>, scorer <span class="op">=</span> <span class="fu"><a href="reference/scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Scoring ■■■■■■■■■■■                       33% | ETA:  5s</span></span>
 <span><span class="co">#&gt; Scoring ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  3s</span></span>
 <span><span class="co">#&gt; Scoring ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s</span></span>
