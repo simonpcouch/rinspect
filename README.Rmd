@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/rinspect)](https://CRAN.R-project.org/package=rinspect)
+[![R-CMD-check](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 rinspect is a framework for large language model evaluation in R. It's specifically aimed at ellmer users who want to measure the effectiveness of their LLM-based apps.

@@ -9,6 +9,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/rinspect)](https://CRAN.R-project.org/package=rinspect)
+[![R-CMD-check](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 rinspect is a framework for large language model evaluation in R. It’s
@@ -76,13 +77,15 @@ is a plain ellmer chat—evaluate a solver on a task with `task_solve()`:
 
 ``` r
 tsk <- task_solve(tsk, solver = chat_claude())
-#> Solving ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% 
+#> Solving ■■■■■■■■■■■                       33% | ETA:  2s
+#> Solving ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  1s
+#> Solving ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 tsk
 #> # Evaluation task simple_addition.
 #> # A tibble: 3 × 5
 #>   input       target    id output  solver
 #> * <chr>       <chr>  <int> <chr>   <list>
-#> 1 What's 2+2? 4          1 2+2 = 4 <Chat>
+#> 1 What's 2+2? 4          1 2+2=4   <Chat>
 #> 2 What's 2+3? 5          2 2+3 = 5 <Chat>
 #> 3 What's 2+4? 6          3 2+4 = 6 <Chat>
 ```
@@ -93,13 +96,14 @@ using `task_score()`:
 
 ``` r
 tsk <- task_score(tsk, scorer = model_graded_qa())
-#> Scoring ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100%
+#> Scoring ■■■■■■■■■■■                       33% | ETA:  5s
+#> Scoring ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 tsk
 #> # Evaluation task simple_addition.
 #> # A tibble: 3 × 7
 #>   input       target    id output  solver score scorer
 #> * <chr>       <chr>  <int> <chr>   <list> <dbl> <list>
-#> 1 What's 2+2? 4          1 2+2 = 4 <Chat>     1 <Chat>
+#> 1 What's 2+2? 4          1 2+2=4   <Chat>     1 <Chat>
 #> 2 What's 2+3? 5          2 2+3 = 5 <Chat>     1 <Chat>
 #> 3 What's 2+4? 6          3 2+4 = 6 <Chat>     1 <Chat>
 ```

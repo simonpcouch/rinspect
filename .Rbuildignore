@@ -10,3 +10,4 @@
 inst/log_dump
 inst/inspect_ai
 .continue/
+^codecov\.yml$
