@@ -5,6 +5,7 @@
 \alias{task_create}
 \alias{task_solve}
 \alias{task_score}
+\alias{task_log}
 \title{Evaluation tasks}
 \usage{
 task_create(dataset, name = deparse(substitute(dataset)), dir = eval_log_dir())
@@ -12,9 +13,18 @@ task_create(dataset, name = deparse(substitute(dataset)), dir = eval_log_dir())
 task_solve(task, solver, epochs = 1L)
 
 task_score(task, scorer)
+
+task_log(task, time_start = Sys.time(), dir = attr(res, "dir"))
 }
 \arguments{
 \item{dataset}{A tibble with, minimally, columns \code{input} and \code{target}.}
+
+\item{name}{A name for the evaluation task. Defaults to
+\code{deparse(substitute(dataset))}.}
+
+\item{dir}{A directory to write evaluation logs to.}
+
+\item{task}{An evaluation task created with \code{task_create()}.}
 
 \item{solver}{A function that takes an element of \code{dataset$input} as input
 and determines a value approximating \code{dataset$target}. Its return value should
@@ -26,7 +36,10 @@ ellmer chat.}
 multiple times to measure variation. Optional, defaults to \code{1L}.}
 
 \item{scorer}{A function that evaluates how well the solver's return value
-approximates the corresponding elements of \code{dataset$target}.}
+approximates the corresponding elements of \code{dataset$target}. See
+\link[=scorer_model]{model-based scoring} for examples.}
+
+\item{time_start}{TODO: remove.}
 }
 \value{
 Each of these functions return a \code{task}, which is a subclass of a tibble.
@@ -53,7 +66,7 @@ schemes. Score solver results using \code{task_score()}.
 }
 }
 \examples{
-if (interactive()) {
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   library(ellmer)
   library(tibble)
 
@@ -71,7 +84,9 @@ if (interactive()) {
   tsk <- task_score(tsk, scorer = model_graded_qa())
   tsk
 
-  inspect_view(tsk)
+  if (interactive()) {
+    inspect_view(tsk)
+  }
 }
 
 }

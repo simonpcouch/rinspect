@@ -8,7 +8,7 @@
 \alias{eval_log_dir_set}
 \title{Read and write evaluation logs}
 \usage{
-eval_log_read(file)
+eval_log_read(x)
 
 eval_log_write(x = eval_log_new(), dir = eval_log_dir())
 
@@ -16,8 +16,17 @@ eval_log_dir()
 
 eval_log_dir_set(dir)
 }
+\arguments{
+\item{x}{For \code{eval_log_read()}, a path to the log file to read. For
+For \code{eval_log_write()}, an evaluation log object to write to disk.}
+
+\item{dir}{Directory where logs should be stored.}
+}
 \description{
-Read and write evaluation logs
+Utilities for reading and writing evaluation logs.
+
+These utilities support the \code{INSPECT_LOG_DIR} environment variable,
+which sets a default directory to write logs to.
 }
 \examples{
 file <-

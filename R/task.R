@@ -17,15 +17,22 @@
 #' schemes. Score solver results using `task_score()`.
 #'
 #' @param dataset A tibble with, minimally, columns `input` and `target`.
+#' @param name A name for the evaluation task. Defaults to
+#' `deparse(substitute(dataset))`.
+# TODO: does this need to be associated with a task?
+#' @param task An evaluation task created with `task_create()`.
+#' @param dir A directory to write evaluation logs to.
 #' @param solver A function that takes an element of `dataset$input` as input
 #' and determines a value approximating `dataset$target`. Its return value should
 #' be a list with elements `result` (the final response) and `chat` (an ellmer
 #' chat used to solve the problem, or a list of them). Or, just supply an
 #' ellmer chat.
 #' @param scorer A function that evaluates how well the solver's return value
-#' approximates the corresponding elements of `dataset$target`.
+#' approximates the corresponding elements of `dataset$target`. See
+#' [model-based scoring][scorer_model] for examples.
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to measure variation. Optional, defaults to `1L`.
+#' @param time_start TODO: remove.
 #'
 #' @returns
 #' Each of these functions return a `task`, which is a subclass of a tibble.
@@ -38,7 +45,7 @@
 #' file and interfacing with the Inspect Log Viewer.
 #'
 #' @examples
-#' if (interactive()) {
+#' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -56,7 +63,9 @@
 #'   tsk <- task_score(tsk, scorer = model_graded_qa())
 #'   tsk
 #'
-#'   inspect_view(tsk)
+#'   if (interactive()) {
+#'     inspect_view(tsk)
+#'   }
 #' }
 #'
 #' @export
@@ -214,7 +223,7 @@ print.task <- function(x, ...) {
   invisible(x)
 }
 
-#' @rdname inspect_view
+#' @rdname task
 #' @export
 task_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
   eval_log <- eval_log_new(

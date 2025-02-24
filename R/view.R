@@ -1,42 +1,45 @@
 #' The Inspect Log Viewer
 #'
-#' @param x Either a path to a directory containing a task eval log or a 
+#' @param x Either a path to a directory containing a task eval log or a
 #' task itself. If a task, the function will log the task to a temporary
 #' directory and open that directory in the viewer.
 #' @param host Host to serve on. Defaults to "127.0.0.1",
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
+#'
+#' @inherit task examples
+#'
 #' @name inspect_view
 #' @export
-inspect_view <- function(x, host = "127.0.0.1", port = 7576, ...) {
+inspect_view <- function(x, host = "127.0.0.1", port = 7576) {
   UseMethod("inspect_view")
 }
 
 #' @rdname inspect_view
 #' @export
-inspect_view.character <- function(x, host = "127.0.0.1", port = 7576, ...) {
+inspect_view.character <- function(x, host = "127.0.0.1", port = 7576) {
   inspect_view_impl(dir = x, host = host, port = port)
 }
 
 #' @rdname inspect_view
 #' @export
-inspect_view.task <- function(x, host = "127.0.0.1", port = 7576, ...) {
+inspect_view.task <- function(x, host = "127.0.0.1", port = 7576) {
   # can't use the usual withr::local_tempdir as withr doesn't recognize
   # R6 objects as environments. we want to associate cleanup with the
   # server rather than the execution env of the function.
   # TODO: if there's an existing server, add x to that dir and then open it up?
   dir <- tempfile("rinspect-")
   dir.create(dir)
-  
+
   task_log(x, dir = dir)
   server <- inspect_view_impl(dir = dir, host = host, port = port)
-  
+
   reg.finalizer(server, function(e) {
     if (dir.exists(dir)) {
       unlink(dir, recursive = TRUE)
     }
   })
-  
+
   invisible(server)
 }
 
@@ -125,7 +128,7 @@ inspect_view_impl <- function(
                 } else {
                   as.list(query$file)
                 }
-                
+
                 headers <- lapply(files, function(f) {
                   file_path <- file.path(dir, f)
                   if (file.exists(file_path)) {
@@ -142,12 +145,12 @@ inspect_view_impl <- function(
                   }
                 })
 
-                log_headers$body <- 
+                log_headers$body <-
                   jsonlite::toJSON(headers, auto_unbox = TRUE, null = "null")
                 return(log_headers)
               }
 
-              log_headers$body <- 
+              log_headers$body <-
                 jsonlite::toJSON(list(), auto_unbox = TRUE, null = "null")
               return(log_headers)
             }

@@ -3,9 +3,18 @@
 \name{scorer_model}
 \alias{scorer_model}
 \alias{model_graded_qa}
+\alias{model_graded_fact}
 \title{Model-based scoring}
 \usage{
 model_graded_qa(
+  template = NULL,
+  instructions = NULL,
+  grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
+  partial_credit = FALSE,
+  chat = ellmer::chat_claude()
+)
+
+model_graded_fact(
   template = NULL,
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
@@ -46,12 +55,12 @@ default \code{template} to evaluate correctness.
 if (!identical("ANTHROPIC_API_KEY", "")) {
   library(ellmer)
   library(tibble)
-  
+
   simple_addition <- tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   tsk <- task_create(dataset = simple_addition)
   tsk
 
@@ -70,15 +79,15 @@ if (!identical("ANTHROPIC_API_KEY", "")) {
 if (!identical("ANTHROPIC_API_KEY", "")) {
   library(ellmer)
   library(tibble)
-  
+
   r_history <- tibble(
     input = c(
-      "Who created the R programming language?", 
+      "Who created the R programming language?",
       "In what year was version 1.0 of R released?"
     ),
     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
   )
-  
+
   tsk <- task_create(dataset = r_history)
   tsk
 

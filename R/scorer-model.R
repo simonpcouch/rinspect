@@ -2,14 +2,14 @@
 #'
 #' @description
 #' Model-based scoring makes use of a model to score output from a solver.
-#' 
+#'
 #' * `model_graded_qa()` scores how well a solver answers a question/answer task.
 #' * `model_graded_fact()` determines whether a solver includes a given fact
 #' in its response.
-#' 
+#'
 #' The two scorers are quite similar in their implementation, but use a different
 #' default `template` to evaluate correctness.
-#' 
+#'
 #' @param template Grading template to use--a `glue()` string which will take
 #' substitutions `input`, `answer`, `criterion`, `instructions`.
 #' @param instructions Grading instructions.
@@ -28,48 +28,48 @@
 #' if (!identical("ANTHROPIC_API_KEY", "")) {
 #'   library(ellmer)
 #'   library(tibble)
-#'   
+#'
 #'   simple_addition <- tibble(
 #'     input = c("What's 2+2?", "What's 2+3?"),
 #'     target = c("4", "5")
 #'   )
-#'   
+#'
 #'   tsk <- task_create(dataset = simple_addition)
 #'   tsk
-#' 
+#'
 #'   tsk <- task_solve(tsk, solver = chat_claude())
 #'   tsk
-#' 
+#'
 #'   tsk <- task_score(tsk, scorer = model_graded_qa())
 #'   tsk
-#' 
+#'
 #'   if (interactive()) {
 #'     inspect_view(tsk)
 #'   }
 #' }
-#' 
+#'
 #' # Factual response -------------------------------
 #' if (!identical("ANTHROPIC_API_KEY", "")) {
 #'   library(ellmer)
 #'   library(tibble)
-#'   
+#'
 #'   r_history <- tibble(
 #'     input = c(
-#'       "Who created the R programming language?", 
+#'       "Who created the R programming language?",
 #'       "In what year was version 1.0 of R released?"
 #'     ),
 #'     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
 #'   )
-#'   
+#'
 #'   tsk <- task_create(dataset = r_history)
 #'   tsk
-#' 
+#'
 #'   tsk <- task_solve(tsk, solver = chat_claude())
 #'   tsk
-#' 
+#'
 #'   tsk <- task_score(tsk, scorer = model_graded_fact())
 #'   tsk
-#' 
+#'
 #'   if (interactive()) {
 #'     inspect_view(tsk)
 #'   }
@@ -185,6 +185,8 @@ qa_default_template <- function() {
   {instructions}"
 }
 
+#' @rdname scorer_model
+#' @export
 model_graded_fact <- function(
   template = NULL,
   instructions = NULL,
