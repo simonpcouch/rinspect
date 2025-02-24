@@ -76,7 +76,7 @@ schemes. Score solver results using <code>task_score()</code>.</p></li>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_create</span><span class="op">(</span><span class="va">dataset</span>, name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/deparse.html" class="external-link">deparse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">substitute</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span><span class="op">)</span>, dir <span class="op">=</span> <span class="fu"><a href="eval_log.html">eval_log_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">task_solve</span><span class="op">(</span><span class="va">task</span>, <span class="va">solver</span><span class="op">)</span></span>
+<span><span class="fu">task_solve</span><span class="op">(</span><span class="va">task</span>, <span class="va">solver</span>, epochs <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">task_score</span><span class="op">(</span><span class="va">task</span>, <span class="va">scorer</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -95,6 +95,11 @@ and determines a value approximating <code>dataset$target</code>. Its return val
 be a list with elements <code>result</code> (the final response) and <code>chat</code> (an ellmer
 chat used to solve the problem, or a list of them). Or, just supply an
 ellmer chat.</p></dd>
+
+
+<dt id="arg-epochs">epochs<a class="anchor" aria-label="anchor" href="#arg-epochs"></a></dt>
+<dd><p>The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to <code>1L</code>.</p></dd>
 
 
 <dt id="arg-scorer">scorer<a class="anchor" aria-label="anchor" href="#arg-scorer"></a></dt>
