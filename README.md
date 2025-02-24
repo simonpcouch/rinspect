@@ -97,6 +97,7 @@ using `task_score()`:
 ``` r
 tsk <- task_score(tsk, scorer = model_graded_qa())
 #> Scoring ■■■■■■■■■■■                       33% | ETA:  5s
+#> Scoring ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  3s
 #> Scoring ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 tsk
 #> # Evaluation task simple_addition.
@@ -115,4 +116,4 @@ the Inspect Log Viewer:
 inspect_view(tsk)
 ```
 
-<img src="inst/figs/log_viewer.png" alt="A screenshot of the Inspect Log Viewer, an interactive app displaying information on the 3 samples evaluated in this eval." width="100%" />
+<img src="man/figures/log_viewer.png" alt="A screenshot of the Inspect Log Viewer, an interactive app displaying information on the 3 samples evaluated in this eval." width="100%" />

@@ -85,5 +85,5 @@ inspect_view(tsk)
 ```{r}
 #| echo: false
 #| fig-alt: "A screenshot of the Inspect Log Viewer, an interactive app displaying information on the 3 samples evaluated in this eval."
-knitr::include_graphics("inst/figs/log_viewer.png")
+knitr::include_graphics("man/figures/log_viewer.png")
 ```
