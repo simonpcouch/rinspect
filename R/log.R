@@ -1,34 +1,67 @@
-#' Read and write evaluation logs
+#' The log directory
 #'
 #' @description
-#' Utilities for reading and writing evaluation logs.
+#' rinspect supports the `INSPECT_LOG_DIR` environment variable,
+#' which sets a default directory to write logs to in [task_create()]
+#' and [inspect_log()] and to view from in [inspect_view()].
 #'
-#' These utilities support the `INSPECT_LOG_DIR` environment variable,
-#' which sets a default directory to write logs to.
+#' @inheritParams task_create
 #'
-#' @param x For `eval_log_read()`, a path to the log file to read. For
-#' For `eval_log_write()`, an evaluation log object to write to disk.
-#' @param dir Directory where logs should be stored.
+#' @returns
+#' Both `inspect_log_dir()` and `inspect_log_dir_set()` return the current
+#' value of the environment variable `INSPECT_LOG_DIR`. `inspect_log_dir_set()`
+#' additionally sets it to a new value.
 #'
 #' @examples
-#' file <-
-#'   system.file(
-#'     "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
-#'      package = "rinspect"
-#'   )
+#' inspect_log_dir()
 #'
-#' example_eval_log <- eval_log_read(file)
+#' dir <- tempdir()
 #'
-#' example_eval_log
-#' @name eval_log
+#' inspect_log_dir_set(dir)
+#'
+#' inspect_log_dir()
 #' @export
+inspect_log_dir <- function() {
+  Sys.getenv("INSPECT_LOG_DIR", unset = NA)
+}
+
+#' @rdname inspect_log_dir
+#' @export
+inspect_log_dir_set <- function(dir) {
+  old <- Sys.getenv("INSPECT_LOG_DIR", unset = NA)
+  Sys.setenv(INSPECT_LOG_DIR = dir)
+  invisible(old)
+}
+
+# Read and write evaluation logs
+#
+# @description
+# Utilities for reading and writing evaluation logs.
+#
+# These utilities support the `INSPECT_LOG_DIR` environment variable,
+# which sets a default directory to write logs to.
+#
+# @param x For `eval_log_read()`, a path to the log file to read. For
+# For `eval_log_write()`, an evaluation log object to write to disk.
+# @param dir Directory where logs should be stored.
+#
+# @examples
+# file <-
+#   system.file(
+#     "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
+#      package = "rinspect"
+#   )
+#
+# example_eval_log <- eval_log_read(file)
+#
+# example_eval_log
+# @name eval_log
 eval_log_read <- function(x) {
   structure(jsonlite::read_json(x), class = c("eval_log", "list"))
 }
 
-#' @rdname eval_log
-#' @export
-eval_log_write <- function(x = eval_log_new(), dir = eval_log_dir()) {
+# @rdname eval_log
+eval_log_write <- function(x = eval_log_new(), dir = inspect_log_dir()) {
   if (!dir.exists(dir)) {
     dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   }
@@ -37,18 +70,4 @@ eval_log_write <- function(x = eval_log_new(), dir = eval_log_dir()) {
     x = structure(x, class = "list"),
     path = file.path(dir, eval_log_filename(x))
   )
-}
-
-#' @rdname eval_log
-#' @export
-eval_log_dir <- function() {
-  Sys.getenv("INSPECT_LOG_DIR", unset = "./logs")
-}
-
-#' @rdname eval_log
-#' @export
-eval_log_dir_set <- function(dir) {
-  old <- Sys.getenv("INSPECT_LOG_DIR", unset = NA)
-  Sys.setenv(INSPECT_LOG_DIR = path)
-  invisible(old)
 }

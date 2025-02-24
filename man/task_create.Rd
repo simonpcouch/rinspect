@@ -4,13 +4,19 @@
 \alias{task_create}
 \title{Creating tasks}
 \usage{
-task_create(dataset, name = deparse(substitute(dataset)), dir = eval_log_dir())
+task_create(
+  dataset,
+  name = deparse(substitute(dataset)),
+  dir = inspect_log_dir()
+)
 }
 \arguments{
 \item{dataset}{A tibble with, minimally, columns \code{input} and \code{target}.}
 
 \item{name}{A name for the evaluation task. Defaults to
 \code{deparse(substitute(dataset))}.}
+
+\item{dir}{Directory where logs should be stored.}
 }
 \value{
 A \code{task} object, which is a subclass of a tibble.
@@ -65,6 +71,6 @@ A typical evaluation with rinspect calls three functions in sequence:
 \item Grade solutions with \code{\link[=task_score]{task_score()}}.
 }
 
-Then, see \code{\link[=task_log]{task_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
+Then, see \code{\link[=inspect_log]{inspect_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
 file and interfacing with the Inspect Log Viewer.
 }

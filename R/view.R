@@ -31,7 +31,7 @@ inspect_view.task <- function(x, host = "127.0.0.1", port = 7576) {
   dir <- tempfile("rinspect-")
   dir.create(dir)
 
-  task_log(x, dir = dir)
+  inspect_log(x, dir = dir)
   server <- inspect_view_impl(dir = dir, host = host, port = port)
 
   reg.finalizer(server, function(e) {
@@ -44,7 +44,7 @@ inspect_view.task <- function(x, host = "127.0.0.1", port = 7576) {
 }
 
 inspect_view_impl <- function(
-    dir = eval_log_dir(),
+    dir = inspect_log_dir(),
     host = "127.0.0.1",
     port = 7576,
     call = caller_env()

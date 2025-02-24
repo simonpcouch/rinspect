@@ -7,6 +7,8 @@
 task_score(task, scorer)
 }
 \arguments{
+\item{task}{An evaluation task created with \code{task_create()}.}
+
 \item{scorer}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. See
 \link[=scorer_model]{model-based scoring} for examples.}
@@ -64,6 +66,6 @@ A typical evaluation with rinspect calls three functions in sequence:
 \item Grade solutions with \code{\link[=task_score]{task_score()}}.
 }
 
-Then, see \code{\link[=task_log]{task_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
+Then, see \code{\link[=inspect_log]{inspect_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
 file and interfacing with the Inspect Log Viewer.
 }

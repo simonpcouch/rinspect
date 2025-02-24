@@ -72,6 +72,6 @@ A typical evaluation with rinspect calls three functions in sequence:
 \item Grade solutions with \code{\link[=task_score]{task_score()}}.
 }
 
-Then, see \code{\link[=task_log]{task_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
+Then, see \code{\link[=inspect_log]{inspect_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
 file and interfacing with the Inspect Log Viewer.
 }
