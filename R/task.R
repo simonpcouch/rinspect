@@ -182,11 +182,7 @@ task_score_impl <- function(task, scorer) {
     sample <- task[i, , drop = FALSE]
 
     # execute and log results for the scorer
-    scorer_res <- scorer(
-      input = sample$input,
-      target = sample$target,
-      output = task$output[i]
-    )
+    scorer_res <- scorer(sample)
     task$score[i] <- scorer_res$result
     task$scorer[i] <- list(scorer_res$chat)
     cli::cli_progress_update()

@@ -82,14 +82,12 @@ model_graded_qa <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = ellmer::chat_claude()
+  chat = NULL
 ) {
   # TODO: type check
-  function(input, target, output) {
+  function(sample) {
     model_graded_qa_impl(
-      input = input,
-      target = target,
-      output = output,
+      sample = sample,
       template = template,
       instructions = instructions,
       grade_pattern = grade_pattern,
@@ -100,19 +98,27 @@ model_graded_qa <- function(
 }
 
 model_graded_qa_impl <- function(
-  input,
-  target,
-  output,
+  sample,
   template = NULL,
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = chat_claude()
+  chat = NULL
 ) {
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
 
-  prompt <- qa_format_prompt(template, input, output, target, instructions)
+  prompt <- qa_format_prompt(
+    template,
+    sample$input,
+    sample$output,
+    sample$target,
+    instructions
+  )
+  if (is.null(chat)) {
+    chat <- solver_chat(sample)
+  }
+ 
   chat <- chat$clone()
   response <- chat$chat(prompt, echo = FALSE)
 
@@ -192,7 +198,7 @@ model_graded_fact <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = ellmer::chat_claude()
+  chat = NULL
 ) {
   model_graded_qa(
     template = template %||% fact_default_template(),

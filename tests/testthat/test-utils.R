@@ -33,3 +33,11 @@ test_that("check_inherits works", {
   expect_null(check_inherits(list(), "list"))
   expect_null(check_inherits(mtcars, c("data.frame", "list")))
 })
+
+test_that("solver_chat works", {
+  example_sample <- example_task()[1, , drop = FALSE]
+
+  res <- solver_chat(example_sample)
+  expect_s3_class(res, "Chat")
+  expect_equal(res$get_turns(), list())
+})

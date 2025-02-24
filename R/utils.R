@@ -17,3 +17,9 @@ check_inherits <- function(x, cls, x_arg = caller_arg(x), call = caller_env()) {
 
   invisible()
 }
+
+# miscellaneous ---------
+solver_chat <- function(sample) {
+  solver <- sample$solver[[1]]
+  solver$clone()$set_turns(list())
+}

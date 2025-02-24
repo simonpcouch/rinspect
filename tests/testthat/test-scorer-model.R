@@ -18,6 +18,11 @@ test_that("model_graded_qa works", {
   expect_true(all(tsk$score %in% c(0, .5, 1)))
   expect_s3_class(tsk$solver[[1]], "Chat")
   expect_length(tsk$solver[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$scorer[[1]], "Chat")
+  expect_length(tsk$scorer[[1]]$get_turns(), 2)
+
+  # by default, scorer detects last model used to solve
+  expect_equal(tsk$solver[[1]]$get_model(), tsk$scorer[[1]]$get_model())
 })
 
 test_that("model_graded_fact works", {
@@ -40,4 +45,9 @@ test_that("model_graded_fact works", {
   expect_true(all(tsk$score %in% c(0, .5, 1)))
   expect_s3_class(tsk$solver[[1]], "Chat")
   expect_length(tsk$solver[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$scorer[[1]], "Chat")
+  expect_length(tsk$scorer[[1]]$get_turns(), 2)
+
+  # by default, scorer detects last model used to solve
+  expect_equal(tsk$solver[[1]]$get_model(), tsk$scorer[[1]]$get_model())
 })
