@@ -2,3 +2,19 @@ url: https://simonpcouch.github.io/rinspect/
 template:
   bootstrap: 5
 
+reference:
+- title: "Evaluation tasks"
+  contents:
+  - starts_with("task_")
+  - inspect_view
+
+- title: "Scorers"
+  contents:
+  - starts_with("model_graded_")
+
+- title: "Utilities for evaluation logs"
+  contents:
+  - eval_log_read
+  - eval_log_write
+  - eval_log_dir
+  - eval_log_dir_set
