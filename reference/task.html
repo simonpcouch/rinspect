@@ -9,8 +9,8 @@ Solvers evaluate the input in the dataset and produce a final result.
 The simplest solver is just an ellmer chat—evaluate a task with a solver
 using task_solve().
 Scorers evaluate the final output of solvers. They may use text
-comparisons, model grading (like model_graded_qa()), or other custom
-schemes. Score solver results using task_score().
+comparisons (like detect_match()), model grading (like model_graded_qa()),
+or other custom schemes. Score solver results using task_score().
 
 "><meta property="og:description" content="Evaluation tasks provide a flexible data structure for evaluating LLM-based
 tools.
@@ -22,8 +22,8 @@ Solvers evaluate the input in the dataset and produce a final result.
 The simplest solver is just an ellmer chat—evaluate a task with a solver
 using task_solve().
 Scorers evaluate the final output of solvers. They may use text
-comparisons, model grading (like model_graded_qa()), or other custom
-schemes. Score solver results using task_score().
+comparisons (like detect_match()), model grading (like model_graded_qa()),
+or other custom schemes. Score solver results using task_score().
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -68,8 +68,8 @@ inside of a task with <code>task_create()</code>.</p></li>
 The simplest solver is just an ellmer chat—evaluate a task with a solver
 using <code>task_solve()</code>.</p></li>
 <li><p><strong>Scorers</strong> evaluate the final output of solvers. They may use text
-comparisons, model grading (like <code><a href="scorer_model.html">model_graded_qa()</a></code>), or other custom
-schemes. Score solver results using <code>task_score()</code>.</p></li>
+comparisons (like <code><a href="scorer_detect.html">detect_match()</a></code>), model grading (like <code><a href="scorer_model.html">model_graded_qa()</a></code>),
+or other custom schemes. Score solver results using <code>task_score()</code>.</p></li>
 </ol></div>
 
     <div class="section level2">
@@ -163,7 +163,9 @@ file and interfacing with the Inspect Log Viewer.</p></div>
 <span class="r-in"><span>    <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  1s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  3s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
