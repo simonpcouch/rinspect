@@ -24,3 +24,14 @@ example_inspect_log <- function() {
     )
   )
 }
+
+example_task <- function() {
+  load(
+    system.file(
+      "sandbox/example-task.rda",
+      package = "rinspect"
+    )
+  )
+
+  tsk
+}

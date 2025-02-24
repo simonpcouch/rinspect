@@ -1,5 +1,3 @@
-# TODO: `sample` should actually be the corresponding row of the dataset
-# (with an id slot), not the index
 translate_to_events <- function(chat, sample) {
   turns <- chat$get_turns()
   events <- list()

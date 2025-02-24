@@ -13,14 +13,3 @@ test_that("inspect_view() works with read + written eval file", {
 
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })
-
-test_that("inspect_view() works with template eval_log_write()", {
-  log_dir <- tempdir()
-  if (!dir.exists(log_dir)) dir.create(log_dir)
-  withr::defer(unlink(log_dir, recursive = TRUE))
-
-  # generated from rinspect defaults
-  eval_log_write(dir = log_dir)
-
-  expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
-})

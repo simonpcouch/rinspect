@@ -43,7 +43,8 @@ inspect_view.task <- function(x, host = "127.0.0.1", port = 7576, ...) {
 inspect_view_impl <- function(
     dir = eval_log_dir(),
     host = "127.0.0.1",
-    port = 7576
+    port = 7576,
+    call = caller_env()
 ) {
   dist_dir <- system.file("dist", package = "rinspect")
 
@@ -53,11 +54,18 @@ inspect_view_impl <- function(
       httpuv::stopServer(existing_server[[1]])
     }
   }, error = function(cnd) {
-    cli::cli_abort("Unable to terminate the existing server.", parent = cnd)
+    cli::cli_abort(
+      "Unable to terminate the existing server.",
+      parent = cnd,
+      call = call
+    )
   })
 
   if (!dir.exists(dir)) {
-    cli::cli_abort("Log directory {.file {dir}} not found.")
+    cli::cli_abort(
+      "Log directory {.file {dir}} not found.",
+      call = call
+    )
   }
 
   server <- httpuv::startServer(
