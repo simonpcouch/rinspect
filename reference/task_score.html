@@ -81,7 +81,11 @@ or other custom schemes. Score solver results using <code>task_score()</code>.</
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-scorer">scorer<a class="anchor" aria-label="anchor" href="#arg-scorer"></a></dt>
+<dl><dt id="arg-task">task<a class="anchor" aria-label="anchor" href="#arg-task"></a></dt>
+<dd><p>An evaluation task created with <code><a href="task_create.html">task_create()</a></code>.</p></dd>
+
+
+<dt id="arg-scorer">scorer<a class="anchor" aria-label="anchor" href="#arg-scorer"></a></dt>
 <dd><p>A function that evaluates how well the solver's return value
 approximates the corresponding elements of <code>dataset$target</code>. See
 <a href="scorer_model.html">model-based scoring</a> for examples.</p></dd>
@@ -97,7 +101,7 @@ approximates the corresponding elements of <code>dataset$target</code>. See
     <div class="dont-index"><p>A typical evaluation with rinspect calls three functions in sequence:</p><ul><li><p>Create an evaluation task with <code><a href="task_create.html">task_create()</a></code>.</p></li>
 <li><p>Generate solutions with <code><a href="task_solve.html">task_solve()</a></code>.</p></li>
 <li><p>Grade solutions with <code>task_score()</code>.</p></li>
-</ul><p>Then, see <code><a href="task_log.html">task_log()</a></code> and <code><a href="inspect_view.html">inspect_view()</a></code> for writing results to
+</ul><p>Then, see <code><a href="inspect_log.html">inspect_log()</a></code> and <code><a href="inspect_view.html">inspect_view()</a></code> for writing results to
 file and interfacing with the Inspect Log Viewer.</p></div>
     </div>
 
@@ -125,9 +129,7 @@ file and interfacing with the Inspect Log Viewer.</p></div>
 <span class="r-in"><span>    <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  3s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  3s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  2s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

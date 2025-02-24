@@ -74,7 +74,11 @@ or other custom schemes. Score solver results using <code><a href="task_score.ht
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_create</span><span class="op">(</span><span class="va">dataset</span>, name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/deparse.html" class="external-link">deparse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">substitute</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span><span class="op">)</span>, dir <span class="op">=</span> <span class="fu"><a href="eval_log.html">eval_log_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">task_create</span><span class="op">(</span></span>
+<span>  <span class="va">dataset</span>,</span>
+<span>  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/deparse.html" class="external-link">deparse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">substitute</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu"><a href="inspect_log_dir.html">inspect_log_dir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -89,6 +93,10 @@ or other custom schemes. Score solver results using <code><a href="task_score.ht
 <dd><p>A name for the evaluation task. Defaults to
 <code>deparse(substitute(dataset))</code>.</p></dd>
 
+
+<dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
+<dd><p>Directory where logs should be stored.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -100,7 +108,7 @@ or other custom schemes. Score solver results using <code><a href="task_score.ht
     <div class="dont-index"><p>A typical evaluation with rinspect calls three functions in sequence:</p><ul><li><p>Create an evaluation task with <code>task_create()</code>.</p></li>
 <li><p>Generate solutions with <code><a href="task_solve.html">task_solve()</a></code>.</p></li>
 <li><p>Grade solutions with <code><a href="task_score.html">task_score()</a></code>.</p></li>
-</ul><p>Then, see <code><a href="task_log.html">task_log()</a></code> and <code><a href="inspect_view.html">inspect_view()</a></code> for writing results to
+</ul><p>Then, see <code><a href="inspect_log.html">inspect_log()</a></code> and <code><a href="inspect_view.html">inspect_view()</a></code> for writing results to
 file and interfacing with the Inspect Log Viewer.</p></div>
     </div>
 
@@ -128,9 +136,9 @@ file and interfacing with the Inspect Log Viewer.</p></div>
 <span class="r-in"><span>    <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA: 11s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  1s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA: 14s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  2s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
