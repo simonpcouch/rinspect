@@ -11,7 +11,7 @@ model_graded_qa(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = ellmer::chat_claude()
+  chat = NULL
 )
 
 model_graded_fact(
@@ -19,7 +19,7 @@ model_graded_fact(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = ellmer::chat_claude()
+  chat = NULL
 )
 }
 \arguments{
