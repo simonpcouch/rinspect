@@ -68,7 +68,7 @@ inside of a task with <code>task_create()</code>.</p></li>
 The simplest solver is just an ellmer chat—evaluate a task with a solver
 using <code>task_solve()</code>.</p></li>
 <li><p><strong>Scorers</strong> evaluate the final output of solvers. They may use text
-comparisons, model grading (like <code><a href="model_graded_qa.html">model_graded_qa()</a></code>), or other custom
+comparisons, model grading (like <code><a href="scorer_model.html">model_graded_qa()</a></code>), or other custom
 schemes. Score solver results using <code>task_score()</code>.</p></li>
 </ol></div>
 
@@ -136,7 +136,7 @@ file and interfacing with the Inspect Log Viewer.</p></div>
 <span class="r-in"><span>  <span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu">task_solve</span><span class="op">(</span><span class="va">tsk</span>, solver <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu">task_score</span><span class="op">(</span><span class="va">tsk</span>, scorer <span class="op">=</span> <span class="fu"><a href="model_graded_qa.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span> <span class="op">&lt;-</span> <span class="fu">task_score</span><span class="op">(</span><span class="va">tsk</span>, scorer <span class="op">=</span> <span class="fu"><a href="scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
