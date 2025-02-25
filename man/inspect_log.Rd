@@ -4,12 +4,10 @@
 \alias{inspect_log}
 \title{Write a task to an eval log}
 \usage{
-inspect_log(task, time_start = Sys.time(), dir = attr(res, "dir"))
+inspect_log(task, dir = attr(res, "dir"))
 }
 \arguments{
 \item{task}{An evaluation task created with \code{task_create()}.}
-
-\item{time_start}{TODO: remove.}
 
 \item{dir}{Directory where logs should be stored.}
 }

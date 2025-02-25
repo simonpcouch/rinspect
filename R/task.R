@@ -271,14 +271,13 @@ print.task <- function(x, ...) {
 #'
 #' @inheritParams task_create
 #' @inheritParams task_solve
-#' @param time_start TODO: remove.
 #'
 #' @returns
 #' The path to the directory which the log was written to. Pass this value
 #' to [inspect_view()] to view the task logs.
 #'
 #' @export
-inspect_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
+inspect_log <- function(task, dir = attr(res, "dir")) {
   eval_log <- eval_log_new(
     eval = eval_log_eval(
       task = attr(task, "name"),
@@ -294,7 +293,7 @@ inspect_log <- function(task, time_start = Sys.time(), dir = attr(res, "dir")) {
     # into two. will probably want to take those values independently
     # for those two steps and then subtract out the intermediate time.
     stats = eval_log_stats(
-      started_at = time_start,
+      started_at = attr(task$solver[[1]]$get_turns()[[1]], "time_completed"),
       completed_at = Sys.time(),
       model_usage = sum_model_usage(task$solver)
     ),
