@@ -6,8 +6,8 @@ tibble with columns input and target, where input is a prompt
 and target is either literal value(s) or grading guidance. Situate datasets
 inside of a task with task_create().
 Solvers evaluate the input in the dataset and produce a final result.
-The simplest solver is just an ellmer chat—evaluate a task with a solver
-using task_solve().
+The simplest solver is just an ellmer chat (e.g. ellmer::chat_claude()).
+Evaluate a task with a solver using task_solve().
 Scorers evaluate the final output of solvers. They may use text
 comparisons (like detect_match()), model grading (like model_graded_qa()),
 or other custom schemes. Score solver results using task_score().
@@ -19,8 +19,8 @@ tibble with columns input and target, where input is a prompt
 and target is either literal value(s) or grading guidance. Situate datasets
 inside of a task with task_create().
 Solvers evaluate the input in the dataset and produce a final result.
-The simplest solver is just an ellmer chat—evaluate a task with a solver
-using task_solve().
+The simplest solver is just an ellmer chat (e.g. ellmer::chat_claude()).
+Evaluate a task with a solver using task_solve().
 Scorers evaluate the final output of solvers. They may use text
 comparisons (like detect_match()), model grading (like model_graded_qa()),
 or other custom schemes. Score solver results using task_score().
@@ -65,8 +65,8 @@ tibble with columns <code>input</code> and <code>target</code>, where <code>inpu
 and <code>target</code> is either literal value(s) or grading guidance. Situate datasets
 inside of a task with <code>task_create()</code>.</p></li>
 <li><p><strong>Solvers</strong> evaluate the <code>input</code> in the dataset and produce a final result.
-The simplest solver is just an ellmer chat—evaluate a task with a solver
-using <code><a href="task_solve.html">task_solve()</a></code>.</p></li>
+The simplest solver is just an ellmer chat (e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>).
+Evaluate a task with a solver using <code><a href="task_solve.html">task_solve()</a></code>.</p></li>
 <li><p><strong>Scorers</strong> evaluate the final output of solvers. They may use text
 comparisons (like <code><a href="scorer_detect.html">detect_match()</a></code>), model grading (like <code><a href="scorer_model.html">model_graded_qa()</a></code>),
 or other custom schemes. Score solver results using <code><a href="task_score.html">task_score()</a></code>.</p></li>
@@ -108,8 +108,8 @@ or other custom schemes. Score solver results using <code><a href="task_score.ht
     <div class="dont-index"><p>A typical evaluation with rinspect calls three functions in sequence:</p><ul><li><p>Create an evaluation task with <code>task_create()</code>.</p></li>
 <li><p>Generate solutions with <code><a href="task_solve.html">task_solve()</a></code>.</p></li>
 <li><p>Grade solutions with <code><a href="task_score.html">task_score()</a></code>.</p></li>
-</ul><p>Then, see <code><a href="inspect_log.html">inspect_log()</a></code> and <code><a href="inspect_view.html">inspect_view()</a></code> for writing results to
-file and interfacing with the Inspect Log Viewer.</p></div>
+</ul><p>Then, explore task evaluation results in an interactive
+application using <code><a href="inspect_view.html">inspect_view()</a></code>.</p></div>
     </div>
 
     <div class="section level2">
@@ -136,9 +136,7 @@ file and interfacing with the Inspect Log Viewer.</p></div>
 <span class="r-in"><span>    <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  3s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
