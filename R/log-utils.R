@@ -1,29 +1,3 @@
-eval_log <- function(task, ..., result, time_start, dir) {
-  task_env <- environment(task)
-
-  eval_log <- eval_log_new(
-    eval = eval_log_eval(
-      task = task_env$name,
-      dataset = list(samples = nrow(result), sample_ids = seq_len(nrow(result))),
-      model = .turn_model(.last_assistant_turn(result$solver[[1]]$get_turns()))
-    ),
-    results = eval_log_results(
-      total_samples = nrow(result),
-      completed_samples = nrow(result)
-    ),
-    stats = eval_log_stats(
-      started_at = time_start,
-      completed_at = Sys.time(),
-      model_usage = sum_model_usage(result$solver)
-    ),
-    samples = eval_log_samples(result)
-  )
-
-  eval_log_write(eval_log, dir = dir)
-
-  eval_log
-}
-
 eval_log_new <- function(
     eval = eval_log_eval(),
     plan = eval_log_plan(),
