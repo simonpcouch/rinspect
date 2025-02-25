@@ -66,8 +66,7 @@ task_create <- function(
     dir = inspect_log_dir()
 ) {
   force(name)
-  check_data_frame(dataset)
-  # TODO: check that it has the appropriate columns
+  check_dataset(dataset)
 
   dataset$id <- seq_len(nrow(dataset))
 
@@ -83,6 +82,22 @@ task_create <- function(
   res
 }
 
+check_dataset <- function(dataset, call = caller_env()) {
+  check_data_frame(dataset)
+  
+  required_cols <- c("input", "target")
+  missing_cols <- required_cols[!required_cols %in% names(dataset)]
+  
+  if (length(missing_cols) > 0) {
+    cli::cli_abort(
+      "{.arg dataset} is missing required column{?s} {.field {missing_cols}}.",
+      call = call
+    )
+  }
+    
+  invisible(dataset)
+}
+
 # solving -------------------------------------------------------------------
 #' Solving tasks
 #'
@@ -90,9 +105,9 @@ task_create <- function(
 #'
 #' @param task An evaluation task created with `task_create()`.
 #' @param solver A function that takes an element of `dataset$input` as its first
-#' argument and determines a value approximating `dataset$target`. 
-#' Its return value should be a list with elements `result` (the final response) 
-#' and `chat` (an ellmer chat used to solve the problem, or a list of them). 
+#' argument and determines a value approximating `dataset$target`.
+#' Its return value should be a list with elements `result` (the final response)
+#' and `chat` (an ellmer chat used to solve the problem, or a list of them).
 #' Or, just supply an ellmer chat (e.g. [ellmer::chat_claude()]).
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to measure variation. Optional, defaults to `1L`.

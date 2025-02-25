@@ -30,10 +30,18 @@ test_that("basic task_create -> task_solve -> task_score works", {
   )
 })
 
+test_that("check_dataset works", {
+  expect_snapshot(error = TRUE, task_create(data.frame(input = 1)))
+  expect_snapshot(error = TRUE, task_create(data.frame(target = 1)))
+  expect_snapshot(error = TRUE, task_create(data.frame(x = 1)))
+  d <- data.frame(input = "hey", target = "there")
+  expect_equal(d, check_dataset(d))
+})
+
 test_that("task_solve(epochs) works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_options(cli.default_handler = function(...) { })
-
+  
   library(ellmer)
 
   simple_addition <- tibble::tibble(
