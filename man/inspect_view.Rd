@@ -4,7 +4,7 @@
 \alias{inspect_view}
 \alias{inspect_view.character}
 \alias{inspect_view.task}
-\title{The Inspect Log Viewer}
+\title{Interactive evaluation log viewer}
 \usage{
 inspect_view(x, host = "127.0.0.1", port = 7576)
 
@@ -23,7 +23,10 @@ directory and open that directory in the viewer.}
 implementation.}
 }
 \description{
-The Inspect Log Viewer
+rinspect bundles the Inspect log viewer, an interactive app for exploring
+evaluation logs. You can view \link[=task_create]{tasks} directly, which will
+write the task to a temporary json file, or you can supply a path to a
+directory of tasks written to json using \code{\link[=inspect_log]{inspect_log()}}.
 }
 \examples{
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {

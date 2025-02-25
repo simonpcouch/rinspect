@@ -16,8 +16,8 @@
 #' @param grade_pattern A regex pattern to extract the final grade from the
 #' judge model's response.
 #' @param partial_credit Whether to allow partial credit.
-#' @param chat An ellmer chat used to grade the model output.
-# in Inspect, "by default, the model being evaluated is used"
+#' @param chat An ellmer chat used to grade the model output, e.g.
+#' [ellmer::chat_claude()].
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.

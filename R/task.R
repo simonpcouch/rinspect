@@ -10,8 +10,8 @@
 #' and `target` is either literal value(s) or grading guidance. Situate datasets
 #' inside of a task with [task_create()].
 #' 2) **Solvers** evaluate the `input` in the dataset and produce a final result.
-#' The simplest solver is just an ellmer chat---evaluate a task with a solver
-#' using [task_solve()].
+#' The simplest solver is just an ellmer chat (e.g. [ellmer::chat_claude()]).
+#' Evaluate a task with a solver using [task_solve()].
 #' 3) **Scorers** evaluate the final output of solvers. They may use text
 #' comparisons (like [detect_match()]), model grading (like [model_graded_qa()]),
 #' or other custom schemes. Score solver results using [task_score()].
@@ -31,8 +31,8 @@
 #' * Generate solutions with [task_solve()].
 #' * Grade solutions with [task_score()].
 #'
-#' Then, see [inspect_log()] and [inspect_view()] for writing results to
-#' file and interfacing with the Inspect Log Viewer.
+#' Then, explore task evaluation results in an interactive
+#' application using [inspect_view()].
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -89,11 +89,11 @@ task_create <- function(
 #' @inherit task_create description
 #'
 #' @param task An evaluation task created with `task_create()`.
-#' @param solver A function that takes an element of `dataset$input` as input
-#' and determines a value approximating `dataset$target`. Its return value should
-#' be a list with elements `result` (the final response) and `chat` (an ellmer
-#' chat used to solve the problem, or a list of them). Or, just supply an
-#' ellmer chat.
+#' @param solver A function that takes an element of `dataset$input` as its first
+#' argument and determines a value approximating `dataset$target`. 
+#' Its return value should be a list with elements `result` (the final response) 
+#' and `chat` (an ellmer chat used to solve the problem, or a list of them). 
+#' Or, just supply an ellmer chat (e.g. [ellmer::chat_claude()]).
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to measure variation. Optional, defaults to `1L`.
 #'
@@ -246,12 +246,12 @@ print.task <- function(x, ...) {
 #'
 #' @description
 #' This function translates a [task][task_create] to an evaluation log file
-#' readable by the Inspect Log Viewer.
+#' readable by the Inspect log viewer.
 #'
 #' The usual entry point to this function is [inspect_view()]; use [inspect_log()]
 #' to write a persistent log of your task eval. That said, evaluation logs
 #' can't be read back into R as `task`s and later analyzed (or viewed in the
-#' Inspect Log Viewer, for that matter); for that use, you likely want to
+#' Inspect log viewer, for that matter); for that use, you likely want to
 #' save the `task` using [save()] or [saveRDS()].
 #'
 #' @inheritParams task_create

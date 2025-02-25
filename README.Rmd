@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-rinspect is a framework for large language model evaluation in R. It's specifically aimed at ellmer users who want to measure the effectiveness of their LLM-based apps.
+rinspect is a framework for large language model evaluation in R. It's specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who want to measure the effectiveness of their LLM-based apps.
 
-The package is an R port of the widely adopted Python framework [Inspect](https://inspect.ai-safety-institute.org.uk/). While the package doesn't integrate with Inspect directly, it allows users to interface with the [Inspect Log Viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and provides an on-ramp to transition to Inspect if need be by writing evaluation logs to the same file format.
+The package is an R port of the widely adopted Python framework [Inspect](https://inspect.ai-safety-institute.org.uk/). While the package doesn't integrate with Inspect directly, it allows users to interface with the [Inspect log viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and provides an on-ramp to transition to Inspect if need be by writing evaluation logs to the same file format.
 
 > **Important**
 > 
@@ -75,7 +75,7 @@ tsk <- task_score(tsk, scorer = model_graded_qa())
 tsk
 ```
 
-Once a task has been scored, it's ready to explore interactively with the Inspect Log Viewer:
+Once a task has been scored, it's ready to explore interactively with the Inspect log viewer:
 
 ```{r}
 #| eval: false
@@ -84,6 +84,6 @@ inspect_view(tsk)
 
 ```{r}
 #| echo: false
-#| fig-alt: "A screenshot of the Inspect Log Viewer, an interactive app displaying information on the 3 samples evaluated in this eval."
+#| fig-alt: "A screenshot of the Inspect log viewer, an interactive app displaying information on the 3 samples evaluated in this eval."
 knitr::include_graphics("man/figures/log_viewer.png")
 ```

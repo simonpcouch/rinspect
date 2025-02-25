@@ -26,8 +26,8 @@ tibble with columns \code{input} and \code{target}, where \code{input} is a prom
 and \code{target} is either literal value(s) or grading guidance. Situate datasets
 inside of a task with \code{\link[=task_create]{task_create()}}.
 \item \strong{Solvers} evaluate the \code{input} in the dataset and produce a final result.
-The simplest solver is just an ellmer chat---evaluate a task with a solver
-using \code{\link[=task_solve]{task_solve()}}.
+The simplest solver is just an ellmer chat (e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}).
+Evaluate a task with a solver using \code{\link[=task_solve]{task_solve()}}.
 \item \strong{Scorers} evaluate the final output of solvers. They may use text
 comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (like \code{\link[=model_graded_qa]{model_graded_qa()}}),
 or other custom schemes. Score solver results using \code{\link[=task_score]{task_score()}}.
@@ -66,6 +66,6 @@ A typical evaluation with rinspect calls three functions in sequence:
 \item Grade solutions with \code{\link[=task_score]{task_score()}}.
 }
 
-Then, see \code{\link[=inspect_log]{inspect_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
-file and interfacing with the Inspect Log Viewer.
+Then, explore task evaluation results in an interactive
+application using \code{\link[=inspect_view]{inspect_view()}}.
 }

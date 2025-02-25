@@ -9,11 +9,11 @@ task_solve(task, solver, epochs = 1L)
 \arguments{
 \item{task}{An evaluation task created with \code{task_create()}.}
 
-\item{solver}{A function that takes an element of \code{dataset$input} as input
-and determines a value approximating \code{dataset$target}. Its return value should
-be a list with elements \code{result} (the final response) and \code{chat} (an ellmer
-chat used to solve the problem, or a list of them). Or, just supply an
-ellmer chat.}
+\item{solver}{A function that takes an element of \code{dataset$input} as its first
+argument and determines a value approximating \code{dataset$target}.
+Its return value should be a list with elements \code{result} (the final response)
+and \code{chat} (an ellmer chat used to solve the problem, or a list of them).
+Or, just supply an ellmer chat (e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}).}
 
 \item{epochs}{The number of times to repeat each sample. Evaluate each sample
 multiple times to measure variation. Optional, defaults to \code{1L}.}
@@ -32,8 +32,8 @@ tibble with columns \code{input} and \code{target}, where \code{input} is a prom
 and \code{target} is either literal value(s) or grading guidance. Situate datasets
 inside of a task with \code{\link[=task_create]{task_create()}}.
 \item \strong{Solvers} evaluate the \code{input} in the dataset and produce a final result.
-The simplest solver is just an ellmer chat---evaluate a task with a solver
-using \code{\link[=task_solve]{task_solve()}}.
+The simplest solver is just an ellmer chat (e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}).
+Evaluate a task with a solver using \code{\link[=task_solve]{task_solve()}}.
 \item \strong{Scorers} evaluate the final output of solvers. They may use text
 comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (like \code{\link[=model_graded_qa]{model_graded_qa()}}),
 or other custom schemes. Score solver results using \code{\link[=task_score]{task_score()}}.
@@ -72,6 +72,6 @@ A typical evaluation with rinspect calls three functions in sequence:
 \item Grade solutions with \code{\link[=task_score]{task_score()}}.
 }
 
-Then, see \code{\link[=inspect_log]{inspect_log()}} and \code{\link[=inspect_view]{inspect_view()}} for writing results to
-file and interfacing with the Inspect Log Viewer.
+Then, explore task evaluation results in an interactive
+application using \code{\link[=inspect_view]{inspect_view()}}.
 }

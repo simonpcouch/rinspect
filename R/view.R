@@ -1,5 +1,11 @@
-#' The Inspect Log Viewer
+#' Interactive evaluation log viewer
 #'
+#' @description
+#' rinspect bundles the Inspect log viewer, an interactive app for exploring
+#' evaluation logs. You can view [tasks][task_create()] directly, which will
+#' write the task to a temporary json file, or you can supply a path to a 
+#' directory of tasks written to json using [inspect_log()].
+#' 
 #' @param x Either a path to a directory containing a task eval log or a
 #' task itself. If a task, the function will log the task to a temporary
 #' directory and open that directory in the viewer.

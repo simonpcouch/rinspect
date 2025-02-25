@@ -110,10 +110,10 @@ tsk
 ```
 
 Once a task has been scored, it’s ready to explore interactively with
-the Inspect Log Viewer:
+the Inspect log viewer:
 
 ``` r
 inspect_view(tsk)
 ```
 
-<img src="man/figures/log_viewer.png" alt="A screenshot of the Inspect Log Viewer, an interactive app displaying information on the 3 samples evaluated in this eval." width="100%" />
+<img src="man/figures/log_viewer.png" alt="A screenshot of the Inspect log viewer, an interactive app displaying information on the 3 samples evaluated in this eval." width="100%" />

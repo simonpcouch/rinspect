@@ -33,7 +33,8 @@ judge model's response.}
 
 \item{partial_credit}{Whether to allow partial credit.}
 
-\item{chat}{An ellmer chat used to grade the model output.}
+\item{chat}{An ellmer chat used to grade the model output, e.g.
+\code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}
 }
 \value{
 A function that will grade model responses according to the given instructions.

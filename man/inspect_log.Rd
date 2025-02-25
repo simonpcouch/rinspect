@@ -19,11 +19,11 @@ to \code{\link[=inspect_view]{inspect_view()}} to view the task logs.
 }
 \description{
 This function translates a \link[=task_create]{task} to an evaluation log file
-readable by the Inspect Log Viewer.
+readable by the Inspect log viewer.
 
 The usual entry point to this function is \code{\link[=inspect_view]{inspect_view()}}; use \code{\link[=inspect_log]{inspect_log()}}
 to write a persistent log of your task eval. That said, evaluation logs
 can't be read back into R as \code{task}s and later analyzed (or viewed in the
-Inspect Log Viewer, for that matter); for that use, you likely want to
+Inspect log viewer, for that matter); for that use, you likely want to
 save the \code{task} using \code{\link[=save]{save()}} or \code{\link[=saveRDS]{saveRDS()}}.
 }
