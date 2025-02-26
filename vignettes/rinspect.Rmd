@@ -108,7 +108,7 @@ Next, we'll use `task_solve()` to apply a solver to our task. A solver is some f
 TODO: link to a vignette on more involved solvers here
 -->
 
-For this example, though, we'll just use `chat_claude()`. At the time of writing, the current default model used by `chat_claude()` is `r chat_claude()$get_model()`.
+For this example, though, we'll just use `chat_claude()`. At the time of writing, the current default model used by `chat_claude()` is Claude Sonnet 3.5.
 
 <!--
 TODO: several epochs?
