@@ -30,6 +30,7 @@ Imports:
     tibble,
     withr
 Suggests: 
+    ggplot2,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
