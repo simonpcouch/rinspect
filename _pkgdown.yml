@@ -20,3 +20,7 @@ reference:
   - inspect_log
   - inspect_log_dir
   - inspect_log_dir_set
+
+- title: "Example Evals"
+  contents:
+  - tre
