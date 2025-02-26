@@ -1,0 +1,1 @@
+{"title":"tibble-edge-case","input":"How to make a 1-row, 0-column tibble in R?","target":"Can either set `.rows` argument, like `tibble(.rows = 1)`, or make a 1-column, 1-row tibble and then select off the column, like `tribble(~dummy_col, NULL) |> select(-dummy_col)`.","domain":"Programming","task":"New code","knowledge":"tidyverse","source":"NA"}
