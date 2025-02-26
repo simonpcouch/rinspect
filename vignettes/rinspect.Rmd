@@ -51,6 +51,7 @@ First, load the required packages:
 ```{r setup}
 #| message: false
 #| warning: false
+#| eval: true
 library(rinspect)
 library(ellmer)
 library(dplyr)
@@ -165,7 +166,7 @@ if (should_eval) {
 }
 ```
 
-## Analyzing the Results
+## Analyzing the results
 
 Especially the first few times you run an eval, you'll want to inspect (ha!) its outputs closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
 
@@ -173,7 +174,8 @@ Interactively, we'd launch that app with `inspect_view(are_scored)`. You can do 
 
 For a cursory analysis, we can visualize correct vs. partially correct vs. incorrect answers:
 
-```{r}
+```{r plot-1}
+#| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
 are_scored <- 
   are_scored %>% 
   mutate(grade = case_when(
