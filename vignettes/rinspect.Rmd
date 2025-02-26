@@ -1,0 +1,207 @@
+---
+title: "Getting started with rinspect"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with rinspect}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = rlang::is_installed("ggplot2")
+)
+
+cat <- function(x, width = 0.9 * getOption("width")) {
+  # Split on existing newlines first
+  lines <- unlist(strsplit(x, "\n"))
+  # Then wrap each line
+  wrapped <- unlist(lapply(lines, strwrap, width = width))
+  base::cat(wrapped, sep = "\n")
+}
+
+# don't set this as the default `eval`, but use it as a
+# flag for the computationally intensive steps
+should_eval <- identical(Sys.getenv("RINSPECT_SHOULD_EVAL"), "true")
+
+if (!should_eval) {
+  load("data/are_scored.rda")
+  are_solved <- are_scored[
+    !colnames(are_scored) %in% c("score", "scorer")
+  ]
+  are_task <- are_solved[
+    !colnames(are_solved) %in% c("output", "solver")
+  ]
+}
+```
+
+At their core, LLM evals are composed of three pieces:
+
+1) **Datasets** contain a set of labelled samples. Datasets are just a tibble with columns `input` and `target`, where `input` is a prompt and `target` is either literal value(s) or grading guidance.
+2) **Solvers** evaluate the `input` in the dataset and produce a final result (hopefully) approximating `target`. In rinspect, the simplest solver is just an ellmer chat (e.g. `ellmer::chat_claude()`).
+3) **Scorers** evaluate the final output of solvers. They may use text
+comparisons, model grading, or other custom schemes to determine how well the solver approximated the `target` based on the `input`. 
+
+This vignette will explore these three steps one-by-one using `are`, an example dataset that ships with the package.
+
+First, load the required packages:
+
+```{r setup}
+#| message: false
+#| warning: false
+library(rinspect)
+library(ellmer)
+library(dplyr)
+library(ggplot2)
+```
+
+## An R eval dataset
+
+From the `are` docs:
+
+> An R Eval is a dataset of challenging R coding problems. Each `input` is a question about R code which could be solved on first-read only by human experts and, with a chance to read documentation and run some code, by  fluent data scientists. Solutions are in `target` and enable a fluent  data scientist to evaluate whether the solution deserves full, partial, or no credit.
+
+```{r explore-dataset}
+glimpse(are)
+```
+
+At a high level:
+
+- `title`:  A unique identifier for the problem.
+- `input`: The question to be answered.
+- `target`: The solution, often with a description of notable features of a correct solution.
+- `domain`, `task`, and `knowledge` are pieces of metadata describing the kind of R coding challenge.
+- `source`: Where the problem came from, as a URL. Many of these coding problems are adapted "from the wild" and include the kinds of context usually available to those answering questions.
+
+For the purposes of actually carrying out the initial evaluation, we're specifically interested in the `input` and `target` columns. Let's print out the first entry in full so you can get a taste of a typical problem in this dataset:
+
+```{r input-1}
+cat(are$input[1])
+```
+
+Here's the suggested solution:
+
+```{r target-1}
+cat(are$target[1])
+```
+
+## Creating an evaluation task
+
+`task_create()` situates a dataset inside of an evaluation `task`, a subclass of a tibble with some additional attributes to track the experiment. Any dataset is fair game as long as it has columns `input` and `target`. The `name` argument is optional, but we'll specify it here:
+
+```{r create-task}
+are_task <- task_create(dataset = are, name = "An R Eval")
+are_task
+```
+
+The only notable change here for a user is the new `id` column, which is just the row number.
+
+## Solving the task with Claude
+
+
+Next, we'll use `task_solve()` to apply a solver to our task. A solver is some function that takes in an `input` question and produces a result. The most basic solver in rinspect is a plain ellmer chat, like `chat_claude()`. (ellmer chats themselves are indeed not functions; rinspect special-cases them.) Users can supply any function they please, though, that likely wraps calls to ellmer chats in some way.
+
+<!--
+TODO: link to a vignette on more involved solvers here
+-->
+
+For this example, though, we'll just use `chat_claude()`. At the time of writing, the current default model used by `chat_claude()` is `r chat_claude()$get_model()`.
+
+<!--
+TODO: several epochs?
+-->
+
+```{r solve-task, eval = should_eval}
+are_solved <- task_solve(are_task, solver = chat_claude())
+```
+
+Each `input` from the dataset is sent to Claude. For each input prompt, Claude generates a response that attempts to solve the R coding problem.
+
+<!--
+TODO: discuss the time to evaluate here. with no parallelism and a single epoch, 30 rows took 3 minutes.
+-->
+
+`task_solve()` will append two columns, `output` and `solver`. Here's what the model responded to that first question with:
+
+```{r output-1}
+cat(are_solved$output[1])
+```
+
+`output` is the final response from the solver, and the `solver` is the ellmer chat object that led to the output. It's not technically required that your solvers provide these chats in their output, but it _is_ required if you'd like to explore your evaluation results with `inspect_view()`, which is highly recommended.
+
+## Scoring the solutions
+
+Now we'll evaluate the quality of Claude's solutions using `task_score()` with the `model_graded_qa()` scorer:
+
+```{r score-task, eval = should_eval}
+are_scored <- task_score(
+  are_solved, 
+  scorer = model_graded_qa(partial_credit = TRUE)
+)
+```
+
+`model_graded_qa()` is a model-graded scorer provides by the package. This step will compare Claude's solutions against the reference solutions provided in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generate the final response in `task_solve()` as the model to score solutions.
+
+Hold up, though—we're using an LLM to generate responses to questions, and then using the LLM to grade those responses?
+
+```{r}
+#| echo: false
+#| fig-alt: "The meme of 3 spiderman pointing at each other."
+knitr::include_graphics("https://cdn-useast1.kapwing.com/static/templates/3-spiderman-pointing-meme-template-full-ca8f27e0.webp")
+```
+
+This technique is called "model grading" or "LLM-as-a-judge." Done correctly, model grading is an effective and scalable solution to scoring. That said, it's not without its faults. Here's what the grading model thought of the response:
+
+```{r}
+cat(are_scored$scorer[[1]]$last_turn()@text)
+```
+
+```{r save-are-task-scored}
+#| include: false
+if (should_eval) {
+  save(are_scored, file = "vignettes/data/are_scored.rda")
+}
+```
+
+## Analyzing the Results
+
+Especially the first few times you run an eval, you'll want to inspect (ha!) its outputs closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
+
+Interactively, we'd launch that app with `inspect_view(are_scored)`. You can do so yourself (using this eval specifically!) with the following code (TODO: code to grab from github and view).
+
+For a cursory analysis, we can visualize correct vs. partially correct vs. incorrect answers:
+
+```{r}
+are_scored <- 
+  are_scored %>% 
+  mutate(grade = case_when(
+    score == 1 ~ "Correct",
+    score == .5 ~ "Partially Correct",
+    score == 0 ~ "Incorrect"
+    ),
+    grade = factor(grade, levels = c("Correct", "Partially Correct", "Incorrect"))
+  )
+
+are_scored %>%
+  ggplot() +
+  aes(x = grade) +
+  geom_bar()
+```
+
+Claude answered fully correctly in `r sum(are_scored$grade == "Correct")` out of `r nrow(are_scored)` samples, and partially correctly `r sum(are_scored$grade == "Partially Correct")` times. For me, this leads to all sorts of questions:
+
+* Are there any models that are cheaper than Claude that would do just as well? Or even a local model?
+* Are there other models available that would do better out of the box?
+* Would Claude do better if I allow it to "reason" briefly before answering?
+* Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::register_btw_tools()`](https://simonpcouch.github.io/btw/reference/register_btw_tools.html) if you're interested in this.)
+
+If you're interested in these questions as well, check out the other vignettes in this package!
+
+## Saving and loading evaluation results
+
+When storing evaluation results for later use, you have a couple options:
+
+* **Complete**: `task`s are just tibbles, and can be saved to `.rda` or `.rds` files using the usual `save()` or `saveRDS()`. Tasks saved this way can be reloaded back into R and passed to `inspect_view()`.
+* **Portable**: Under the hood, when you `inspect_view()` a task, it's written to a temporary `.json` file that the Inspect log viewer can read. You can write to a permanent (and more portable than `.rda`) viewer-compatible `.json` file with `inspect_log()`. Tasks can't be read back into R from the `.json` directly, but you can still view them in the log viewer with `inspect_view()`.
