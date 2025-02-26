@@ -207,7 +207,13 @@ eval_log_metrics <- function(
 }
 
 eval_log_score <- function(output, score, scorer) {
-  value <- if (score == 1) "C" else "I"
+  value <- if (score == 1) {
+    "C"
+  } else if (score == .5) {
+    "P"
+  } else {
+    "I"
+  }
   
   turns <- scorer$get_turns()
   explanation <- .last_assistant_turn(turns)@text
