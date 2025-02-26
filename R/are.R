@@ -1,9 +1,9 @@
-#' The R Eval
+#' An R Eval
 #'
 #' @description
-#' The R Eval is a dataset of challenging R coding problems. Each `input` is a
-#' question about R code which could be solved on first-read only by human
-#' experts and, with a chance to read documentation and run some code, by 
+#' An R Eval is a dataset of challenging R coding problems. Each `input` is a 
+#' question about R code which could be solved on first-read only by experts 
+#' and, with a chance to read documentation and run some code, by 
 #' fluent data scientists. Solutions are in `target()` and enable a fluent 
 #' data scientist to evaluate whether the solution deserves full, partial, or
 #' no credit.
@@ -11,7 +11,7 @@
 #' Pass this dataset to [task_create()] to situate it inside of an evaluation
 #' task.
 #' 
-#' @format A tibble with `r nrow(tre)` rows and `r ncol(tre)` columns:
+#' @format A tibble with `r nrow(are)` rows and `r ncol(are)` columns:
 #' \describe{
 #'   \item{title}{Character. Unique identifier/title for the code problem.}
 #'   \item{input}{Character. The question to be answered.}
@@ -30,7 +30,7 @@
 #' references, see `source`.
 #' 
 #' @examples
-#' tre
+#' are
 #' 
-#' dplyr::glimpse(tre)
-"tre"
+#' dplyr::glimpse(are)
+"are"

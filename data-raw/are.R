@@ -1,6 +1,6 @@
-# concatenate the json files in `data-raw/tre`
-tre <- 
-  list.files("data-raw/tre", pattern = "*.json", full.names = TRUE) %>%
+# concatenate the json files in `data-raw/are`
+are <- 
+  list.files("data-raw/are", pattern = "*.json", full.names = TRUE) %>%
   purrr::map(function(.x) {
     .x <- jsonlite::fromJSON(.x)
     .x$knowledge <- as.list(.x$knowledge)
@@ -9,4 +9,4 @@ tre <-
   purrr::list_rbind() %>%
   dplyr::arrange(title)
 
-usethis::use_data(tre, overwrite = TRUE)
+usethis::use_data(are, overwrite = TRUE)
