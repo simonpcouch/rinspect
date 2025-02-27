@@ -35,7 +35,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Remotes:
-    simonpcouch/ellmer#1
+    tidyverse/ellmer#343
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

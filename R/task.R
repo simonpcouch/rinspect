@@ -293,7 +293,7 @@ inspect_log <- function(task, dir = attr(res, "dir")) {
     # into two. will probably want to take those values independently
     # for those two steps and then subtract out the intermediate time.
     stats = eval_log_stats(
-      started_at = attr(task$solver[[1]]$get_turns()[[1]], "time_completed"),
+      started_at = task$solver[[1]]$get_turns()[[1]]@completed,
       completed_at = Sys.time(),
       model_usage = sum_model_usage(task$solver)
     ),

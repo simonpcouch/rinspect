@@ -16,7 +16,7 @@ translate_to_events <- function(chat, sample) {
 
 translate_to_events_user <- function(turn, sample) {
   list(
-    timestamp = attr(turn, "time_completed"),
+    timestamp = turn@completed,
     event = "sample_init",
     sample = list(
       input = sample$input,
@@ -46,7 +46,7 @@ translate_to_events_user <- function(turn, sample) {
 
 translate_to_events_assistant <- function(turn) {
   list(
-    timestamp = attr(turn, "time_completed"),
+    timestamp = turn@completed,
     event = "model",
     model = turn@json$model,
     input = list(list(
