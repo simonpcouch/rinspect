@@ -21,7 +21,12 @@
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
-#' This can be passed directly to [task_score()].
+#' The returned function takes a [solved task][task_solve()] and outputs a
+#' 2-element list, where the first element `scores` is a vector of scores with
+#' length `nrow(task)` and the second is list of ellmer chats that led to the
+#' scores, also with length `nrow(task)`.
+#' The function that `model_graded_qa()`'s outputs can be passed directly to 
+#' [task_score()].
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 
@@ -87,9 +92,9 @@ model_graded_qa <- function(
   chat = NULL
 ) {
   # TODO: type check
-  function(sample) {
+  function(task) {
     model_graded_qa_impl(
-      sample = sample,
+      task = task,
       template = template,
       instructions = instructions,
       grade_pattern = grade_pattern,
@@ -100,7 +105,7 @@ model_graded_qa <- function(
 }
 
 model_graded_qa_impl <- function(
-  sample,
+  task,
   template = NULL,
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
@@ -110,30 +115,40 @@ model_graded_qa_impl <- function(
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
 
-  prompt <- qa_format_prompt(
-    template,
-    sample$input,
-    sample$output,
-    sample$target,
-    instructions
-  )
+  prompts <- purrr::map_chr(seq_len(nrow(task)), function(i) {
+    qa_format_prompt(
+      template,
+      task$input[i],
+      task$output[i],
+      task$target[i],
+      instructions
+    )
+  })
+  
   if (is.null(chat)) {
-    chat <- solver_chat(sample)
+    chat <- solver_chat(task[1, ])
   }
- 
+  
   chat <- chat$clone()
-  response <- chat$chat(prompt, echo = FALSE)
-
-  result <- qa_extract_grade(response, grade_pattern, partial_credit)
-
-  list(
-    result = result,
-    scorer = chat,
-    metadata = list(
-      prompt = prompt,
-      response = response,
+  responses <- chat$chat_parallel(as.list(prompts))
+  
+  scores <- purrr::map_dbl(responses, function(response_chat) {
+    response_text <- response_chat$last_turn()@text
+    qa_extract_grade(response_text, grade_pattern, partial_credit)
+  })
+  
+  metadata <- purrr::map(seq_along(prompts), function(i) {
+    list(
+      prompt = prompts[i],
+      response = responses[[i]]$last_turn()@text,
       grade_pattern = grade_pattern
     )
+  })
+  
+  list(
+    scores = scores,
+    scorer = responses,
+    metadata = metadata
   )
 }
 

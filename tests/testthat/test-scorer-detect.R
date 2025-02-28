@@ -3,7 +3,7 @@ test_that("detect_includes works", {
   tsk <- task_score(tsk, scorer = detect_includes())
 
   expect_equal(tsk$score, c(1, 1))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("includes", "includes"))
+  expect_equal(tsk$scorer, c("includes", "includes"))
   # TODO: include and test for `metadata` slots (here and in model-based)
 
   # respects case sensitivity
@@ -25,7 +25,7 @@ test_that("detect_match works", {
   tsk <- task_score(tsk, scorer = detect_match())
 
   expect_equal(tsk$score, c(1, 1))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("match", "match"))
+  expect_equal(tsk$scorer, c("match", "match"))
 
   # respects case sensitivity
   tsk <- example_task(scored = FALSE)
@@ -46,7 +46,7 @@ test_that("detect_pattern works", {
   tsk <- task_score(tsk, scorer = detect_pattern("(\\d+)\\s*=\\s*(\\d+)"))
 
   expect_equal(tsk$score, c(1, 1))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("pattern", "pattern"))
+  expect_equal(tsk$scorer, c("pattern", "pattern"))
 
   # respects case sensitivity
   tsk <- example_task(scored = FALSE)
@@ -95,7 +95,7 @@ test_that("detect_exact works", {
   tsk <- task_score(tsk, scorer = detect_exact())
 
   expect_equal(tsk$score, c(1, 0))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("exact", "exact"))
+  expect_equal(tsk$scorer, c("exact", "exact"))
 
   # respects case sensitivity
   tsk <- example_task(scored = FALSE)
@@ -117,7 +117,7 @@ test_that("detect_answer works", {
   tsk <- task_score(tsk, scorer = detect_answer())
 
   expect_equal(tsk$score, c(1, 1))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("answer", "answer"))
+  expect_equal(tsk$scorer, c("answer", "answer"))
 
   # whitespace is trimmed by default
   tsk <- example_task(scored = FALSE)
@@ -125,7 +125,7 @@ test_that("detect_answer works", {
   tsk <- task_score(tsk, scorer = detect_answer())
 
   expect_equal(tsk$score, c(1, 1))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("answer", "answer"))
+  expect_equal(tsk$scorer, c("answer", "answer"))
 
   # respects format argument
   tsk <- example_task(scored = FALSE)
@@ -140,7 +140,7 @@ test_that("detect_answer works", {
 
   tsk <- task_score(tsk, scorer = detect_answer(format = "line"))
   expect_equal(tsk$score, c(1, 0))
-  expect_equal(sapply(tsk$scorer, function(x) x[[1]]), c("answer", "answer"))
+  expect_equal(tsk$scorer, c("answer", "answer"))
 
   # letter is the same word in the second example
   tsk <- task_score(tsk, scorer = detect_answer(format = "word"))

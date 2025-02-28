@@ -26,7 +26,7 @@ test_that("basic task_create -> task_solve -> task_score works", {
   expect_s3_class(tsk, "task")
   expect_named(
     tsk,
-    c("input", "target", "id", "output", "solver", "score", "scorer")
+    c("input", "target", "id", "output", "solver", "score", "scorer", "metadata")
   )
 })
 
@@ -56,7 +56,7 @@ test_that("task_solve(epochs) works", {
   expect_s3_class(tsk, "task")
   expect_named(
     tsk,
-    c("input", "target", "id", "epoch", "output", "solver", "score", "scorer")
+    c("input", "target", "id", "epoch", "output", "solver", "score", "scorer", "metadata")
   )
   expect_equal(nrow(tsk), nrow(simple_addition) * 2)
 })

@@ -205,21 +205,10 @@ task_score <- function(task, scorer) {
 }
 
 task_score_impl <- function(task, scorer) {
-  task$score <- logical(nrow(task))
-  task$scorer <- vector("list", nrow(task))
-
-  withr::local_options(cli.progress_show_after = 0)
-  cli::cli_progress_bar("Scoring", total = nrow(task))
-  for (i in seq_len(nrow(task))) {
-    sample <- task[i, , drop = FALSE]
-
-    # execute and log results for the scorer
-    scorer_res <- scorer(sample)
-    task$score[i] <- scorer_res$result
-    task$scorer[i] <- list(scorer_res$scorer)
-    cli::cli_progress_update()
-  }
-  cli::cli_progress_done()
+  scorer_res <- scorer(task)
+  task$score <- scorer_res$scores
+  task$scorer <- scorer_res$scorer
+  task$metadata <- scorer_res$metadata
 
   task
 }
