@@ -104,11 +104,13 @@ check_dataset <- function(dataset, call = caller_env()) {
 #' @inherit task_create description
 #'
 #' @param task An evaluation task created with `task_create()`.
-#' @param solver A function that takes an element of `dataset$input` as its first
+#' @param solver A function that takes the vector `dataset$input` as its first
 #' argument and determines a value approximating `dataset$target`.
-#' Its return value should be a list with elements `result` (the final response)
-#' and `chat` (an ellmer chat used to solve the problem, or a list of them).
-#' Or, just supply an ellmer chat (e.g. [ellmer::chat_claude()]).
+#' Its return value should be a list with elements `outputs` (a vector of the
+#' final responses, the same length as `dataset$input`) and `solvers` 
+#' (the list of ellmer chats used to solve the inputs, also the same length
+#' as `dataset$input`). Or, just supply an ellmer chat 
+#' (e.g. [ellmer::chat_claude()]) and rinspect will take care of the details.
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to measure variation. Optional, defaults to `1L`.
 #'
@@ -137,32 +139,24 @@ task_solve <- function(task, solver, epochs = 1L) {
 task_solve_impl <- function(task, solver, epochs, ...) {
   task <- join_epochs(task, epochs)
 
-  task$output <- character(nrow(task))
-  task$solver <- vector("list", nrow(task))
-
-  withr::local_options(cli.progress_show_after = 0)
-  cli::cli_progress_bar("Solving", total = nrow(task))
-  for (i in seq_len(nrow(task))) {
-    sample <- task[i, , drop = FALSE]
-
-    # execute and log results for the solver
-    solver_res <- solver(sample$input)
-    task$output[i] <- solver_res$result
-    task$solver[i] <- list(solver_res$chat)
-    cli::cli_progress_update()
-  }
-  cli::cli_progress_done()
+  solver_res <- solver(as.list(task$input))
+  # TODO: check that output and solver look right
+  task$output <- solver_res$outputs
+  task$solver <- solver_res$solvers
 
   task
 }
 
 ellmer_chat_to_solver <- function(chat) {
   carrier::crate(
-    function(input) {
+    function(inputs) {
       ch <- chat$clone()
-      res <- ch$chat(input, echo = FALSE)
+      res <- ch$chat_parallel(inputs)
 
-      list(result = res, chat = ch)
+      list(
+        outputs = purrr::map_chr(res, function(c) c$last_turn()@text),
+        solvers = res
+      )
     },
     chat = chat
   )

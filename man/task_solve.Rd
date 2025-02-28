@@ -9,11 +9,13 @@ task_solve(task, solver, epochs = 1L)
 \arguments{
 \item{task}{An evaluation task created with \code{task_create()}.}
 
-\item{solver}{A function that takes an element of \code{dataset$input} as its first
+\item{solver}{A function that takes the vector \code{dataset$input} as its first
 argument and determines a value approximating \code{dataset$target}.
-Its return value should be a list with elements \code{result} (the final response)
-and \code{chat} (an ellmer chat used to solve the problem, or a list of them).
-Or, just supply an ellmer chat (e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}).}
+Its return value should be a list with elements \code{outputs} (a vector of the
+final responses, the same length as \code{dataset$input}) and \code{solvers}
+(the list of ellmer chats used to solve the inputs, also the same length
+as \code{dataset$input}). Or, just supply an ellmer chat
+(e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}) and rinspect will take care of the details.}
 
 \item{epochs}{The number of times to repeat each sample. Evaluate each sample
 multiple times to measure variation. Optional, defaults to \code{1L}.}
