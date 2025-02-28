@@ -87,11 +87,13 @@ or other custom schemes. Score solver results using <code><a href="task_score.ht
 
 
 <dt id="arg-solver">solver<a class="anchor" aria-label="anchor" href="#arg-solver"></a></dt>
-<dd><p>A function that takes an element of <code>dataset$input</code> as its first
+<dd><p>A function that takes the vector <code>dataset$input</code> as its first
 argument and determines a value approximating <code>dataset$target</code>.
-Its return value should be a list with elements <code>result</code> (the final response)
-and <code>chat</code> (an ellmer chat used to solve the problem, or a list of them).
-Or, just supply an ellmer chat (e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>).</p></dd>
+Its return value should be a list with elements <code>outputs</code> (a vector of the
+final responses, the same length as <code>dataset$input</code>) and <code>solvers</code>
+(the list of ellmer chats used to solve the inputs, also the same length
+as <code>dataset$input</code>). Or, just supply an ellmer chat
+(e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>) and rinspect will take care of the details.</p></dd>
 
 
 <dt id="arg-epochs">epochs<a class="anchor" aria-label="anchor" href="#arg-epochs"></a></dt>
@@ -138,10 +140,8 @@ application using <code><a href="inspect_view.html">inspect_view()</a></code>.</
 <span class="r-in"><span>    <span class="fu"><a href="inspect_view.html">inspect_view</a></span><span class="op">(</span><span class="va">tsk</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  1s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Solving <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50% | ETA:  4s</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Scoring <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in req_perform_parallel(reqs, max_active = max_active):</span> HTTP 400 Bad Request.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> You have reached your specified API usage limits. You will regain access on 2025-03-01 at 00:00 UTC. [invalid_request_error]</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
