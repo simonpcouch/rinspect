@@ -1,6 +1,8 @@
 test_that("model_graded_qa works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   skip_on_cran()
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
 
   library(ellmer)
@@ -10,24 +12,32 @@ test_that("model_graded_qa works", {
     target = c("4", "5")
   )
 
-  tsk <- task_create(dataset = simple_addition)
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk <- task_score(tsk, scorer = model_graded_qa())
+  tsk <- Task$new(
+    dataset = simple_addition, 
+    solver = generate(chat = chat_claude()), 
+    scorer = model_graded_qa()
+  )
+  
+  tsk$eval()
+
+  tsk_data <- tsk$data()
 
   # returns scores and a complete solver chat
-  expect_true(all(tsk$score %in% c(0, .5, 1)))
-  expect_s3_class(tsk$solver[[1]], "Chat")
-  expect_length(tsk$solver[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$scorer[[1]], "Chat")
-  expect_length(tsk$scorer[[1]]$get_turns(), 2)
+  expect_true(all(tsk_data$score %in% c(0, .5, 1)))
+  expect_s3_class(tsk_data$solver[[1]], "Chat")
+  expect_length(tsk_data$solver[[1]]$get_turns(), 2)
+  expect_s3_class(tsk_data$scorer[[1]], "Chat")
+  expect_length(tsk_data$scorer[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
-  expect_equal(tsk$solver[[1]]$get_model(), tsk$scorer[[1]]$get_model())
+  expect_equal(tsk_data$solver[[1]]$get_model(), tsk_data$scorer[[1]]$get_model())
 })
 
 test_that("model_graded_fact works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   skip_on_cran()
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
 
   library(ellmer)
@@ -37,17 +47,26 @@ test_that("model_graded_fact works", {
     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
   )
 
-  tsk <- task_create(dataset = r_history)
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk <- task_score(tsk, scorer = model_graded_fact())
+  tsk <- Task$new(
+    dataset = r_history, 
+    solver = generate(chat = chat_claude()), 
+    scorer = model_graded_fact()
+  )
+  
+  tsk$eval()
+
+  tsk_data <- tsk$data()
 
   # returns scores and a complete solver chat
-  expect_true(all(tsk$score %in% c(0, .5, 1)))
-  expect_s3_class(tsk$solver[[1]], "Chat")
-  expect_length(tsk$solver[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$scorer[[1]], "Chat")
-  expect_length(tsk$scorer[[1]]$get_turns(), 2)
+  expect_true(all(tsk_data$score %in% c(0, .5, 1)))
+  expect_s3_class(tsk_data$solver[[1]], "Chat")
+  expect_length(tsk_data$solver[[1]]$get_turns(), 2)
+  expect_s3_class(tsk_data$scorer[[1]], "Chat")
+  expect_length(tsk_data$scorer[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
-  expect_equal(tsk$solver[[1]]$get_model(), tsk$scorer[[1]]$get_model())
+  expect_equal(
+    tsk_data$solver[[1]]$get_model(),
+    tsk_data$scorer[[1]]$get_model()
+  )
 })

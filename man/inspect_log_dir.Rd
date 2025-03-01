@@ -19,8 +19,7 @@ additionally sets it to a new value.
 }
 \description{
 rinspect supports the \code{INSPECT_LOG_DIR} environment variable,
-which sets a default directory to write logs to in \code{\link[=task_create]{task_create()}}
-and \code{\link[=inspect_log]{inspect_log()}} and to view from in \code{\link[=inspect_view]{inspect_view()}}.
+which sets a default directory to write logs to in \code{task$eval()}.
 }
 \examples{
 inspect_log_dir()

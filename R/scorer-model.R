@@ -41,18 +41,13 @@
 #'     target = c("4", "5")
 #'   )
 #'
-#'   tsk <- task_create(dataset = simple_addition)
-#'   tsk
-#'
-#'   tsk <- task_solve(tsk, solver = chat_claude())
-#'   tsk
-#'
-#'   tsk <- task_score(tsk, scorer = model_graded_qa())
-#'   tsk
-#'
-#'   if (interactive()) {
-#'     inspect_view(tsk)
-#'   }
+#'   tsk <- Task$new(
+#'     dataset = simple_addition, 
+#'     solver = generate(chat = chat_claude()), 
+#'     scorer = model_graded_qa()
+#'   )
+#'   
+#'   tsk$eval()
 #' }
 #'
 #' # Factual response -------------------------------
@@ -68,18 +63,13 @@
 #'     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
 #'   )
 #'
-#'   tsk <- task_create(dataset = r_history)
-#'   tsk
-#'
-#'   tsk <- task_solve(tsk, solver = chat_claude())
-#'   tsk
-#'
-#'   tsk <- task_score(tsk, scorer = model_graded_fact())
-#'   tsk
-#'
-#'   if (interactive()) {
-#'     inspect_view(tsk)
-#'   }
+#'   tsk <- Task$new(
+#'     dataset = r_history, 
+#'     solver = generate(chat = chat_claude()), 
+#'     scorer = model_graded_fact()
+#'   )
+#'   
+#'   tsk$eval()
 #' }
 #'
 #' @name scorer_model

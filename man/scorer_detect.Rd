@@ -69,17 +69,15 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
     target = c("4", "5")
   )
 
-  # Requires an API key:
-  tsk <- task_create(dataset = simple_addition)
-  tsk <- task_solve(tsk, solver = chat_claude())
-
-  # Does not require an API key:
-  tsk <- task_score(tsk, scorer = detect_includes())
-  tsk
-
-  if (interactive()) {
-    inspect_view(tsk)
-  }
+  # create a new Task
+  tsk <- Task$new(
+    dataset = simple_addition, 
+    solver = generate(chat = chat_claude()), 
+    scorer = detect_includes()
+  )
+  
+  # evaluate the task (runs solver and scorer)
+  tsk$eval()
 }
 
 }

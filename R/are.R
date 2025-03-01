@@ -8,7 +8,7 @@
 #' data scientist to evaluate whether the solution deserves full, partial, or
 #' no credit.
 #' 
-#' Pass this dataset to [task_create()] to situate it inside of an evaluation
+#' Pass this dataset to `Task$new()` to situate it inside of an evaluation
 #' task.
 #' 
 #' @format A tibble with `r nrow(are)` rows and `r ncol(are)` columns:

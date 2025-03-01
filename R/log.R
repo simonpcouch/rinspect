@@ -2,8 +2,7 @@
 #'
 #' @description
 #' rinspect supports the `INSPECT_LOG_DIR` environment variable,
-#' which sets a default directory to write logs to in [task_create()]
-#' and [inspect_log()] and to view from in [inspect_view()].
+#' which sets a default directory to write logs to in `task$eval()`.
 #'
 #' @param dir A directory to configure `INSPECT_LOG_DIR` to.
 #'
