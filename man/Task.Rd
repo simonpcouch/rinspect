@@ -29,8 +29,8 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   # create a new Task
   tsk <- Task$new(
-    dataset = simple_addition, 
-    solver = generate(chat = chat_claude()), 
+    dataset = simple_addition,
+    solver = generate(chat = chat_claude()),
     scorer = model_graded_qa()
   )
 
@@ -39,6 +39,14 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   tsk$eval()
 }
 
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
+to \code{Sys.getenv("INSPECT_LOG_DIR")}.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
