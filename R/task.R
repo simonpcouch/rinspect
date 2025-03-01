@@ -25,16 +25,14 @@
 #' 
 #'   # create a new Task
 #'   tsk <- Task$new(
-#'     dataset, 
+#'     dataset = simple_addition, 
 #'     solver = generate(chat = chat_claude()), 
 #'     scorer = model_graded_qa()
 #'   )
 #' 
-#'   # evaluate the task (runs solver and scorer)
+#'   # evaluate the task (runs solver and scorer) and opens
+#'   # the results in the Inspect log viewer (if interactive)
 #'   tsk$eval()
-#'   
-#'   # view the task results
-#'   tsk$view()
 #' }
 #'
 #' @export
@@ -66,6 +64,8 @@ Task <- R6::R6Class("Task",
     ) {
       force(name)
       check_dataset(dataset)
+      solver_name <- deparse(substitute(solver))
+      scorer_name <- deparse(substitute(scorer))
       
       if (inherits(solver, "Chat")) {
         solver <- generate(solver)
@@ -74,28 +74,27 @@ Task <- R6::R6Class("Task",
       }
       
       private$dataset_name <- name
+      private$solver_name <- solver_name
+      private$scorer_name <- scorer_name
       private$log_dir <- dir
       private$solver_fn <- solver
       private$scorer_fn <- scorer
       
-      # Initialize internal task tibble
       dataset$id <- seq_len(nrow(dataset))
       private$tbl <- dataset
-
-      invisible(self)
     },
     
     #' @description
     #' Evaluate the task by running the solver and scorer
     #' 
-    #' @param ... Additional arguments passed to the solver and scorer functions
+    #' @param ... Additional arguments passed to the solver and scorer functions.
     #' @param epochs The number of times to repeat each sample. Evaluate each sample
     #' multiple times to measure variation. Optional, defaults to `1L`.
-    #' @param auto_view Automatically open the viewer after evaluation (defaults to 
-    #' TRUE if interactive, FALSE otherwise)
+    #' @param view Automatically open the viewer after evaluation (defaults to 
+    #' TRUE if interactive, FALSE otherwise).
     #' 
     #' @return The Task object (invisibly)
-    eval = function(..., epochs = 1L, auto_view = interactive()) {
+    eval = function(..., epochs = 1L, view = interactive()) {
       check_number_whole(epochs, min = 1)
       
       if (epochs > 1) {
@@ -111,10 +110,10 @@ Task <- R6::R6Class("Task",
       private$tbl$scorer <- scorer_res$scorer
       private$tbl$metadata <- scorer_res$metadata
       
-      private$log()
+      self$log(private$log_dir)
       private$stash_last_task()
 
-      if (auto_view) {
+      if (view) {
         self$view()
       }
       
@@ -127,7 +126,9 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     view = function() {
       if (!has_output(private$tbl)) {
-        cli::cli_alert_warning("Task has not been evaluated yet. Run task$eval() first.")
+        cli::cli_alert_warning(
+          "Task has not been evaluated yet. Run task$eval() first."
+        )
         return(invisible(self))
       }
       
@@ -136,23 +137,15 @@ Task <- R6::R6Class("Task",
     },
     
     #' @description
-    #' Get the internal task tibble
+    #' Log the task to a directory.
     #' 
-    #' @return A tibble with the task data
-    data = function() {
-      # Return a copy to prevent direct modification
-      private$tbl
-    }
-  ),
-  
-  private = list(
-    tbl = NULL,
-    dataset_name = NULL,
-    log_dir = NULL,
-    solver_fn = NULL,
-    scorer_fn = NULL,
-    
-    log = function() {
+    #' Note that, if an `INSPECT_LOG_DIR` envvar is set, this will happen
+    #' automatically in `$eval()`.
+    #' 
+    #' @param dir The directory to write the log to.
+    #' 
+    #' @return The path to the logged file, invisibly.
+    log = function(dir = inspect_log_dir()) {
       task <- private$tbl
       
       eval_log <- eval_log_new(
@@ -173,14 +166,38 @@ Task <- R6::R6Class("Task",
         samples = eval_log_samples(task)
       )
       
-      if (is.na(private$log_dir)) {
-        private$log_dir <- tempdir()
+      if (is.na(dir)) {
+        if (!is.na(private$log_dir)) {
+          dir <- private$log_dir
+        } else {
+          dir <- tempdir()
+        }
       }
       
-      private$log_dir <- eval_log_write(eval_log, dir = private$log_dir)
+      private$log_dir <- dir
+      eval_log_write(eval_log, dir = private$log_dir)
       
+      # TODO: actually return the file path rather than log dir
       invisible(private$log_dir)
     },
+
+    #' @description
+    #' Get the internal task tibble
+    #' 
+    #' @return A tibble with the task data
+    data = function() {
+      private$tbl
+    }
+  ),
+  
+  private = list(
+    tbl = NULL,
+    dataset_name = NULL,
+    solver_name = NULL,
+    scorer_name = NULL,
+    log_dir = NULL,
+    solver_fn = NULL,
+    scorer_fn = NULL,
     
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {
@@ -200,52 +217,13 @@ Task <- R6::R6Class("Task",
 #' @importFrom cli cat_line format_inline col_grey
 print.Task <- function(x, ...) {
   dataset_name <- x$.__enclos_env__$private$dataset_name
-  
-  get_fn_expr <- function(fn) {
-    if (inherits(fn, "crate")) {
-      env <- environment(fn)
-      if (exists("chat", env)) {
-        return(paste0("generate(chat = ", class(env$chat)[1], "())"))
-      } else {
-        return("generate()")
-      }
-    } else {
-      fn_name <- deparse(substitute(fn))
-      return(fn_name)
-    }
-  }
-  
-  solver_expr <- get_fn_expr(x$.__enclos_env__$private$solver_fn)
-  scorer_expr <- deparse(substitute(x$.__enclos_env__$private$scorer_fn))
-  
-  cli::cat_line("An evaluation task.")
-  cli::cat_line(cli::format_inline(
-    "Dataset: {dataset_name}"
-  ))
-  cli::cat_line(cli::format_inline(
-    "Solver: {solver_expr}"
-  ))
-  cli::cat_line(cli::format_inline(
-    "Scorer: {scorer_expr}"
-  ))
-  
-  task_data <- x$.__enclos_env__$private$tbl
-  if (has_output(task_data)) {
-    cli::cat_line(cli::format_inline(
-      "Status: {cli::col_green('Evaluated')} ({nrow(task_data)} samples)"
-    ))
-    
-    if ("score" %in% names(task_data)) {
-      avg_score <- mean(as.numeric(task_data$score), na.rm = TRUE)
-      cli::cat_line(cli::format_inline(
-        "Average score: {sprintf('%.2f', avg_score)}"
-      ))
-    }
-  } else {
-    cli::cat_line(cli::format_inline(
-      "Status: {cli::col_yellow('Not evaluated')} ({nrow(task_data)} samples ready)"
-    ))
-  }
+  solver_name <- x$.__enclos_env__$private$solver_name
+  scorer_name <- x$.__enclos_env__$private$scorer_name
+
+  cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')}."))
+  cli::cat_line(cli::format_inline("Dataset: {.field {dataset_name}}"))
+  cli::cat_line(cli::format_inline("Solver: {.field {solver_name}}"))
+  cli::cat_line(cli::format_inline("Scorer: {.field {scorer_name}}"))
   
   invisible(x)
 }
