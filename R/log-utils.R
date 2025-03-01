@@ -260,7 +260,14 @@ eval_log_filename <- function(eval_log) {
 }
 
 # given the list of solvers in a dataset, sum across all of their token usage
+# TODO: this doesn't work for non-Claude?
 sum_model_usage <- function(solvers) {
+  chat <- solvers[[1]]
+  provider <- chat$.__enclos_env__$private$provider
+  if (!inherits(provider, "ellmer::ProviderClaude")) {
+    return(list())
+  }
+  
   usage_per_solver <- lapply(
     solvers,
     function(chat) {translate_to_model_usage(chat$get_turns())[[1]]}

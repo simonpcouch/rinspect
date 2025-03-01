@@ -255,8 +255,9 @@ check_dataset <- function(dataset, call = caller_env()) {
 #' @return A solver function that can be used with Task
 #' @export
 generate <- function(chat) {
+  ch <- chat
   carrier::crate(
-    function(inputs, ...) {
+    function(inputs, ..., chat = ch) {
       ch <- chat$clone()
       res <- ch$chat_parallel(inputs)
 
@@ -265,7 +266,7 @@ generate <- function(chat) {
         solvers = res
       )
     },
-    chat = chat
+    ch = ch
   )
 }
 

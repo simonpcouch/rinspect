@@ -91,8 +91,9 @@ model_graded_qa <- function(
   partial_credit = FALSE,
   chat = NULL
 ) {
-  # TODO: type check
-  function(task) {
+  ch <- chat
+
+  function(task, chat = ch) {
     model_graded_qa_impl(
       task = task,
       template = template,
