@@ -39,7 +39,7 @@ At their core, LLM evals are composed of three pieces:
 3) **Scorers** evaluate the final output of solvers. They may use text
 comparisons, model grading, or other custom schemes to determine how well the solver approximated the `target` based on the `input`. 
 
-This vignette will explore these three steps one-by-one using `are`, an example dataset that ships with the package.
+This vignette will explore these three components using `are`, an example dataset that ships with the package.
 
 First, load the required packages:
 
@@ -85,7 +85,7 @@ cat(are$target[1])
 
 ## Creating and evaluating a task
 
-The `Task` R6 class allows us to create an evaluation task, composed of the dataset, solver, and scorer. Any dataset is fair game as long as it has columns `input` and `target`. We'll create a new Task with those elements:
+The `Task` R6 class allows us to create an evaluation task, composed of the dataset, solver, and scorer. Any data frame is fair game as a **dataset** as long as it has, minimally, columns `input` and `target`. Remaining metadata columns will persist throughout evaluation and be logged in the final result. The simplest **solver** that ships with rinspect is `generate()`, which just passes an ellmer chat some `input` and returns it response. (To read more about solvers, check out `vignette("solvers", package = "rinspect")`.) Finally, the **scorer** `model_graded_qa()` will grade the results from the solver according to criteria set in `target`.
 
 ```{r create-task}
 are_task <- Task$new(
@@ -98,11 +98,12 @@ are_task <- Task$new(
 are_task
 ```
 
-When we call `$eval()`, the Task will:
+The task is now ready to run evaluations using the `eval()` method. When we do so, the Task will:
 
-1. Run the solver on each input in the dataset. Each `input` from the dataset is sent to Claude. For each input prompt, Claude generates a response that attempts to solve the R coding problem.
-2. Score each solution against the target using model-grading.
-3. Log the results for later inspection. (When run interactively, `eval()` will display the log in an interactive app by default.)
+1. Run the solver on each input in the dataset, generating solutions.
+2. Score each solution against the target.
+3. Log the results for later inspection. 
+4. When run interactively, `eval()` will also display the log in an interactive app by default.
 
 ```{r solve-and-score, eval = should_eval}
 are_task$eval()
@@ -115,9 +116,7 @@ are_task_data <- are_task$data()
 cat(are_task_data$output[1])
 ```
 
-The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column.
-
-`model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generated the final response as the model to score solutions.
+The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column. `model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generated the final response as the model to score solutions.
 
 Hold up, though—we're using an LLM to generate responses to questions, and then using the LLM to grade those responses?
 
@@ -143,11 +142,11 @@ if (should_eval) {
 
 ## Analyzing the results
 
-Especially the first few times you run an eval, you'll want to inspect (ha!) its outputs closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
+Especially the first few times you run an eval, you'll want to inspect (ha!) its results closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
 
-The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results anytime with `are_task$view()`. You can explore this eval specifically with the following code (TODO: code to grab from github and view).
+The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval specifically with the following code (TODO: code to grab from github and view).
 
-For a cursory analysis, we can visualize correct vs. partially correct vs. incorrect answers:
+For a cursory analysis, though, we can visualize correct vs. partially correct vs. incorrect answers:
 
 ```{r plot-1}
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
@@ -175,7 +174,7 @@ Claude answered fully correctly in `r sum(are_task_data$grade == "Correct")` out
 * Would Claude do better if I allow it to "reason" briefly before answering?
 * Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::register_btw_tools()`](https://simonpcouch.github.io/btw/reference/register_btw_tools.html) if you're interested in this.)
 
-These questions can be explored by creating new Task objects with different solvers and scorers. For example, to compare Claude's performance with OpenAI's GPT-4o:
+These questions can be explored by evaluating Tasks against different solvers and scorers. For example, to compare Claude's performance with OpenAI's GPT-4o, we just need to clone the object and then run `$eval()` with a different solver `chat`:
 
 ```{r are-task-openai, eval = should_eval}
 are_task_openai <- are_task$clone()
@@ -191,7 +190,7 @@ if (should_eval) {
 
 Any arguments to solving or scoring functions can be passed directly to `$eval()`, allowing for quickly evaluating tasks across several parameterizations.
 
-Using this data, we can quickly juxtapose those evaluation results:
+Using this data, we can quickly juxtapose those evaluation results (TODO: this should be a "Adding Error Bars to Evals"-based viz):
 
 ```{r}
 get_model <- function(c) c$get_model()
