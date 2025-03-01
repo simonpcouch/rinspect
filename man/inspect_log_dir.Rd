@@ -9,6 +9,9 @@ inspect_log_dir()
 
 inspect_log_dir_set(dir)
 }
+\arguments{
+\item{dir}{A directory to configure \code{INSPECT_LOG_DIR} to.}
+}
 \value{
 Both \code{inspect_log_dir()} and \code{inspect_log_dir_set()} return the current
 value of the environment variable \code{INSPECT_LOG_DIR}. \code{inspect_log_dir_set()}

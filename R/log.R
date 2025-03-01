@@ -5,7 +5,7 @@
 #' which sets a default directory to write logs to in [task_create()]
 #' and [inspect_log()] and to view from in [inspect_view()].
 #'
-#' @inheritParams task_create
+#' @param dir A directory to configure `INSPECT_LOG_DIR` to.
 #'
 #' @returns
 #' Both `inspect_log_dir()` and `inspect_log_dir_set()` return the current
