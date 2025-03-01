@@ -2,54 +2,20 @@
 % Please edit documentation in R/view.R
 \name{inspect_view}
 \alias{inspect_view}
-\alias{inspect_view.character}
-\alias{inspect_view.task}
 \title{Interactive evaluation log viewer}
 \usage{
-inspect_view(x, host = "127.0.0.1", port = 7576)
-
-\method{inspect_view}{character}(x, host = "127.0.0.1", port = 7576)
-
-\method{inspect_view}{task}(x, host = "127.0.0.1", port = 7576)
+inspect_view(dir, host = "127.0.0.1", port = 7576)
 }
 \arguments{
-\item{x}{Either a path to a directory containing a task eval log or a
-task itself. If a task, the function will log the task to a temporary
-directory and open that directory in the viewer.}
+\item{dir}{Path to a directory containing task eval logs.}
 
-\item{host}{Host to serve on. Defaults to "127.0.0.1",}
+\item{host}{Host to serve on. Defaults to "127.0.0.1".}
 
 \item{port}{Port to serve on. Defaults to 7576, one greater than the Python
 implementation.}
 }
 \description{
 rinspect bundles the Inspect log viewer, an interactive app for exploring
-evaluation logs. You can view \link[=task_create]{tasks} directly, which will
-write the task to a temporary json file, or you can supply a path to a
-directory of tasks written to json using \code{\link[=inspect_log]{inspect_log()}}.
-}
-\examples{
-if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
-  library(ellmer)
-  library(tibble)
-
-  simple_addition <- tibble(
-    input = c("What's 2+2?", "What's 2+3?"),
-    target = c("4", "5")
-  )
-
-  tsk <- task_create(dataset = simple_addition)
-  tsk
-
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk
-
-  tsk <- task_score(tsk, scorer = model_graded_qa())
-  tsk
-
-  if (interactive()) {
-    inspect_view(tsk)
-  }
-}
-
+evaluation logs. Supply a path to a directory of tasks written to json.
+For Task objects, use the \verb{$view()} method instead.
 }
