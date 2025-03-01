@@ -1,5 +1,7 @@
 test_that("Task R6 class works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   library(ellmer)
 
@@ -34,6 +36,8 @@ test_that("Task R6 class works", {
 
 test_that("Task with epochs works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   
   library(ellmer)
