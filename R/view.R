@@ -2,51 +2,17 @@
 #'
 #' @description
 #' rinspect bundles the Inspect log viewer, an interactive app for exploring
-#' evaluation logs. You can view [tasks][task_create()] directly, which will
-#' write the task to a temporary json file, or you can supply a path to a 
-#' directory of tasks written to json using [inspect_log()].
+#' evaluation logs. Supply a path to a directory of tasks written to json.
+#' For Task objects, use the `$view()` method instead.
 #' 
-#' @param x Either a path to a directory containing a task eval log or a
-#' task itself. If a task, the function will log the task to a temporary
-#' directory and open that directory in the viewer.
-#' @param host Host to serve on. Defaults to "127.0.0.1",
+#' @param dir Path to a directory containing task eval logs.
+#' @param host Host to serve on. Defaults to "127.0.0.1".
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
 #'
-#' @inherit task_create examples
-#'
-#' @name inspect_view
 #' @export
-inspect_view <- function(x, host = "127.0.0.1", port = 7576) {
-  UseMethod("inspect_view")
-}
-
-#' @rdname inspect_view
-#' @export
-inspect_view.character <- function(x, host = "127.0.0.1", port = 7576) {
-  inspect_view_impl(dir = x, host = host, port = port)
-}
-
-#' @rdname inspect_view
-#' @export
-inspect_view.task <- function(x, host = "127.0.0.1", port = 7576) {
-  # can't use the usual withr::local_tempdir as withr doesn't recognize
-  # R6 objects as environments. we want to associate cleanup with the
-  # server rather than the execution env of the function.
-  # TODO: if there's an existing server, add x to that dir and then open it up?
-  dir <- tempfile("rinspect-")
-  dir.create(dir)
-
-  inspect_log(x, dir = dir)
-  server <- inspect_view_impl(dir = dir, host = host, port = port)
-
-  reg.finalizer(server, function(e) {
-    if (dir.exists(dir)) {
-      unlink(dir, recursive = TRUE)
-    }
-  })
-
-  invisible(server)
+inspect_view <- function(dir, host = "127.0.0.1", port = 7576) {
+  inspect_view_impl(dir = dir, host = host, port = port)
 }
 
 inspect_view_impl <- function(
