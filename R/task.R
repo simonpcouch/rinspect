@@ -47,6 +47,12 @@ Task <- R6::R6Class("Task",
     #' @field samples A tibble representing the evaluation. Based on the `dataset`,
     #' the solver and scorer will append columns to this data.
     samples = NULL,
+    
+    #' @field solver The solver function passed to `$new()`.
+    solver = NULL,
+    
+    #' @field scorer The scorer function passed to `$new()`.
+    scorer = NULL,
 
     #' @description
     #' Create a new Task object
@@ -88,8 +94,8 @@ Task <- R6::R6Class("Task",
       private$solver_name <- solver_name
       private$scorer_name <- scorer_name
       self$dir <- dir
-      private$solver_fn <- solver
-      private$scorer_fn <- scorer
+      self$solver <- solver
+      self$scorer <- scorer
 
       dataset$id <- seq_len(nrow(dataset))
       self$samples <- dataset
@@ -102,7 +108,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     solve = function(...) {
-      solver_res <- private$solver_fn(as.list(self$samples$input), ...)
+      solver_res <- self$solver(as.list(self$samples$input), ...)
       self$samples$output <- solver_res$outputs
       self$samples$solver <- solver_res$solvers
       
@@ -123,7 +129,7 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
       
-      scorer_res <- private$scorer_fn(self$samples, ...)
+      scorer_res <- self$scorer(self$samples, ...)
       self$samples$score <- scorer_res$scores
       self$samples$scorer <- scorer_res$scorer
       self$samples$metadata <- scorer_res$metadata
@@ -228,8 +234,6 @@ Task <- R6::R6Class("Task",
     dataset_name = NULL,
     solver_name = NULL,
     scorer_name = NULL,
-    solver_fn = NULL,
-    scorer_fn = NULL,
 
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {

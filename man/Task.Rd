@@ -50,6 +50,10 @@ to \code{Sys.getenv("INSPECT_LOG_DIR")}.}
 
 \item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
 the solver and scorer will append columns to this data.}
+
+\item{\code{solver}}{The solver function passed to \verb{$new()}.}
+
+\item{\code{scorer}}{The scorer function passed to \verb{$new()}.}
 }
 \if{html}{\out{</div>}}
 }
