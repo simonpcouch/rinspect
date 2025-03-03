@@ -35,7 +35,7 @@ test_that("check_inherits works", {
 })
 
 test_that("solver_chat works", {
-  example_sample <- example_task()[1, , drop = FALSE]
+  example_sample <- example_task()$data()[1, , drop = FALSE]
 
   res <- solver_chat(example_sample)
   expect_s3_class(res, "Chat")
