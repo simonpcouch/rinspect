@@ -95,11 +95,7 @@ inspect_view_impl <- function(
             )
             if (req$PATH_INFO == "/api/log-headers") {
               if (!is.null(query$file)) {
-                files <- if (is.character(query$file) && length(query$file) == 1) {
-                  list(query$file)
-                } else {
-                  as.list(query$file)
-                }
+                files <- as.list(query)
 
                 headers <- lapply(files, function(f) {
                   file_path <- file.path(dir, f)
@@ -115,6 +111,7 @@ inspect_view_impl <- function(
                   }
                 })
 
+                names(headers) <- NULL
                 log_headers$body <-
                   jsonlite::toJSON(headers, auto_unbox = TRUE, null = "null")
                 return(log_headers)
@@ -229,20 +226,25 @@ inspect_view_impl <- function(
 
 parse_query_string <- function(query_string) {
   if (is.null(query_string) || query_string == "") {
-    return(list())
+      return(list())
   }
-
+  
+  # Remove leading ? if present
+  query_string <- sub("^\\?", "", query_string)
+  
+  # Replace any ?file= with &file= (except at the start)
+  query_string <- gsub("\\?file=", "&file=", query_string)
+  
   parts <- strsplit(query_string, "&")[[1]]
   params <- lapply(parts, function(p) {
-    kv <- strsplit(p, "=")[[1]]
-    if (length(kv) == 2) {
-      val <- utils::URLdecode(kv[2])
-      res <- list(val)
-      names(res) <- kv[1]
-      return(res)
-    }
-    NULL
+      kv <- strsplit(p, "=")[[1]]
+      if (length(kv) == 2) {
+          val <- utils::URLdecode(kv[2])
+          res <- list(val)
+          names(res) <- kv[1]
+          return(res)
+      }
+      NULL
   })
-
   do.call(c, params)
 }
