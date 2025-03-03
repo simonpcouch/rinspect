@@ -37,7 +37,7 @@ or \code{"line"}. Defaults to \code{"line"}.}
 }
 \value{
 A function that scores model output based on string matching. Pass the
-returned value to \code{\link[=task_score]{task_score()}}.
+returned value to \verb{$eval(scorer)}.
 }
 \description{
 Functions for string pattern detection in model outputs:

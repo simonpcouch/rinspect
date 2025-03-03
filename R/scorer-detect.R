@@ -32,7 +32,7 @@
 #' 
 #' @returns
 #' A function that scores model output based on string matching. Pass the
-#' returned value to [task_score()].
+#' returned value to `$eval(scorer)`.
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
