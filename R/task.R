@@ -189,24 +189,24 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The path to the logged file, invisibly.
     log = function(dir = inspect_log_dir()) {
-      task <- self$samples
+      samples <- self$samples
 
       eval_log <- eval_log_new(
         eval = eval_log_eval(
           task = private$dataset_name,
-          dataset = list(samples = nrow(task), sample_ids = seq_len(nrow(task))),
-          model = .turn_model(.last_assistant_turn(task$solver[[1]]$get_turns()))
+          dataset = list(samples = nrow(samples), sample_ids = seq_len(nrow(samples))),
+          model = .turn_model(.last_assistant_turn(samples$solver[[1]]$get_turns()))
         ),
         results = eval_log_results(
-          total_samples = nrow(task),
-          completed_samples = nrow(task)
+          total_samples = nrow(samples),
+          completed_samples = nrow(samples)
         ),
         stats = eval_log_stats(
-          started_at = task$solver[[1]]$get_turns()[[1]]@completed,
+          started_at = samples$solver[[1]]$get_turns()[[1]]@completed,
           completed_at = Sys.time(),
-          model_usage = sum_model_usage(task$solver)
+          model_usage = sum_model_usage(samples$solver)
         ),
-        samples = eval_log_samples(task)
+        samples = eval_log_samples(samples)
       )
 
       if (is.na(dir)) {
@@ -260,8 +260,8 @@ print.Task <- function(x, ...) {
   invisible(x)
 }
 
-has_output <- function(task) {
-  "output" %in% names(task) && length(task$output) > 0
+has_output <- function(samples) {
+  "output" %in% names(samples) && length(samples$output) > 0
 }
 
 check_dataset <- function(dataset, call = caller_env()) {
@@ -302,16 +302,16 @@ generate <- function(chat) {
   )
 }
 
-join_epochs <- function(task, epochs) {
+join_epochs <- function(samples, epochs) {
   if (abs(epochs - 1) < .1) {
-    return(task)
+    return(samples)
   }
 
   dplyr::inner_join(
-    task,
+    samples,
     data.frame(
-      id = rep(seq_len(nrow(task)), each = epochs),
-      epoch = rep(seq_len(epochs), times = nrow(task))
+      id = rep(seq_len(nrow(samples)), each = epochs),
+      epoch = rep(seq_len(epochs), times = nrow(samples))
     ),
     by = "id"
   )
