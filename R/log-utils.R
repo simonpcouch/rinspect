@@ -21,32 +21,18 @@ eval_log_new <- function(
   structure(res, class = c("eval_log", class(res)))
 }
 
-#' @export
-print.eval_log <- function(x, ...) {
-  # TODO: provide runnable text to pull up inspect viewer
-  cli::cat_rule("An eval log.")
-}
-
 # top-level entries ------------------------------------------------------------
 eval_log_eval <- function(
     run_id = generate_id(),
     created = eval_log_timestamp(),
-    # TODO:
-    task = "TODO_some_task",
+    task,
     task_id = generate_id(),
     task_version = 0,
-    # TODO:
-    task_file = "TODO_some_file",
+    task_file = active_file(),
     task_attribs = list(),
     task_args = list(),
-    dataset = list(
-      # TODO: actually describe data
-      samples = 2,
-      sample_ids = list(seq(from = 1, to = 2)),
-      shuffled = FALSE
-    ),
-    # TODO:
-    model = "TODO-describe-ellmer-provider-model",
+    dataset,
+    model,
     model_args = list(),
     config = list(),
     # TODO: look into what this actually does
@@ -91,15 +77,9 @@ eval_log_plan <- function(
 }
 
 eval_log_results <- function(
-    # TODO: actually take nrow
-    total_samples = 2,
-    completed_samples = 2,
-    scores = list(list(
-      name = "model_graded_qa",
-      scorer = "model_graded_qa",
-      params = structure(list(), names = character(0)),
-      metrics = structure(list(), names = character(0))
-    ))
+    total_samples,
+    completed_samples,
+    scores
 ) {
   list(
     total_samples = total_samples,
@@ -109,19 +89,9 @@ eval_log_results <- function(
 }
 
 eval_log_stats <- function(
-    started_at = eval_log_timestamp(),
-    # TODO: actually log completion time
-    completed_at = eval_log_timestamp(Sys.time() + 60),
-    model_usage = list(
-      # TODO: extract this from ellmer object
-      `TODO-describe-ellmer-provider-model` = list(
-        input_tokens = 514L,
-        output_tokens = 342L,
-        total_tokens = 856L,
-        input_tokens_cache_write = 0L,
-        input_tokens_cache_read = 0L
-      )
-    )
+    started_at,
+    completed_at,
+    model_usage
 ) {
   list(
     started_at = started_at,
@@ -289,4 +259,22 @@ sum_model_usage <- function(solvers) {
   dots_list(
     !!.turn_model(.last_assistant_turn(solvers[[1]]$get_turns())) := res
   )
+}
+
+active_file <- function() {
+  if (!rstudioapi::isAvailable()) {
+    return("")
+  }
+  
+  active_document <- rstudioapi::getActiveDocumentContext()
+  active_document$path
+}
+
+results_scores <- function(scorer_name) {
+  list(list(
+    name = scorer_name,
+    scorer = scorer_name,
+    params = structure(list(), names = character(0)),
+    metrics = structure(list(), names = character(0))
+  ))
 }

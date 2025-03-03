@@ -84,12 +84,7 @@ Task <- R6::R6Class("Task",
       solver_name <- deparse(substitute(solver))
       scorer_name <- deparse(substitute(scorer))
       check_log_dir(dir)
-
-      if (inherits(solver, "Chat")) {
-        solver <- generate(solver)
-      } else {
-        check_function(solver)
-      }
+      check_function(solver)
 
       private$dataset_name <- name
       private$solver_name <- solver_name
@@ -201,12 +196,17 @@ Task <- R6::R6Class("Task",
       eval_log <- eval_log_new(
         eval = eval_log_eval(
           task = private$dataset_name,
-          dataset = list(samples = nrow(samples), sample_ids = seq_len(nrow(samples))),
-          model = .turn_model(.last_assistant_turn(samples$solver[[1]]$get_turns()))
+          dataset = list(
+            samples = length(unique(samples$id)), 
+            sample_ids = seq_len(length(unique(samples$id))), 
+            shuffled = FALSE
+          ),
+          model = .turn_model(.last_assistant_turn(samples$solver[[1]]$get_turns())),
         ),
         results = eval_log_results(
           total_samples = nrow(samples),
-          completed_samples = nrow(samples)
+          completed_samples = nrow(samples),
+          scores = results_scores(tsk$samples$metadata[[1]]$scorer_name)
         ),
         stats = eval_log_stats(
           started_at = samples$solver[[1]]$get_turns()[[1]]@completed,
