@@ -95,7 +95,45 @@ Task <- R6::R6Class("Task",
     },
 
     #' @description
-    #' Evaluate the task by running the solver and scorer
+    #' Solve the task by running the solver
+    #'
+    #' @param ... Additional arguments passed to the solver function.
+    #'
+    #' @return The Task object (invisibly)
+    solve = function(...) {
+      solver_res <- private$solver_fn(as.list(self$samples$input), ...)
+      self$samples$output <- solver_res$outputs
+      self$samples$solver <- solver_res$solvers
+      
+      invisible(self)
+    },
+
+    #' @description
+    #' Score the task by running the scorer
+    #'
+    #' @param ... Additional arguments passed to the scorer function.
+    #'
+    #' @return The Task object (invisibly)
+    score = function(...) {
+      if (!has_output(self$samples)) {
+        cli::cli_alert_warning(
+          "Task has not been solved yet. Run task$solve() first."
+        )
+        return(invisible(self))
+      }
+      
+      scorer_res <- private$scorer_fn(self$samples, ...)
+      self$samples$score <- scorer_res$scores
+      self$samples$scorer <- scorer_res$scorer
+      self$samples$metadata <- scorer_res$metadata
+      
+      invisible(self)
+    },
+
+    #' @description
+    #' Evaluate the task by running the solver, scorer, logging results, and viewing (if interactive)
+    #'
+    #' This method works by calling `$solve()`, `$score()`, `$log()`, and `$view()` in sequence.
     #'
     #' @param ... Additional arguments passed to the solver and scorer functions.
     #' @param epochs The number of times to repeat each sample. Evaluate each sample
@@ -111,15 +149,9 @@ Task <- R6::R6Class("Task",
         self$samples <- join_epochs(self$samples, epochs)
       }
 
-      solver_res <- private$solver_fn(as.list(self$samples$input), ...)
-      self$samples$output <- solver_res$outputs
-      self$samples$solver <- solver_res$solvers
-
-      scorer_res <- private$scorer_fn(self$samples, ...)
-      self$samples$score <- scorer_res$scores
-      self$samples$scorer <- scorer_res$scorer
-      self$samples$metadata <- scorer_res$metadata
-
+      self$solve(...)
+      self$score(...)
+      
       self$log(self$dir)
       private$stash_last_task()
 

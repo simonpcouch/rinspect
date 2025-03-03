@@ -57,6 +57,8 @@ the solver and scorer will append columns to this data.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Task-new}{\code{Task$new()}}
+\item \href{#method-Task-solve}{\code{Task$solve()}}
+\item \href{#method-Task-score}{\code{Task$score()}}
 \item \href{#method-Task-eval}{\code{Task$eval()}}
 \item \href{#method-Task-view}{\code{Task$view()}}
 \item \href{#method-Task-log}{\code{Task$log()}}
@@ -104,10 +106,52 @@ approximates the corresponding elements of \code{dataset$target}. See
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-solve"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-solve}{}}}
+\subsection{Method \code{solve()}}{
+Solve the task by running the solver
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$solve(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional arguments passed to the solver function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-score"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-score}{}}}
+\subsection{Method \code{score()}}{
+Score the task by running the scorer
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$score(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional arguments passed to the scorer function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-eval"></a>}}
 \if{latex}{\out{\hypertarget{method-Task-eval}{}}}
 \subsection{Method \code{eval()}}{
-Evaluate the task by running the solver and scorer
+Evaluate the task by running the solver, scorer, logging results, and viewing (if interactive)
+
+This method works by calling \verb{$solve()}, \verb{$score()}, \verb{$log()}, and \verb{$view()} in sequence.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = 1L, view = interactive())}\if{html}{\out{</div>}}
 }
