@@ -76,6 +76,7 @@ Task <- R6::R6Class("Task",
       check_dataset(dataset)
       solver_name <- deparse(substitute(solver))
       scorer_name <- deparse(substitute(scorer))
+      check_log_dir(dir)
 
       if (inherits(solver, "Chat")) {
         solver <- generate(solver)
@@ -216,9 +217,9 @@ Task <- R6::R6Class("Task",
         }
       }
 
+      self$dir <- dir
       eval_log_write(eval_log, dir = dir)
 
-      # TODO: actually return the file path rather than log dir
       invisible(self$dir)
     }
   ),

@@ -41,3 +41,10 @@ test_that("solver_chat works", {
   expect_s3_class(res, "Chat")
   expect_equal(res$get_turns(), list())
 })
+
+test_that("check_log_dir warns informatively", {
+  withr::local_envvar(INSPECT_LOG_DIR = NA)
+  expect_snapshot(
+    res <- Task$new(tibble(input = 1, target = 1), function() {}, function() {})
+  )
+})
