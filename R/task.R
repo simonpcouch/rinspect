@@ -39,6 +39,7 @@
 #'
 #' @export
 Task <- R6::R6Class("Task",
+  lock_objects = FALSE,
   public = list(
     #' @field dir The directory where evaluation logs will be written to. Defaults
     #' to `Sys.getenv("INSPECT_LOG_DIR")`. 
