@@ -43,7 +43,7 @@ The returned function takes a solved \link{Task} and outputs a
 length \code{nrow(task)} and the second is list of ellmer chats that led to the
 scores, also with length \code{nrow(task)}.
 The function that \code{model_graded_qa()}'s outputs can be passed directly to
-\code{\link[=task_score]{task_score()}}.
+\verb{$eval()}.
 }
 \description{
 Model-based scoring makes use of a model to score output from a solver.

@@ -12,3 +12,4 @@ inst/inspect_ai
 .continue/
 ^codecov\.yml$
 ^data-raw$
+.mypy_cache

@@ -265,7 +265,7 @@ generate_id <- function(length = 22) {
 eval_log_filename <- function(eval_log) {
   paste0(
     gsub(":", "-", eval_log$eval$created), "_",
-    gsub("_", "-", eval_log$eval$task), "_",
+    gsub(" ", "-", gsub("_", "-", eval_log$eval$task)), "_",
     eval_log$eval$task_id, ".json"
   )
 }

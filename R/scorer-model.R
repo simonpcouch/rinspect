@@ -26,7 +26,7 @@
 #' length `nrow(task)` and the second is list of ellmer chats that led to the
 #' scores, also with length `nrow(task)`.
 #' The function that `model_graded_qa()`'s outputs can be passed directly to 
-#' [task_score()].
+#' `$eval()`.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 
