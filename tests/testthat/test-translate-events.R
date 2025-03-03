@@ -1,6 +1,6 @@
 test_that("translate_turns works", {
   chat <- example_ellmer_solver()
-  example_sample <- example_task()$data()[1, , drop = FALSE]
+  example_sample <- example_task()$samples[1, , drop = FALSE]
   chat_translated <- translate_to_events(chat, example_sample)
 
   inspect_log <- example_inspect_log()

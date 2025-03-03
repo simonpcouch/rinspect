@@ -35,20 +35,16 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   # if it's not solved, it can't be scored!
   if (!solved) {
-    tsk_data <- tsk$data()
-    tsk_data <- tsk_data[
-      !colnames(tsk_data) %in% c("result", "solver", "score", "scorer", "metadata")
+    tsk$samples <- tsk$samples[
+      !colnames(tsk$samples) %in% c("result", "solver", "score", "scorer", "metadata")
     ]
-    tsk$.__enclos_env__$private$tbl <- tsk_data
     return(tsk)
   }
 
   if (!scored) {
-    tsk_data <- tsk$data()
-    tsk_data <- tsk_data[
-      !colnames(tsk_data) %in% c("result", "solver")
+    tsk$samples <- tsk$samples[
+      !colnames(tsk$samples) %in% c("result", "solver")
     ]
-    tsk$.__enclos_env__$private$tbl <- tsk_data
     return(tsk)
   }
 

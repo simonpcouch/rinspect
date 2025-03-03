@@ -47,6 +47,9 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 \describe{
 \item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
 to \code{Sys.getenv("INSPECT_LOG_DIR")}.}
+
+\item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
+the solver and scorer will append columns to this data.}
 }
 \if{html}{\out{</div>}}
 }
@@ -57,7 +60,6 @@ to \code{Sys.getenv("INSPECT_LOG_DIR")}.}
 \item \href{#method-Task-eval}{\code{Task$eval()}}
 \item \href{#method-Task-view}{\code{Task$view()}}
 \item \href{#method-Task-log}{\code{Task$log()}}
-\item \href{#method-Task-data}{\code{Task$data()}}
 \item \href{#method-Task-clone}{\code{Task$clone()}}
 }
 }
@@ -161,19 +163,6 @@ automatically in \verb{$eval()}.
 }
 \subsection{Returns}{
 The path to the logged file, invisibly.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-data"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-data}{}}}
-\subsection{Method \code{data()}}{
-Get the internal task tibble
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$data()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A tibble with the task data
 }
 }
 \if{html}{\out{<hr>}}

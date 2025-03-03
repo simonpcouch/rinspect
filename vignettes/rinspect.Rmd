@@ -109,8 +109,7 @@ are_task$eval()
 After evaluation, the task contains information from the solving and scoring steps. Here's what the model responded to that first question with:
 
 ```{r output-1}
-are_task_data <- are_task$data()
-cat(are_task_data$output[1])
+cat(are_task$samples$output[1])
 ```
 
 The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column. `model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generated the final response as the model to score solutions.
@@ -126,7 +125,7 @@ knitr::include_graphics("https://cdn-useast1.kapwing.com/static/templates/3-spid
 This technique is called "model grading" or "LLM-as-a-judge." Done correctly, model grading is an effective and scalable solution to scoring. That said, it's not without its faults. Here's what the grading model thought of the response:
 
 ```{r}
-cat(are_task_data$scorer[[1]]$last_turn()@text)
+cat(are_task$samples$scorer[[1]]$last_turn()@text)
 ```
 
 ```{r save-are-task-scored}
@@ -155,7 +154,7 @@ For a cursory analysis, though, we can visualize correct vs. partially correct v
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
 are_task_data <- 
   # TODO: rename data
-  are_task_data %>% 
+  are_task$samples %>% 
   mutate(grade = case_when(
     score == 1 ~ "Correct",
     score == .5 ~ "Partially Correct",
@@ -200,7 +199,7 @@ get_model <- function(c) c$get_model()
 are_task_eval <-
   bind_rows(
     mutate(are_task_data, model = purrr::map_chr(scorer, get_model)), 
-    mutate(are_task_openai$data(), model = purrr::map_chr(scorer, get_model))
+    mutate(are_task_openai$samples, model = purrr::map_chr(scorer, get_model))
   ) %>%
     mutate(grade = case_when(
       score == 1 ~ "Correct",

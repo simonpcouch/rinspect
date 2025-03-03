@@ -20,16 +20,14 @@ test_that("Task R6 class works", {
   expect_true(inherits(tsk, "Task"))
   expect_snapshot(tsk)
   
-  task_data <- tsk$data()
-  expect_equal(nrow(task_data), nrow(simple_addition))
-  expect_named(task_data, c("input", "target", "id"))
+  expect_equal(nrow(tsk$samples), nrow(simple_addition))
+  expect_named(tsk$samples, c("input", "target", "id"))
   
   tsk$eval()
   expect_snapshot(tsk)
   
-  task_data <- tsk$data()
   expect_named(
-    task_data,
+    tsk$samples,
     c("input", "target", "id", "output", "solver", "score", "scorer", "metadata")
   )
 })
@@ -55,10 +53,9 @@ test_that("Task with epochs works", {
   
   tsk$eval(epochs = 2)
   
-  task_data <- tsk$data()
-  expect_equal(nrow(task_data), nrow(simple_addition) * 2)
+  expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
   expect_named(
-    task_data,
+    tsk$samples,
     c("input", "target", "id", "epoch", "output", "solver", "score", "scorer", "metadata")
   )
 })

@@ -44,6 +44,10 @@ Task <- R6::R6Class("Task",
     #' to `Sys.getenv("INSPECT_LOG_DIR")`. 
     dir = inspect_log_dir(),
 
+    #' @field samples A tibble representing the evaluation. Based on the `dataset`,
+    #' the solver and scorer will append columns to this data.
+    samples = NULL,
+
     #' @description
     #' Create a new Task object
     #'
@@ -87,7 +91,7 @@ Task <- R6::R6Class("Task",
       private$scorer_fn <- scorer
 
       dataset$id <- seq_len(nrow(dataset))
-      private$tbl <- dataset
+      self$samples <- dataset
     },
 
     #' @description
@@ -104,17 +108,17 @@ Task <- R6::R6Class("Task",
       check_number_whole(epochs, min = 1)
 
       if (epochs > 1) {
-        private$tbl <- join_epochs(private$tbl, epochs)
+        self$samples <- join_epochs(self$samples, epochs)
       }
 
-      solver_res <- private$solver_fn(as.list(private$tbl$input), ...)
-      private$tbl$output <- solver_res$outputs
-      private$tbl$solver <- solver_res$solvers
+      solver_res <- private$solver_fn(as.list(self$samples$input), ...)
+      self$samples$output <- solver_res$outputs
+      self$samples$solver <- solver_res$solvers
 
-      scorer_res <- private$scorer_fn(private$tbl, ...)
-      private$tbl$score <- scorer_res$scores
-      private$tbl$scorer <- scorer_res$scorer
-      private$tbl$metadata <- scorer_res$metadata
+      scorer_res <- private$scorer_fn(self$samples, ...)
+      self$samples$score <- scorer_res$scores
+      self$samples$scorer <- scorer_res$scorer
+      self$samples$metadata <- scorer_res$metadata
 
       self$log(self$dir)
       private$stash_last_task()
@@ -131,7 +135,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     view = function() {
-      if (!has_output(private$tbl)) {
+      if (!has_output(self$samples)) {
         cli::cli_alert_warning(
           "Task has not been evaluated yet. Run task$eval() first."
         )
@@ -152,7 +156,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The path to the logged file, invisibly.
     log = function(dir = inspect_log_dir()) {
-      task <- private$tbl
+      task <- self$samples
 
       eval_log <- eval_log_new(
         eval = eval_log_eval(
@@ -184,19 +188,10 @@ Task <- R6::R6Class("Task",
 
       # TODO: actually return the file path rather than log dir
       invisible(self$dir)
-    },
-
-    #' @description
-    #' Get the internal task tibble
-    #'
-    #' @return A tibble with the task data
-    data = function() {
-      private$tbl
     }
   ),
 
   private = list(
-    tbl = NULL,
     dataset_name = NULL,
     solver_name = NULL,
     scorer_name = NULL,
@@ -211,7 +206,7 @@ Task <- R6::R6Class("Task",
         )
       }
       env <- as.environment("pkg:rinspect")
-      env$.last_task <- private$tbl
+      env$.last_task <- self$samples
       invisible(NULL)
     }
   )
