@@ -106,6 +106,13 @@ are_task
 are_task$eval()
 ```
 
+```{r save-are-task-scored}
+#| include: false
+if (should_eval) {
+  save(are_task, file = "vignettes/data/are_task.rda")
+}
+```
+
 After evaluation, the task contains information from the solving and scoring steps. Here's what the model responded to that first question with:
 
 ```{r output-1}
@@ -126,13 +133,6 @@ This technique is called "model grading" or "LLM-as-a-judge." Done correctly, mo
 
 ```{r}
 cat(are_task$samples$scorer[[1]]$last_turn()@text)
-```
-
-```{r save-are-task-scored}
-#| include: false
-if (should_eval) {
-  save(are_task, file = "vignettes/data/are_task.rda")
-}
 ```
 
 ## Analyzing the results
