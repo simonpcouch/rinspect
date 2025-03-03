@@ -93,7 +93,8 @@ detect_includes_impl <- function(sample, case_sensitive) {
     scorer = "includes",
     metadata = list(
       matched = result == 1,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_includes"
     )
   )
 }
@@ -147,7 +148,8 @@ detect_match_impl <- function(sample, location, case_sensitive) {
     scorer = "match",
     metadata = list(
       matched = result,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_match"
     )
   )
 }
@@ -187,7 +189,8 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
       scorer = "pattern",
       metadata = list(
         matched = FALSE,
-        answer = NA
+        answer = NA,
+        scorer_name = "detect_pattern"
       )
     ))
   }
@@ -211,7 +214,8 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
     scorer = "pattern",
     metadata = list(
       matched = matched,
-      answer = groups[1]
+      answer = groups[1],
+      scorer_name = "detect_pattern"
     )
   )
 }
@@ -254,7 +258,8 @@ detect_exact_impl <- function(sample, case_sensitive) {
     scorer = "exact",
     metadata = list(
       matched = matched,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_exact"
     )
   )
 }
@@ -296,7 +301,8 @@ detect_answer_impl <- function(sample, format) {
       scorer = "answer",
       metadata = list(
         matched = FALSE,
-        answer = NA
+        answer = NA,
+        scorer_name = "detect_answer"
       )
     ))
   }
@@ -309,7 +315,8 @@ detect_answer_impl <- function(sample, format) {
     scorer = "answer",
     metadata = list(
       matched = matched,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_answer"
     )
   )
 }
