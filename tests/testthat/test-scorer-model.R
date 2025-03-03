@@ -4,6 +4,7 @@ test_that("model_graded_qa works", {
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
 
   library(ellmer)
 
@@ -37,6 +38,7 @@ test_that("model_graded_fact works", {
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
 
   library(ellmer)
 

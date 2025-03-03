@@ -23,3 +23,5 @@ solver_chat <- function(sample) {
   solver <- sample$solver[[1]]
   solver$clone()$set_turns(list())
 }
+
+interactive <- NULL

@@ -3,6 +3,7 @@ test_that("Task R6 class works", {
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
   simple_addition <- tibble::tibble(
@@ -37,6 +38,7 @@ test_that("Task with epochs works", {
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
   
   library(ellmer)
 
