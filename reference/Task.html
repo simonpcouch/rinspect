@@ -83,6 +83,14 @@ to <code>Sys.getenv("INSPECT_LOG_DIR")</code>.</p></dd>
 the solver and scorer will append columns to this data.</p></dd>
 
 
+<dt><code>solver</code></dt>
+<dd><p>The solver function passed to <code>$new()</code>.</p></dd>
+
+
+<dt><code>scorer</code></dt>
+<dd><p>The scorer function passed to <code>$new()</code>.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -296,8 +304,6 @@ automatically in <code>$eval()</code>.</p><div class="section">
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   to a temporary directory.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set a log directory with e.g. `rinspect::inspect_log_dir_set("./logs")`,</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   perhaps in <span style="color: #0000BB;">~/.Rprofile</span>, to quiet this warning.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
 <span class="r-in"><span></span></span>
