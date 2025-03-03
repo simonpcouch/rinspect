@@ -32,7 +32,7 @@
 #' 
 #' @returns
 #' A function that scores model output based on string matching. Pass the
-#' returned value to [task_score()].
+#' returned value to `$eval(scorer)`.
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -44,17 +44,15 @@
 #'     target = c("4", "5")
 #'   )
 #'
-#'   # Requires an API key:
-#'   tsk <- task_create(dataset = simple_addition)
-#'   tsk <- task_solve(tsk, solver = chat_claude())
-#' 
-#'   # Does not require an API key:
-#'   tsk <- task_score(tsk, scorer = detect_includes())
-#'   tsk
-#'
-#'   if (interactive()) {
-#'     inspect_view(tsk)
-#'   }
+#'   # create a new Task
+#'   tsk <- Task$new(
+#'     dataset = simple_addition, 
+#'     solver = generate(chat = chat_claude()), 
+#'     scorer = detect_includes()
+#'   )
+#'   
+#'   # evaluate the task (runs solver and scorer)
+#'   tsk$eval()
 #' }
 #' 
 #' @name scorer_detect
@@ -95,7 +93,8 @@ detect_includes_impl <- function(sample, case_sensitive) {
     scorer = "includes",
     metadata = list(
       matched = result == 1,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_includes"
     )
   )
 }
@@ -149,7 +148,8 @@ detect_match_impl <- function(sample, location, case_sensitive) {
     scorer = "match",
     metadata = list(
       matched = result,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_match"
     )
   )
 }
@@ -189,7 +189,8 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
       scorer = "pattern",
       metadata = list(
         matched = FALSE,
-        answer = NA
+        answer = NA,
+        scorer_name = "detect_pattern"
       )
     ))
   }
@@ -213,7 +214,8 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
     scorer = "pattern",
     metadata = list(
       matched = matched,
-      answer = groups[1]
+      answer = groups[1],
+      scorer_name = "detect_pattern"
     )
   )
 }
@@ -256,7 +258,8 @@ detect_exact_impl <- function(sample, case_sensitive) {
     scorer = "exact",
     metadata = list(
       matched = matched,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_exact"
     )
   )
 }
@@ -298,7 +301,8 @@ detect_answer_impl <- function(sample, format) {
       scorer = "answer",
       metadata = list(
         matched = FALSE,
-        answer = NA
+        answer = NA,
+        scorer_name = "detect_answer"
       )
     ))
   }
@@ -311,7 +315,8 @@ detect_answer_impl <- function(sample, format) {
     scorer = "answer",
     metadata = list(
       matched = matched,
-      answer = answer
+      answer = answer,
+      scorer_name = "detect_answer"
     )
   )
 }

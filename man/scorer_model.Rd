@@ -38,12 +38,12 @@ judge model's response.}
 }
 \value{
 A function that will grade model responses according to the given instructions.
-The returned function takes a \link[=task_solve]{solved task} and outputs a
+The returned function takes a solved \link{Task} and outputs a
 2-element list, where the first element \code{scores} is a vector of scores with
 length \code{nrow(task)} and the second is list of ellmer chats that led to the
 scores, also with length \code{nrow(task)}.
 The function that \code{model_graded_qa()}'s outputs can be passed directly to
-\code{\link[=task_score]{task_score()}}.
+\verb{$eval()}.
 }
 \description{
 Model-based scoring makes use of a model to score output from a solver.
@@ -67,18 +67,13 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
     target = c("4", "5")
   )
 
-  tsk <- task_create(dataset = simple_addition)
-  tsk
-
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk
-
-  tsk <- task_score(tsk, scorer = model_graded_qa())
-  tsk
-
-  if (interactive()) {
-    inspect_view(tsk)
-  }
+  tsk <- Task$new(
+    dataset = simple_addition, 
+    solver = generate(chat = chat_claude()), 
+    scorer = model_graded_qa()
+  )
+  
+  tsk$eval()
 }
 
 # Factual response -------------------------------
@@ -94,18 +89,13 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
   )
 
-  tsk <- task_create(dataset = r_history)
-  tsk
-
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk
-
-  tsk <- task_score(tsk, scorer = model_graded_fact())
-  tsk
-
-  if (interactive()) {
-    inspect_view(tsk)
-  }
+  tsk <- Task$new(
+    dataset = r_history, 
+    solver = generate(chat = chat_claude()), 
+    scorer = model_graded_fact()
+  )
+  
+  tsk$eval()
 }
 
 }

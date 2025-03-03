@@ -21,12 +21,12 @@
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
-#' The returned function takes a [solved task][task_solve()] and outputs a
+#' The returned function takes a solved [Task] and outputs a
 #' 2-element list, where the first element `scores` is a vector of scores with
 #' length `nrow(task)` and the second is list of ellmer chats that led to the
 #' scores, also with length `nrow(task)`.
 #' The function that `model_graded_qa()`'s outputs can be passed directly to 
-#' [task_score()].
+#' `$eval()`.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 
@@ -41,18 +41,13 @@
 #'     target = c("4", "5")
 #'   )
 #'
-#'   tsk <- task_create(dataset = simple_addition)
-#'   tsk
-#'
-#'   tsk <- task_solve(tsk, solver = chat_claude())
-#'   tsk
-#'
-#'   tsk <- task_score(tsk, scorer = model_graded_qa())
-#'   tsk
-#'
-#'   if (interactive()) {
-#'     inspect_view(tsk)
-#'   }
+#'   tsk <- Task$new(
+#'     dataset = simple_addition, 
+#'     solver = generate(chat = chat_claude()), 
+#'     scorer = model_graded_qa()
+#'   )
+#'   
+#'   tsk$eval()
 #' }
 #'
 #' # Factual response -------------------------------
@@ -68,18 +63,13 @@
 #'     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
 #'   )
 #'
-#'   tsk <- task_create(dataset = r_history)
-#'   tsk
-#'
-#'   tsk <- task_solve(tsk, solver = chat_claude())
-#'   tsk
-#'
-#'   tsk <- task_score(tsk, scorer = model_graded_fact())
-#'   tsk
-#'
-#'   if (interactive()) {
-#'     inspect_view(tsk)
-#'   }
+#'   tsk <- Task$new(
+#'     dataset = r_history, 
+#'     solver = generate(chat = chat_claude()), 
+#'     scorer = model_graded_fact()
+#'   )
+#'   
+#'   tsk$eval()
 #' }
 #'
 #' @name scorer_model
@@ -91,8 +81,9 @@ model_graded_qa <- function(
   partial_credit = FALSE,
   chat = NULL
 ) {
-  # TODO: type check
-  function(task) {
+  ch <- chat
+
+  function(task, chat = ch) {
     model_graded_qa_impl(
       task = task,
       template = template,
@@ -110,7 +101,8 @@ model_graded_qa_impl <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL
+  chat = NULL,
+  scorer_name = "model_graded_qa"
 ) {
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
@@ -141,7 +133,8 @@ model_graded_qa_impl <- function(
     list(
       prompt = prompts[i],
       response = responses[[i]]$last_turn()@text,
-      grade_pattern = grade_pattern
+      grade_pattern = grade_pattern,
+      scorer_name = scorer_name
     )
   })
   
@@ -217,13 +210,19 @@ model_graded_fact <- function(
   partial_credit = FALSE,
   chat = NULL
 ) {
-  model_graded_qa(
-    template = template %||% fact_default_template(),
-    instructions = instructions,
-    grade_pattern = grade_pattern,
-    partial_credit = partial_credit,
-    chat = chat
-  )
+  ch <- chat
+  
+  function(task, chat = ch) {
+    model_graded_qa_impl(
+      task = task,
+      template = template %||% fact_default_template(),
+      instructions = instructions,
+      grade_pattern = grade_pattern,
+      partial_credit = partial_credit,
+      chat = chat,
+      scorer_name = "model_graded_fact"
+    )
+  }
 }
 
 fact_default_template <- function() {

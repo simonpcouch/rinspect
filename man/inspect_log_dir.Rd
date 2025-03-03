@@ -10,7 +10,7 @@ inspect_log_dir()
 inspect_log_dir_set(dir)
 }
 \arguments{
-\item{dir}{Directory where logs should be stored.}
+\item{dir}{A directory to configure \code{INSPECT_LOG_DIR} to.}
 }
 \value{
 Both \code{inspect_log_dir()} and \code{inspect_log_dir_set()} return the current
@@ -19,8 +19,7 @@ additionally sets it to a new value.
 }
 \description{
 rinspect supports the \code{INSPECT_LOG_DIR} environment variable,
-which sets a default directory to write logs to in \code{\link[=task_create]{task_create()}}
-and \code{\link[=inspect_log]{inspect_log()}} and to view from in \code{\link[=inspect_view]{inspect_view()}}.
+which sets a default directory to write logs to in \code{task$eval()}.
 }
 \examples{
 inspect_log_dir()

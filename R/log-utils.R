@@ -141,6 +141,8 @@ eval_log_samples <- function(dataset) {
 
 eval_log_sample <- function(sample) {
   chat <- sample$solver[[1]]
+  scorer_name <- sample$metadata[[1]]$scorer_name
+
   turns <- chat$get_turns()
   list(
     id = sample$id,
@@ -149,8 +151,8 @@ eval_log_sample <- function(sample) {
     target = sample$target,
     messages = translate_to_messages(turns),
     output = translate_to_output(turns),
-    scores = list(
-      model_graded_qa = eval_log_score(
+    scores = dots_list(
+      !!scorer_name := eval_log_score(
         output = sample$output[[1]],
         score = sample$score[[1]],
         scorer = sample$scorer[[1]]
@@ -215,6 +217,15 @@ eval_log_score <- function(output, score, scorer) {
     "I"
   }
   
+  if (!inherits(scorer, "Chat")) {
+    return(list(
+      value = value,
+      answer = output,
+      explanation = paste0("Detected correct answer."),
+      metadata = list()
+    ))
+  }
+
   turns <- scorer$get_turns()
   explanation <- .last_assistant_turn(turns)@text
   
@@ -254,13 +265,20 @@ generate_id <- function(length = 22) {
 eval_log_filename <- function(eval_log) {
   paste0(
     gsub(":", "-", eval_log$eval$created), "_",
-    gsub("_", "-", eval_log$eval$task), "_",
+    gsub(" ", "-", gsub("_", "-", eval_log$eval$task)), "_",
     eval_log$eval$task_id, ".json"
   )
 }
 
 # given the list of solvers in a dataset, sum across all of their token usage
+# TODO: this doesn't work for non-Claude?
 sum_model_usage <- function(solvers) {
+  chat <- solvers[[1]]
+  provider <- chat$.__enclos_env__$private$provider
+  if (!inherits(provider, "ellmer::ProviderClaude")) {
+    return(list())
+  }
+  
   usage_per_solver <- lapply(
     solvers,
     function(chat) {translate_to_model_usage(chat$get_turns())[[1]]}
