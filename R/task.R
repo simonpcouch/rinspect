@@ -1,4 +1,4 @@
-#' Creating and evaluating tasks with R6
+#' Creating and evaluating tasks
 #'
 #' @description
 #' Evaluation `Task`s provide a flexible data structure for evaluating LLM-based
@@ -8,11 +8,13 @@
 #' tibble with columns `input` and `target`, where `input` is a prompt
 #' and `target` is either literal value(s) or grading guidance.
 #' 2) **Solvers** evaluate the `input` in the dataset and produce a final result.
-#' The simplest solver is just an ellmer chat (e.g. [ellmer::chat_claude()]).
 #' 3) **Scorers** evaluate the final output of solvers. They may use text
 #' comparisons (like [detect_match()]), model grading (like
 #' [model_graded_qa()]), or other custom schemes.
 #'
+#' The usual flow of LLM evaluation with Tasks calls `$new()` and then
+#' `$eval()`.
+#' 
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 #'   library(ellmer)

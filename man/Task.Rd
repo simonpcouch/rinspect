@@ -2,7 +2,7 @@
 % Please edit documentation in R/task.R
 \name{Task}
 \alias{Task}
-\title{Creating and evaluating tasks with R6}
+\title{Creating and evaluating tasks}
 \description{
 Evaluation \code{Task}s provide a flexible data structure for evaluating LLM-based
 tools.
@@ -11,11 +11,13 @@ tools.
 tibble with columns \code{input} and \code{target}, where \code{input} is a prompt
 and \code{target} is either literal value(s) or grading guidance.
 \item \strong{Solvers} evaluate the \code{input} in the dataset and produce a final result.
-The simplest solver is just an ellmer chat (e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}).
 \item \strong{Scorers} evaluate the final output of solvers. They may use text
 comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (like
 \code{\link[=model_graded_qa]{model_graded_qa()}}), or other custom schemes.
 }
+
+The usual flow of LLM evaluation with Tasks calls \verb{$new()} and then
+\verb{$eval()}.
 }
 \examples{
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
