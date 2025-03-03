@@ -5,10 +5,11 @@ template:
 reference:
 - title: "Evaluation tasks"
   contents:
-  - task_create
-  - task_solve
-  - task_score
-  - inspect_view
+  - Task
+
+- title: "Solvers"
+  contents:
+  - generate
 
 - title: "Scorers"
   contents:
@@ -17,7 +18,7 @@ reference:
 
 - title: "Utilities for evaluation logs"
   contents:
-  - inspect_log
+  - inspect_view
   - inspect_log_dir
   - inspect_log_dir_set
 
