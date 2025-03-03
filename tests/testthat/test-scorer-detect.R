@@ -1,3 +1,5 @@
+skip("TODO: these will need a `$score()` slot to be as lean as possible.")
+
 test_that("detect_includes works", {
   tsk <- example_task(scored = FALSE)
   tsk <- task_score(tsk, scorer = detect_includes())

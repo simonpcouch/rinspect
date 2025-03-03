@@ -27,6 +27,7 @@ Imports:
     jsonlite,
     purrr,
     rlang,
+    R6,
     tibble,
     withr
 Suggests: 

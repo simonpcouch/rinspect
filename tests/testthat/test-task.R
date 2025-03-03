@@ -1,5 +1,7 @@
-test_that("basic task_create -> task_solve -> task_score works", {
+test_that("Task R6 class works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   library(ellmer)
 
@@ -8,38 +10,32 @@ test_that("basic task_create -> task_solve -> task_score works", {
     target = c("4", "5")
   )
 
-  tsk <- task_create(dataset = simple_addition)
-  tsk
-
-  expect_s3_class(tsk, "task")
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_claude()),
+    scorer = model_graded_qa()
+  )
+  
+  expect_true(R6::is.R6(tsk))
+  expect_true(inherits(tsk, "Task"))
   expect_snapshot(tsk)
-
-  tsk <- task_solve(tsk, solver = chat_claude())
-  tsk
-
-  expect_s3_class(tsk, "task")
-  expect_named(tsk, c("input", "target", "id", "output", "solver"))
-
-  tsk <- task_score(tsk, scorer = model_graded_qa())
-  tsk
-
-  expect_s3_class(tsk, "task")
+  
+  expect_equal(nrow(tsk$samples), nrow(simple_addition))
+  expect_named(tsk$samples, c("input", "target", "id"))
+  
+  tsk$eval()
+  expect_snapshot(tsk)
+  
   expect_named(
-    tsk,
+    tsk$samples,
     c("input", "target", "id", "output", "solver", "score", "scorer", "metadata")
   )
 })
 
-test_that("check_dataset works", {
-  expect_snapshot(error = TRUE, task_create(data.frame(input = 1)))
-  expect_snapshot(error = TRUE, task_create(data.frame(target = 1)))
-  expect_snapshot(error = TRUE, task_create(data.frame(x = 1)))
-  d <- data.frame(input = "hey", target = "there")
-  expect_equal(d, check_dataset(d))
-})
-
-test_that("task_solve(epochs) works", {
+test_that("Task with epochs works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   
   library(ellmer)
@@ -49,23 +45,57 @@ test_that("task_solve(epochs) works", {
     target = c("4", "5")
   )
 
-  tsk <- task_create(dataset = simple_addition)
-  tsk <- task_solve(tsk, solver = chat_claude(), epochs = 2)
-  tsk <- task_score(tsk, scorer = model_graded_qa())
-
-  expect_s3_class(tsk, "task")
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_claude()),
+    scorer = model_graded_qa()
+  )
+  
+  tsk$eval(epochs = 2)
+  
+  expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
   expect_named(
-    tsk,
+    tsk$samples,
     c("input", "target", "id", "epoch", "output", "solver", "score", "scorer", "metadata")
   )
-  expect_equal(nrow(tsk), nrow(simple_addition) * 2)
+})
+
+test_that("check_dataset works", {
+  expect_snapshot(
+    Task$new(
+      dataset = data.frame(input = 1),
+      solver = function() {},
+      scorer = function() {}
+    ),
+    error = TRUE
+  )
+  expect_snapshot(
+    Task$new(
+      dataset = data.frame(target = 1),
+      solver = function() {},
+      scorer = function() {}
+    ),
+    error = TRUE
+  )
+  expect_snapshot(
+    Task$new(
+      dataset = data.frame(x = 1),
+      solver = function() {},
+      scorer = function() {}
+    ),
+    error = TRUE
+  )
+  
+  d <- data.frame(input = "hey", target = "there")
+  expect_equal(d, check_dataset(d))
 })
 
 test_that("join_epochs() works", {
-  task <- data.frame(something = "here", id = 1:3)
-  expect_equal(join_epochs(task, 1), task)
+  task_data <- data.frame(something = "here", id = 1:3)
+  expect_equal(join_epochs(task_data, 1), task_data)
 
-  joined <- join_epochs(task, 2)
-  expect_equal(nrow(joined), nrow(task) * 2)
-  expect_equal(joined$epoch, rep(1:3, 2))
+  joined <- join_epochs(task_data, 2)
+  expect_equal(nrow(joined), nrow(task_data) * 2)
+  expect_equal(joined$epoch, rep(1:2, 3))
+  expect_equal(joined$id, rep(1:3, each = 2))
 })

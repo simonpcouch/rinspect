@@ -5,7 +5,7 @@
 \alias{are}
 \title{An R Eval}
 \format{
-A tibble with 29 rows and 7 columns:
+A tibble with 28 rows and 7 columns:
 \describe{
 \item{title}{Character. Unique identifier/title for the code problem.}
 \item{input}{Character. The question to be answered.}
@@ -35,7 +35,7 @@ fluent data scientists. Solutions are in \code{target()} and enable a fluent
 data scientist to evaluate whether the solution deserves full, partial, or
 no credit.
 
-Pass this dataset to \code{\link[=task_create]{task_create()}} to situate it inside of an evaluation
+Pass this dataset to \code{Task$new()} to situate it inside of an evaluation
 task.
 }
 \examples{
