@@ -104,14 +104,12 @@ inspect_view_impl <- function(
                 headers <- lapply(files, function(f) {
                   file_path <- file.path(dir, f)
                   if (file.exists(file_path)) {
+                    # TODO: in Inspect, only these smaller fields are read 
+                    # for performance.
+                    # not clear to me that jsonlite supports this, so may
+                    # need to transition from the package?
                     content <- jsonlite::fromJSON(file_path)
-                    # Extract just the metadata/header portion
-                    list(
-                      task = content$task,
-                      task_id = content$task_id,
-                      created = content$created,
-                      model = content$model
-                    )
+                    content[!names(content) %in% c("samples", "logging")]
                   } else {
                     NULL
                   }
