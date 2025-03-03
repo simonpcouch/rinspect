@@ -85,9 +85,11 @@ cat(are$target[1])
 
 ## Creating and evaluating a task
 
-The `Task` R6 class allows us to create an evaluation task, composed of the dataset, solver, and scorer. Any data frame is fair game as a **dataset** as long as it has, minimally, columns `input` and `target`. Remaining metadata columns will persist throughout evaluation and be logged in the final result. The simplest **solver** that ships with rinspect is `generate()`, which just passes an ellmer chat some `input` and returns it response. (To read more about solvers, check out `vignette("solvers", package = "rinspect")`.) Finally, the **scorer** `model_graded_qa()` will grade the results from the solver according to criteria set in `target`.
+LLM evaluation with rinspect happens in two main steps:
 
-```{r create-task}
+1) Use `Task$new()` to situate a dataset, solver, and scorer in a `Task`.
+
+```{r create-task, eval = should_eval}
 are_task <- Task$new(
   dataset = are,
   solver = generate(chat = chat_claude()),
@@ -98,12 +100,7 @@ are_task <- Task$new(
 are_task
 ```
 
-The task is now ready to run evaluations using the `eval()` method. When we do so, the Task will:
-
-1. Run the solver on each input in the dataset, generating solutions.
-2. Score each solution against the target.
-3. Log the results for later inspection. 
-4. When run interactively, `eval()` will also display the log in an interactive app by default.
+2) Use `Task$eval()` to evaluate the solver, evaluate the scorer, and then explore a persistent log of the results in the interactive Inspect log viewer.
 
 ```{r solve-and-score, eval = should_eval}
 are_task$eval()
@@ -123,7 +120,6 @@ Hold up, though—we're using an LLM to generate responses to questions, and the
 ```{r}
 #| echo: false
 #| fig-alt: "The meme of 3 spiderman pointing at each other."
-#| fig-width: 70%
 knitr::include_graphics("https://cdn-useast1.kapwing.com/static/templates/3-spiderman-pointing-meme-template-full-ca8f27e0.webp")
 ```
 
@@ -144,7 +140,14 @@ if (should_eval) {
 
 Especially the first few times you run an eval, you'll want to inspect (ha!) its results closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
 
-The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval specifically with the following code (TODO: code to grab from github and view).
+```{r}
+#| label: tsk-view
+#| echo: false
+#| fig-alt: "A screenshot of the Inspect log viewer, an interactive app displaying information on the samples evaluated in this eval."
+knitr::include_graphics("data/are_viewer.png")
+```
+
+Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval specifically with the following code (TODO: code to grab from github and view).
 
 For a cursory analysis, though, we can visualize correct vs. partially correct vs. incorrect answers:
 
@@ -215,9 +218,3 @@ are_task_eval %>%
 ```
 
 If you're interested in these questions as well, check out the other vignettes in this package!
-
-## Saving and loading evaluation results
-
-Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The log file location is controlled by the `INSPECT_LOG_DIR` environment variable. You can also manually write to a specific location with the `$log()` method.
-
-`inspect_view()` will launch the Inspect log viewer from a given directory, and also defaults to `INSPECT_LOG_DIR`.
