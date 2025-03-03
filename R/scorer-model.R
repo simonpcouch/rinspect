@@ -21,7 +21,7 @@
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
-#' The returned function takes a [solved task][task_solve()] and outputs a
+#' The returned function takes a solved [Task] and outputs a
 #' 2-element list, where the first element `scores` is a vector of scores with
 #' length `nrow(task)` and the second is list of ellmer chats that led to the
 #' scores, also with length `nrow(task)`.
