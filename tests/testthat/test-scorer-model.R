@@ -15,21 +15,24 @@ test_that("model_graded_qa works", {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat = chat_claude()), 
+    solver = generate(chat_claude()), 
     scorer = model_graded_qa()
   )
   
   tsk$eval()
 
-  # returns scores and a complete solver chat
+  # returns scores and a complete scorer chat
   expect_true(all(tsk$samples$score %in% c(0, .5, 1)))
-  expect_s3_class(tsk$samples$solver[[1]], "Chat")
-  expect_length(tsk$samples$solver[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$samples$scorer[[1]], "Chat")
-  expect_length(tsk$samples$scorer[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
+  expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")
+  expect_length(tsk$samples$scorer_chat[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
-  expect_equal(tsk$samples$solver[[1]]$get_model(), tsk$samples$scorer[[1]]$get_model())
+  expect_equal(
+    tsk$samples$solver_chat[[1]]$get_model(),
+    tsk$samples$scorer_chat[[1]]$get_model()
+  )
 })
 
 test_that("model_graded_fact works", {
@@ -49,22 +52,22 @@ test_that("model_graded_fact works", {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(chat = chat_claude()), 
+    solver = generate(chat_claude()), 
     scorer = model_graded_fact()
   )
   
   tsk$eval()
 
-  # returns scores and a complete solver chat
+  # returns scores and a complete scorer chat
   expect_true(all(tsk$samples$score %in% c(0, .5, 1)))
-  expect_s3_class(tsk$samples$solver[[1]], "Chat")
-  expect_length(tsk$samples$solver[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$samples$scorer[[1]], "Chat")
-  expect_length(tsk$samples$scorer[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
+  expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")
+  expect_length(tsk$samples$scorer_chat[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
   expect_equal(
-    tsk$samples$solver[[1]]$get_model(),
-    tsk$samples$scorer[[1]]$get_model()
+    tsk$samples$solver_chat[[1]]$get_model(),
+    tsk$samples$scorer_chat[[1]]$get_model()
   )
 })

@@ -31,7 +31,7 @@
 #'   # create a new Task
 #'   tsk <- Task$new(
 #'     dataset = simple_addition,
-#'     solver = generate(chat = chat_claude()),
+#'     solver = generate(chat_claude()),
 #'     scorer = model_graded_qa()
 #'   )
 #'
@@ -45,11 +45,12 @@ Task <- R6::R6Class("Task",
   lock_objects = FALSE,
   public = list(
     #' @field dir The directory where evaluation logs will be written to. Defaults
-    #' to `Sys.getenv("INSPECT_LOG_DIR")`. 
+    #' to `inspect_log_dir()`. 
     dir = inspect_log_dir(),
 
     #' @field samples A tibble representing the evaluation. Based on the `dataset`,
-    #' the solver and scorer will append columns to this data.
+    #' `epochs` may duplicate rows, and the solver and scorer will append 
+    #' columns to this data.
     samples = NULL,
     
     #' @field solver The solver function passed to `$new()`.
@@ -64,11 +65,10 @@ Task <- R6::R6Class("Task",
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
     #' @param solver A function that takes the vector `dataset$input` as its first
     #' argument and determines a value approximating `dataset$target`.
-    #' Its return value should be a list with elements `outputs` (a vector of the
-    #' final responses, the same length as `dataset$input`) and `solvers`
+    #' Its return value should be a list with elements `result` (a vector of the
+    #' final responses, the same length as `dataset$input`) and `solver_chat`
     #' (the list of ellmer chats used to solve the inputs, also the same length
-    #' as `dataset$input`). Or, just supply an ellmer chat
-    #' (e.g. [ellmer::chat_claude()]) and rinspect will take care of the details.
+    #' as `dataset$input`). See [generate()] for the simplest example.
     #' @param scorer A function that evaluates how well the solver's return value
     #' approximates the corresponding elements of `dataset$target`. See
     #' [model-based scoring][scorer_model] for examples.
@@ -103,8 +103,8 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     solve = function(...) {
       solver_res <- self$solver(as.list(self$samples$input), ...)
-      self$samples$output <- solver_res$outputs
-      self$samples$solver <- solver_res$solvers
+      self$samples$result <- solver_res$result
+      self$samples$solver_chat <- solver_res$solver_chat
       
       invisible(self)
     },
@@ -116,7 +116,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     score = function(...) {
-      if (!has_output(self$samples)) {
+      if (!has_result(self$samples)) {
         cli::cli_alert_warning(
           "Task has not been solved yet. Run task$solve() first."
         )
@@ -124,8 +124,14 @@ Task <- R6::R6Class("Task",
       }
       
       scorer_res <- self$scorer(self$samples, ...)
-      self$samples$score <- scorer_res$scores
-      self$samples$scorer <- scorer_res$scorer
+      self$samples$score <- scorer_res$score
+      if ("scorer_chat" %in% names(scorer_res)) {
+        self$samples$scorer_chat <- scorer_res$scorer_chat
+      }
+      # TODO: this probably should go in metadata
+      if ("scorer_name" %in% names(scorer_res$metadata[[1]])) {
+        self$samples$scorer <- scorer_res$metadata[[1]]$scorer_name
+      }
       self$samples$metadata <- scorer_res$metadata
       
       invisible(self)
@@ -168,7 +174,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     view = function() {
-      if (!has_output(self$samples)) {
+      if (!has_result(self$samples)) {
         cli::cli_alert_warning(
           "Task has not been evaluated yet. Run task$eval() first."
         )
@@ -199,7 +205,7 @@ Task <- R6::R6Class("Task",
             sample_ids = seq_len(length(unique(samples$id))), 
             shuffled = FALSE
           ),
-          model = .turn_model(.last_assistant_turn(samples$solver[[1]]$get_turns())),
+          model = .turn_model(.last_assistant_turn(samples$solver_chat[[1]]$get_turns())),
         ),
         results = eval_log_results(
           total_samples = nrow(samples),
@@ -207,9 +213,9 @@ Task <- R6::R6Class("Task",
           scores = results_scores(self$samples$metadata[[1]]$scorer_name)
         ),
         stats = eval_log_stats(
-          started_at = samples$solver[[1]]$get_turns()[[1]]@completed,
+          started_at = samples$solver_chat[[1]]$get_turns()[[1]]@completed,
           completed_at = Sys.time(),
-          model_usage = sum_model_usage(samples$solver)
+          model_usage = sum_model_usage(samples$solver_chat)
         ),
         samples = eval_log_samples(samples)
       )
@@ -262,8 +268,8 @@ print.Task <- function(x, ...) {
   invisible(x)
 }
 
-has_output <- function(samples) {
-  "output" %in% names(samples) && length(samples$output) > 0
+has_result <- function(samples) {
+  "result" %in% names(samples) && length(samples$result) > 0
 }
 
 has_scores <- function(samples) {

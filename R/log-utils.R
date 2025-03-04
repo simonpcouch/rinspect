@@ -110,7 +110,7 @@ eval_log_samples <- function(dataset) {
 }
 
 eval_log_sample <- function(sample) {
-  chat <- sample$solver[[1]]
+  chat <- sample$solver_chat[[1]]
   scorer_name <- sample$metadata[[1]]$scorer_name
 
   turns <- chat$get_turns()
@@ -123,9 +123,14 @@ eval_log_sample <- function(sample) {
     output = translate_to_output(turns),
     scores = dots_list(
       !!scorer_name := eval_log_score(
-        output = sample$output[[1]],
+        output = sample$result[[1]],
         score = sample$score[[1]],
-        scorer = sample$scorer[[1]]
+        scorer = scorer_name,
+        scorer_chat = if ("scorer_chat" %in% names(sample)) {
+          sample$scorer_chat[[1]]
+        } else {
+          NULL
+        }
       )
     ),
     metadata = list(),
@@ -178,7 +183,7 @@ eval_log_metrics <- function(
   )
 }
 
-eval_log_score <- function(output, score, scorer) {
+eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
   value <- if (score == 1) {
     "C"
   } else if (score == .5) {
@@ -187,7 +192,7 @@ eval_log_score <- function(output, score, scorer) {
     "I"
   }
   
-  if (!inherits(scorer, "Chat")) {
+  if (is.null(scorer_chat)) {
     return(list(
       value = value,
       answer = output,
@@ -196,7 +201,7 @@ eval_log_score <- function(output, score, scorer) {
     ))
   }
 
-  turns <- scorer$get_turns()
+  turns <- scorer_chat$get_turns()
   explanation <- .last_assistant_turn(turns)@text
   
   list(

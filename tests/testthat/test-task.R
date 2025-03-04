@@ -29,7 +29,8 @@ test_that("Task R6 class works", {
   
   expect_named(
     tsk$samples,
-    c("input", "target", "id", "output", "solver", "score", "scorer", "metadata")
+    c("input", "target", "id", "result", "solver_chat", "score", "scorer", "scorer_chat", "metadata"),
+    ignore.order = TRUE
   )
 
   expect_equal(tsk, .last_task)
@@ -60,7 +61,8 @@ test_that("Task with epochs works", {
   expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
   expect_named(
     tsk$samples,
-    c("input", "target", "id", "epoch", "output", "solver", "score", "scorer", "metadata")
+    c("input", "target", "id", "epoch", "result", "solver_chat", "score", "scorer", "scorer_chat", "metadata"),
+    ignore.order = TRUE
   )
 })
 

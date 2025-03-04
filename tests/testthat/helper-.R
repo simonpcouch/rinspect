@@ -26,6 +26,7 @@ example_inspect_log <- function() {
 }
 
 example_task <- function(solved = TRUE, scored = TRUE) {
+  # loads a cached `tsk` with example output
   load(
     system.file(
       "sandbox/example-task.rda",
@@ -33,20 +34,30 @@ example_task <- function(solved = TRUE, scored = TRUE) {
     )
   )
 
-  # if it's not solved, it can't be scored!
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+  
+  res <- Task$new(
+    dataset = simple_addition, 
+    solver = function(...) {}, 
+    scorer = function(...) {}
+  )
+
   if (!solved) {
-    tsk$samples <- tsk$samples[
-      !colnames(tsk$samples) %in% c("result", "solver", "score", "scorer", "metadata")
-    ]
-    return(tsk)
+    return(res)
   }
+
+  res$samples$result <- tsk$samples$result
+  res$samples$solver_chat <- tsk$samples$solver_chat
 
   if (!scored) {
-    tsk$samples <- tsk$samples[
-      !colnames(tsk$samples) %in% c("result", "solver")
-    ]
-    return(tsk)
+    return(res)
   }
 
-  tsk
+  res$samples$score <- tsk$samples$score
+  res$samples$scorer_chat <- tsk$samples$scorer_chat
+
+  res
 }

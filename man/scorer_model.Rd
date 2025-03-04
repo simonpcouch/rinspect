@@ -11,7 +11,7 @@ model_graded_qa(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL
+  scorer_chat = NULL
 )
 
 model_graded_fact(
@@ -19,7 +19,7 @@ model_graded_fact(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\\\s*:\\\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL
+  scorer_chat = NULL
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ judge model's response.}
 
 \item{partial_credit}{Whether to allow partial credit.}
 
-\item{chat}{An ellmer chat used to grade the model output, e.g.
+\item{scorer_chat}{An ellmer chat used to grade the model output, e.g.
 \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}
 }
 \value{
@@ -69,7 +69,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat = chat_claude()), 
+    solver = generate(solver_chat = chat_claude()), 
     scorer = model_graded_qa()
   )
   
@@ -91,7 +91,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(chat = chat_claude()), 
+    solver = generate(solver_chat = chat_claude()), 
     scorer = model_graded_fact()
   )
   

@@ -59,7 +59,7 @@ simple_addition <- tibble(
 
 tsk <- Task$new(
   dataset = simple_addition, 
-  solver = generate(chat = chat_claude()), 
+  solver = generate(chat_claude()), 
   scorer = model_graded_qa()
 )
 ```

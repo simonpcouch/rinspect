@@ -16,7 +16,7 @@
 #' @param grade_pattern A regex pattern to extract the final grade from the
 #' judge model's response.
 #' @param partial_credit Whether to allow partial credit.
-#' @param chat An ellmer chat used to grade the model output, e.g.
+#' @param scorer_chat An ellmer chat used to grade the model output, e.g.
 #' [ellmer::chat_claude()].
 #'
 #' @returns
@@ -43,7 +43,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_claude()), 
 #'     scorer = model_graded_qa()
 #'   )
 #'   
@@ -65,7 +65,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = r_history, 
-#'     solver = generate(chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_claude()), 
 #'     scorer = model_graded_fact()
 #'   )
 #'   
@@ -79,18 +79,18 @@ model_graded_qa <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL
+  scorer_chat = NULL
 ) {
-  ch <- chat
+  ch <- scorer_chat
 
-  function(task, chat = ch) {
+  function(task, ..., scorer_chat = ch) {
     model_graded_qa_impl(
       task = task,
       template = template,
       instructions = instructions,
       grade_pattern = grade_pattern,
       partial_credit = partial_credit,
-      chat = chat
+      scorer_chat = scorer_chat
     )
   }
 }
@@ -101,7 +101,7 @@ model_graded_qa_impl <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL,
+  scorer_chat = NULL,
   scorer_name = "model_graded_qa"
 ) {
   template <- template %||% qa_default_template()
@@ -111,18 +111,18 @@ model_graded_qa_impl <- function(
     qa_format_prompt(
       template,
       task$input[i],
-      task$output[i],
+      task$result[i],
       task$target[i],
       instructions
     )
   })
   
-  if (is.null(chat)) {
-    chat <- solver_chat(task[1, ])
+  if (is.null(scorer_chat)) {
+    scorer_chat <- solver_chat(task[1, ])
   }
   
-  chat <- chat$clone()
-  responses <- chat$chat_parallel(as.list(prompts))
+  scorer_chat <- scorer_chat$clone()
+  responses <- scorer_chat$chat_parallel(as.list(prompts))
   
   scores <- purrr::map_dbl(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
@@ -139,8 +139,8 @@ model_graded_qa_impl <- function(
   })
   
   list(
-    scores = scores,
-    scorer = responses,
+    score = scores,
+    scorer_chat = responses,
     metadata = metadata
   )
 }
@@ -208,18 +208,18 @@ model_graded_fact <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  chat = NULL
+  scorer_chat = NULL
 ) {
-  ch <- chat
+  ch <- scorer_chat
   
-  function(task, chat = ch) {
+  function(task, scorer_chat = ch) {
     model_graded_qa_impl(
       task = task,
       template = template %||% fact_default_template(),
       instructions = instructions,
       grade_pattern = grade_pattern,
       partial_credit = partial_credit,
-      chat = chat,
+      scorer_chat = scorer_chat,
       scorer_name = "model_graded_fact"
     )
   }

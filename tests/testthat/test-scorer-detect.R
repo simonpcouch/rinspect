@@ -4,12 +4,15 @@ test_that("detect_includes works", {
   tsk$score()
 
   expect_equal(tsk$samples$score, c(1, 1))
-  expect_equal(tsk$samples$scorer, c("includes", "includes"))
+  expect_equal(
+    tsk$samples$scorer,
+    c("detect_includes", "detect_includes")
+  )
   # TODO: include and test for `metadata` slots (here and in model-based)
 
   simple_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c("The answer is C", "The answer is D"),
+    result = c("The answer is C", "The answer is D"),
     target = c("c", "d")
   )
   
@@ -39,11 +42,11 @@ test_that("detect_match works", {
   tsk$score()
 
   expect_equal(tsk$samples$score, c(1, 1))
-  expect_equal(tsk$samples$scorer, c("match", "match"))
+  expect_equal(tsk$samples$scorer, c("detect_match", "detect_match"))
 
   simple_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c("The answer is C", "The answer is D"),
+    result = c("The answer is C", "The answer is D"),
     target = c("c", "d")
   )
   
@@ -72,11 +75,11 @@ test_that("detect_pattern works", {
   tsk$score()
 
   expect_equal(tsk$samples$score, c(1, 1))
-  expect_equal(tsk$samples$scorer, c("pattern", "pattern"))
+  expect_equal(tsk$samples$scorer, c("detect_pattern", "detect_pattern"))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c("The answer contains C", "The answer contains D"),
+    result = c("The answer contains C", "The answer contains D"),
     target = c("c", "d")
   )
 
@@ -106,7 +109,10 @@ test_that("detect_pattern works", {
 
   all_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c("Found colors red and blue", "Found colors green and yellow"),
+    result = c(
+      "Found colors red and blue",
+      "Found colors green and yellow"
+    ),
     target = c("red", "green")
   )
 
@@ -139,7 +145,7 @@ test_that("detect_exact works", {
   ex_task <- example_task(scored = FALSE)
   exact_df <- tibble::tibble(
     input = ex_task$samples$input,
-    output = c(ex_task$samples$target[1], "non-matching output"),
+    result = c(ex_task$samples$target[1], "non-matching output"),
     target = ex_task$samples$target
   )
   
@@ -152,11 +158,11 @@ test_that("detect_exact works", {
   tsk$score()
 
   expect_equal(tsk$samples$score, c(1, 0))
-  expect_equal(tsk$samples$scorer, c("exact", "exact"))
+  expect_equal(tsk$samples$scorer, c("detect_exact", "detect_exact"))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c("ANSWER: C", "ANSWER: d"),
+    result = c("ANSWER: C", "ANSWER: d"),
     target = c("ANSWER: c", "ANSWER: d")
   )
   
@@ -183,7 +189,7 @@ test_that("detect_answer works", {
   ex_task <- example_task(scored = FALSE)
   answer_df <- tibble::tibble(
     input = ex_task$samples$input,
-    output = paste("ANSWER:", ex_task$samples$target),
+    result = paste("ANSWER:", ex_task$samples$target),
     target = ex_task$samples$target
   )
   
@@ -196,11 +202,11 @@ test_that("detect_answer works", {
   tsk$score()
 
   expect_equal(tsk$samples$score, c(1, 1))
-  expect_equal(tsk$samples$scorer, c("answer", "answer"))
+  expect_equal(tsk$samples$scorer, c("detect_answer", "detect_answer"))
 
   whitespace_df <- tibble::tibble(
     input = ex_task$samples$input,
-    output = paste("ANSWER: ", ex_task$samples$target),
+    result = paste("ANSWER: ", ex_task$samples$target),
     target = ex_task$samples$target
   )
   
@@ -212,11 +218,14 @@ test_that("detect_answer works", {
   tsk_whitespace$scorer <- detect_answer()
   tsk_whitespace$score()
   expect_equal(tsk_whitespace$samples$score, c(1, 1))
-  expect_equal(tsk_whitespace$samples$scorer, c("answer", "answer"))
+  expect_equal(
+    tsk_whitespace$samples$scorer,
+    c("detect_answer", "detect_answer")
+  )
 
   format_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
-    output = c(
+    result = c(
       "The solution is:\nANSWER: The Industrial Revolution",
       "ANSWER: C\nExplanation follows..."
     ),
@@ -234,7 +243,10 @@ test_that("detect_answer works", {
   tsk_line$scorer <- detect_answer(format = "line")
   tsk_line$score()
   expect_equal(tsk_line$samples$score, c(1, 0))
-  expect_equal(tsk_line$samples$scorer, c("answer", "answer"))
+  expect_equal(
+    tsk_line$samples$scorer,
+    c("detect_answer", "detect_answer")
+  )
 
   tsk_word <- Task$new(
     dataset = format_df,

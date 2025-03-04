@@ -47,7 +47,7 @@
 #'   # create a new Task
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_claude()), 
 #'     scorer = detect_includes()
 #'   )
 #'   
@@ -70,7 +70,7 @@ detect_includes <- function(case_sensitive = FALSE) {
     )
     
     list(
-      scores = purrr::map_dbl(results, "result"),
+      score = purrr::map_dbl(results, "result"),
       scorer = "includes",
       metadata = purrr::map(results, "metadata")
     )
@@ -78,7 +78,7 @@ detect_includes <- function(case_sensitive = FALSE) {
 }
 
 detect_includes_impl <- function(sample, case_sensitive) {
-  answer <- sample$output
+  answer <- sample$result
   target <- sample$target
 
   if (!case_sensitive) {
@@ -119,7 +119,7 @@ detect_match <- function(
     )
     
     list(
-      scores = purrr::map_dbl(results, "result"),
+      score = purrr::map_dbl(results, "result"),
       scorer = "match",
       metadata = purrr::map(results, "metadata")
     )
@@ -127,7 +127,7 @@ detect_match <- function(
 }
 
 detect_match_impl <- function(sample, location, case_sensitive) {
-  answer <- trimws(sample$output)
+  answer <- trimws(sample$result)
   target <- trimws(sample$target)
 
   if (!case_sensitive) {
@@ -173,7 +173,7 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
     )
     
     list(
-      scores = purrr::map_dbl(results, "result"),
+      score = purrr::map_dbl(results, "result"),
       scorer = "pattern",
       metadata = purrr::map(results, "metadata")
     )
@@ -182,7 +182,7 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
 
 detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
   flags <- if (!case_sensitive) ignore.case = TRUE else NULL
-  matches <- regexec(pattern, sample$output, perl = TRUE, flags)
+  matches <- regexec(pattern, sample$result, perl = TRUE, flags)
   if (matches[[1]][1] == -1) {
     return(list(
       result = 0,
@@ -195,7 +195,7 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
     ))
   }
 
-  groups <- regmatches(sample$output, matches)[[1]][-1]
+  groups <- regmatches(sample$result, matches)[[1]][-1]
   target <- sample$target
 
   if (!case_sensitive) {
@@ -235,7 +235,7 @@ detect_exact <- function(case_sensitive = FALSE) {
     )
     
     list(
-      scores = purrr::map_dbl(results, "result"),
+      score = purrr::map_dbl(results, "result"),
       scorer = "exact",
       metadata = purrr::map(results, "metadata")
     )
@@ -243,7 +243,7 @@ detect_exact <- function(case_sensitive = FALSE) {
 }
 
 detect_exact_impl <- function(sample, case_sensitive) {
-  answer <- trimws(gsub("[[:punct:]]", "", sample$output))
+  answer <- trimws(gsub("[[:punct:]]", "", sample$result))
   target <- trimws(gsub("[[:punct:]]", "", sample$target))
 
   if (!case_sensitive) {
@@ -279,7 +279,7 @@ detect_answer <- function(format = c("line", "word", "letter")) {
     )
 
     list(
-      scores = purrr::map_dbl(results, "result"),
+      score = purrr::map_dbl(results, "result"),
       scorer = "answer",
       metadata = purrr::map(results, "metadata")
     )
@@ -294,7 +294,7 @@ detect_answer_impl <- function(sample, format) {
     "ANSWER:\\s*(.+)$"
   )
 
-  matches <- regexec(pattern, sample$output, perl = TRUE)
+  matches <- regexec(pattern, sample$result, perl = TRUE)
   if (matches[[1]][1] == -1) {
     return(list(
       result = 0,
@@ -307,7 +307,7 @@ detect_answer_impl <- function(sample, format) {
     ))
   }
 
-  answer <- regmatches(sample$output, matches)[[1]][2]
+  answer <- regmatches(sample$result, matches)[[1]][2]
   matched <- tolower(trimws(answer)) == tolower(trimws(sample$target))
 
   list(

@@ -4,19 +4,22 @@
 \alias{generate}
 \title{Convert a chat to a solver function}
 \usage{
-generate(chat)
+generate(solver_chat)
 }
 \arguments{
-\item{chat}{An ellmer chat object, such as from \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}
+\item{solver_chat}{An ellmer chat object, such as from \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}
 }
 \value{
 The output of \code{generate()} is another function. That function takes in
-a vector of \code{input}s and returns a list of length 2:
+a vector of \code{input}s, as well as a solver chat by the
+name of \code{solver_chat} with the default supplied to \code{generate()} itself,
+and returns a list of length 2:
 \itemize{
 \item \verb{[[1]]} is the final response from the solver, and
 \item \verb{[[2]]} are the ellmer chat objects that led to that answer.
 }
 
+Both slots should have length equal to the number of \code{input}s.
 The \code{input}s are evaluated in parallel, not in the sense of multiple R
 sessions, but in the sense of multiple, asynchronous HTTP requests using
 \verb{$chat_parallel()}.

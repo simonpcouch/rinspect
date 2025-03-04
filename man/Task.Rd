@@ -32,7 +32,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   # create a new Task
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat = chat_claude()),
+    solver = generate(chat_claude()),
     scorer = model_graded_qa()
   )
 
@@ -51,10 +51,11 @@ scoring.
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
-to \code{Sys.getenv("INSPECT_LOG_DIR")}.}
+to \code{inspect_log_dir()}.}
 
 \item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
-the solver and scorer will append columns to this data.}
+\code{epochs} may duplicate rows, and the solver and scorer will append
+columns to this data.}
 
 \item{\code{solver}}{The solver function passed to \verb{$new()}.}
 
@@ -96,11 +97,10 @@ Create a new Task object
 
 \item{\code{solver}}{A function that takes the vector \code{dataset$input} as its first
 argument and determines a value approximating \code{dataset$target}.
-Its return value should be a list with elements \code{outputs} (a vector of the
-final responses, the same length as \code{dataset$input}) and \code{solvers}
+Its return value should be a list with elements \code{result} (a vector of the
+final responses, the same length as \code{dataset$input}) and \code{solver_chat}
 (the list of ellmer chats used to solve the inputs, also the same length
-as \code{dataset$input}). Or, just supply an ellmer chat
-(e.g. \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}) and rinspect will take care of the details.}
+as \code{dataset$input}). See \code{\link[=generate]{generate()}} for the simplest example.}
 
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. See

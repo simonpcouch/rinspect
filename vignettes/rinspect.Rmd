@@ -35,7 +35,7 @@ if (!should_eval) {
 At their core, LLM evals are composed of three pieces:
 
 1) **Datasets** contain a set of labelled samples. Datasets are just a tibble with columns `input` and `target`, where `input` is a prompt and `target` is either literal value(s) or grading guidance.
-2) **Solvers** evaluate the `input` in the dataset and produce a final result (hopefully) approximating `target`. In rinspect, the simplest solver is just an ellmer chat (e.g. `ellmer::chat_claude()`) wrapped in `generate()`, i.e. `generate(chat = ellmer::chat_claude()`), which will call the Chat object's `$chat()` method and return whatever it returns.
+2) **Solvers** evaluate the `input` in the dataset and produce a final result (hopefully) approximating `target`. In rinspect, the simplest solver is just an ellmer chat (e.g. `ellmer::chat_claude()`) wrapped in `generate()`, i.e. `generate(ellmer::chat_claude()`), which will call the Chat object's `$chat()` method and return whatever it returns.
 3) **Scorers** evaluate the final output of solvers. They may use text
 comparisons, model grading, or other custom schemes to determine how well the solver approximated the `target` based on the `input`. 
 
@@ -92,7 +92,7 @@ LLM evaluation with rinspect happens in two main steps:
 ```{r create-task, eval = should_eval}
 are_task <- Task$new(
   dataset = are,
-  solver = generate(chat = chat_claude()),
+  solver = generate(chat_claude()),
   scorer = model_graded_qa(partial_credit = TRUE),
   name = "An R Eval"
 )
@@ -116,7 +116,7 @@ if (should_eval) {
 After evaluation, the task contains information from the solving and scoring steps. Here's what the model responded to that first question with:
 
 ```{r output-1}
-cat(are_task$samples$output[1])
+cat(are_task$samples$result[1])
 ```
 
 The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column. `model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generated the final response as the model to score solutions.
@@ -132,7 +132,7 @@ knitr::include_graphics("https://cdn-useast1.kapwing.com/static/templates/3-spid
 This technique is called "model grading" or "LLM-as-a-judge." Done correctly, model grading is an effective and scalable solution to scoring. That said, it's not without its faults. Here's what the grading model thought of the response:
 
 ```{r}
-cat(are_task$samples$scorer[[1]]$last_turn()@text)
+cat(are_task$samples$scorer_chat[[1]]$last_turn()@text)
 ```
 
 ## Analyzing the results
@@ -180,7 +180,7 @@ These questions can be explored by evaluating Tasks against different solvers an
 
 ```{r are-task-openai, eval = should_eval}
 are_task_openai <- are_task$clone()
-are_task_openai$eval(chat = chat_openai(model = "gpt-4o"))
+are_task_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
 
 ```{r save-are-task-openai}
@@ -198,8 +198,8 @@ Using this data, we can quickly juxtapose those evaluation results (TODO: this s
 get_model <- function(c) c$get_model()
 are_task_eval <-
   bind_rows(
-    mutate(are_task_data, model = purrr::map_chr(scorer, get_model)), 
-    mutate(are_task_openai$samples, model = purrr::map_chr(scorer, get_model))
+    mutate(are_task_data, model = purrr::map_chr(solver_chat, get_model)), 
+    mutate(are_task_openai$samples, model = purrr::map_chr(solver_chat, get_model))
   ) %>%
     mutate(grade = case_when(
       score == 1 ~ "Correct",

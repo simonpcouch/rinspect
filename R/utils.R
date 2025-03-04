@@ -33,7 +33,7 @@ check_log_dir <- function(x, call = caller_env()) {
 
 # miscellaneous ---------
 solver_chat <- function(sample) {
-  solver <- sample$solver[[1]]
+  solver <- sample$solver_chat[[1]]
   solver$clone()$set_turns(list())
 }
 
