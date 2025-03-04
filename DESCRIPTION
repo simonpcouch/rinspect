@@ -29,7 +29,8 @@ Imports:
     rlang,
     R6,
     tibble,
-    withr
+    withr,
+    rstudioapi
 Suggests: 
     ggplot2,
     knitr,
