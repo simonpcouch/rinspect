@@ -206,7 +206,7 @@ Task <- R6::R6Class("Task",
         results = eval_log_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
-          scores = results_scores(tsk$samples$metadata[[1]]$scorer_name)
+          scores = results_scores(self$samples$metadata[[1]]$scorer_name)
         ),
         stats = eval_log_stats(
           started_at = samples$solver[[1]]$get_turns()[[1]]@completed,
