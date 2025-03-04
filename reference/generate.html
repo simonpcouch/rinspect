@@ -45,23 +45,26 @@ its raw responses.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate</span><span class="op">(</span><span class="va">chat</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate</span><span class="op">(</span><span class="va">solver_chat</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-chat">chat<a class="anchor" aria-label="anchor" href="#arg-chat"></a></dt>
+<dl><dt id="arg-solver-chat">solver_chat<a class="anchor" aria-label="anchor" href="#arg-solver-chat"></a></dt>
 <dd><p>An ellmer chat object, such as from <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The output of <code>generate()</code> is another function. That function takes in
-a vector of <code>input</code>s and returns a list of length 2:</p><ul><li><p><code>[[1]]</code> is the final response from the solver, and</p></li>
+a vector of <code>input</code>s, as well as a solver chat by the
+name of <code>solver_chat</code> with the default supplied to <code>generate()</code> itself,
+and returns a list of length 2:</p><ul><li><p><code>[[1]]</code> is the final response from the solver, and</p></li>
 <li><p><code>[[2]]</code> are the ellmer chat objects that led to that answer.</p></li>
-</ul><p>The <code>input</code>s are evaluated in parallel, not in the sense of multiple R
+</ul><p>Both slots should have length equal to the number of <code>input</code>s.
+The <code>input</code>s are evaluated in parallel, not in the sense of multiple R
 sessions, but in the sense of multiple, asynchronous HTTP requests using
 <code>$chat_parallel()</code>.</p>
     </div>

@@ -72,9 +72,9 @@ dataset and produce a final result (hopefully) approximating
 <code>target</code>. In rinspect, the simplest solver is just an ellmer
 chat (e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>) wrapped in
 <code><a href="../reference/generate.html">generate()</a></code>,
-i.e. <code>generate(chat = ellmer::chat_claude()</code>), which will
-call the Chat object’s <code>$chat()</code> method and return whatever
-it returns.</li>
+i.e. <code>generate(ellmer::chat_claude()</code>), which will call the
+Chat object’s <code>$chat()</code> method and return whatever it
+returns.</li>
 <li>
 <strong>Scorers</strong> evaluate the final output of solvers. They
 may use text comparisons, model grading, or other custom schemes to
@@ -179,7 +179,7 @@ in a <code>Task</code>.</li>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">are_task</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Task.html">Task</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  dataset <span class="op">=</span> <span class="va">are</span>,</span>
-<span>  solver <span class="op">=</span> <span class="fu"><a href="../reference/generate.html">generate</a></span><span class="op">(</span>chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  solver <span class="op">=</span> <span class="fu"><a href="../reference/generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  scorer <span class="op">=</span> <span class="fu"><a href="../reference/scorer_model.html">model_graded_qa</a></span><span class="op">(</span>partial_credit <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"An R Eval"</span></span>
 <span><span class="op">)</span></span>
@@ -196,21 +196,21 @@ interactive Inspect log viewer.</li>
 scoring steps. Here’s what the model responded to that first question
 with:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">output</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">result</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Yes, to show proportions instead of counts while maintaining the</span></span>
 <span><span class="co">#&gt; stacked clarity segments, you can use the `position = "fill"` argument</span></span>
-<span><span class="co">#&gt; in `geom_bar()`. This will normalize each bar to the same height (1 or</span></span>
-<span><span class="co">#&gt; 100%) while preserving the relative proportions of clarity within each</span></span>
-<span><span class="co">#&gt; cut. Here's the modified code:</span></span>
+<span><span class="co">#&gt; in `geom_bar()`. Here's the modified code:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
 <span><span class="co">#&gt; geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; This will create a bar chart where each bar has a total height of 1,</span></span>
-<span><span class="co">#&gt; and the segments within each bar show the proportion of diamonds with</span></span>
-<span><span class="co">#&gt; each clarity level for that particular cut.</span></span></code></pre>
+<span><span class="co">#&gt; This will create a stacked bar chart where each bar has the same height</span></span>
+<span><span class="co">#&gt; (1.0 or 100%), and the segments within each bar show the proportion of</span></span>
+<span><span class="co">#&gt; diamonds with each clarity level within that cut category. This makes</span></span>
+<span><span class="co">#&gt; it easier to compare the relative distribution of clarity across</span></span>
+<span><span class="co">#&gt; different cuts.</span></span></code></pre>
 <p>The task also contains score information from the scoring step. We’ve
 used <code><a href="../reference/scorer_model.html">model_graded_qa()</a></code> as our scorer, which uses another
 model to evaluate the quality of our solver’s solutions against the
@@ -231,31 +231,28 @@ correctly, model grading is an effective and scalable solution to
 scoring. That said, it’s not without its faults. Here’s what the grading
 model thought of the response:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">scorer</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">last_turn</span><span class="op">(</span><span class="op">)</span><span class="op">@</span><span class="va">text</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">scorer_chat</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">last_turn</span><span class="op">(</span><span class="op">)</span><span class="op">@</span><span class="va">text</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Let me analyze this:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The submission suggests using `position = "fill"` which will normalize</span></span>
-<span><span class="co">#&gt; each bar to a height of 1 (or 100%). However, this is explicitly stated</span></span>
-<span><span class="co">#&gt; as incorrect in the criterion.</span></span>
+<span><span class="co">#&gt; The submission suggests using `position = "fill"` which makes each bar</span></span>
+<span><span class="co">#&gt; have a height of 1 (or 100%) and shows the relative proportions of</span></span>
+<span><span class="co">#&gt; clarity within each cut category. However, this is explicitly noted as</span></span>
+<span><span class="co">#&gt; incorrect in the criterion.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The criterion specifically wants the proportion to be calculated</span></span>
-<span><span class="co">#&gt; relative to the total number of diamonds in the dataset (using</span></span>
-<span><span class="co">#&gt; `count/sum(count)`), not just normalizing within each cut category.</span></span>
-<span><span class="co">#&gt; This is an important distinction:</span></span>
+<span><span class="co">#&gt; The criterion wants the actual proportion of diamonds with a given cut</span></span>
+<span><span class="co">#&gt; relative to the total number of diamonds (using `count/sum(count)`),</span></span>
+<span><span class="co">#&gt; not just standardized heights within each cut category. This is a</span></span>
+<span><span class="co">#&gt; fundamentally different calculation:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - `position = "fill"` makes each bar sum to 1, showing the relative</span></span>
-<span><span class="co">#&gt; distribution within each cut</span></span>
-<span><span class="co">#&gt; - `y = after_stat(count) / sum(after_stat(count))` shows the true</span></span>
-<span><span class="co">#&gt; proportion of each cut relative to the total number of diamonds</span></span>
+<span><span class="co">#&gt; - `position = "fill"` shows the distribution of clarity within each cut</span></span>
+<span><span class="co">#&gt; (each bar sums to 1)</span></span>
+<span><span class="co">#&gt; - `y = after_stat(count)/sum(after_stat(count))` shows the true</span></span>
+<span><span class="co">#&gt; proportion of each cut relative to the total dataset</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The submission's approach would give misleading results as it doesn't</span></span>
-<span><span class="co">#&gt; show the actual proportion of diamonds with each cut in the overall</span></span>
-<span><span class="co">#&gt; dataset. It's showing something different (the relative distribution of</span></span>
-<span><span class="co">#&gt; clarity within each cut).</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Since the solution provided is explicitly mentioned as incorrect in the</span></span>
-<span><span class="co">#&gt; criterion and produces different results from what was asked for, this</span></span>
-<span><span class="co">#&gt; is an incorrect answer.</span></span>
+<span><span class="co">#&gt; show the actual proportions of cuts in the dataset, which is what was</span></span>
+<span><span class="co">#&gt; specifically asked for. The solution provided is incorrect according to</span></span>
+<span><span class="co">#&gt; the specified criterion.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; GRADE: I</span></span></code></pre></div>
 </div>
@@ -297,7 +294,7 @@ vs. partially correct vs. incorrect answers:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="rinspect_files/figure-html/plot-1-1.png" alt="A ggplot2 bar plot, showing Claude was correct most of the time." width="700"></p>
 <p>Claude answered fully correctly in 14 out of 28 samples, and
-partially correctly 6 times. For me, this leads to all sorts of
+partially correctly 7 times. For me, this leads to all sorts of
 questions:</p>
 <ul>
 <li>Are there any models that are cheaper than Claude that would do just
@@ -316,7 +313,7 @@ OpenAI’s GPT-4o, we just need to clone the object and then run
 <code>$eval()</code> with a different solver <code>chat</code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">are_task_openai</span> <span class="op">&lt;-</span> <span class="va">are_task</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">are_task_openai</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span>chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">chat_openai</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">are_task_openai</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span>solver_chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">chat_openai</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Any arguments to solving or scoring functions can be passed directly
 to <code>$eval()</code>, allowing for quickly evaluating tasks across
 several parameterizations.</p>
@@ -326,8 +323,8 @@ several parameterizations.</p>
 <code class="sourceCode R"><span><span class="va">get_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">c</span><span class="op">)</span> <span class="va">c</span><span class="op">$</span><span class="fu">get_model</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">are_task_eval</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">are_task_data</span>, model <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">scorer</span>, <span class="va">get_model</span><span class="op">)</span><span class="op">)</span>, </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">are_task_openai</span><span class="op">$</span><span class="va">samples</span>, model <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">scorer</span>, <span class="va">get_model</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">are_task_data</span>, model <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">solver_chat</span>, <span class="va">get_model</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">are_task_openai</span><span class="op">$</span><span class="va">samples</span>, model <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">solver_chat</span>, <span class="va">get_model</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>grade <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">score</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"Correct"</span>,</span>

@@ -81,12 +81,13 @@ scoring.</p></div>
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
     <p></p><div class="r6-fields"><dl><dt><code>dir</code></dt>
 <dd><p>The directory where evaluation logs will be written to. Defaults
-to <code>Sys.getenv("INSPECT_LOG_DIR")</code>.</p></dd>
+to <code><a href="inspect_log_dir.html">inspect_log_dir()</a></code>.</p></dd>
 
 
 <dt><code>samples</code></dt>
 <dd><p>A tibble representing the evaluation. Based on the <code>dataset</code>,
-the solver and scorer will append columns to this data.</p></dd>
+<code>epochs</code> may duplicate rows, and the solver and scorer will append
+columns to this data.</p></dd>
 
 
 <dt><code>solver</code></dt>
@@ -134,11 +135,10 @@ the solver and scorer will append columns to this data.</p></dd>
 <dt><code>solver</code></dt>
 <dd><p>A function that takes the vector <code>dataset$input</code> as its first
 argument and determines a value approximating <code>dataset$target</code>.
-Its return value should be a list with elements <code>outputs</code> (a vector of the
-final responses, the same length as <code>dataset$input</code>) and <code>solvers</code>
+Its return value should be a list with elements <code>result</code> (a vector of the
+final responses, the same length as <code>dataset$input</code>) and <code>solver_chat</code>
 (the list of ellmer chats used to solve the inputs, also the same length
-as <code>dataset$input</code>). Or, just supply an ellmer chat
-(e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>) and rinspect will take care of the details.</p></dd>
+as <code>dataset$input</code>). See <code><a href="generate.html">generate()</a></code> for the simplest example.</p></dd>
 
 
 <dt><code>scorer</code></dt>
@@ -298,7 +298,7 @@ automatically in <code>$eval()</code>.</p><div class="section">
 <span class="r-in"><span>  <span class="co"># create a new Task</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk</span> <span class="op">&lt;-</span> <span class="va">Task</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    dataset <span class="op">=</span> <span class="va">simple_addition</span>,</span></span>
-<span class="r-in"><span>    solver <span class="op">=</span> <span class="fu"><a href="generate.html">generate</a></span><span class="op">(</span>chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    solver <span class="op">=</span> <span class="fu"><a href="generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    scorer <span class="op">=</span> <span class="fu"><a href="scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
