@@ -12,3 +12,4 @@ inst/inspect_ai
 ^codecov\.yml$
 ^data-raw$
 .mypy_cache
+CLAUDE.md
