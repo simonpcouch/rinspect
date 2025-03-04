@@ -15,6 +15,9 @@
 #' The usual flow of LLM evaluation with Tasks calls `$new()` and then
 #' `$eval()`.
 #' 
+#' @seealso [generate()] for the simplest possible solver, and 
+#' [scorer_model] and [scorer_detect] for two built-in approaches to 
+#' scoring.
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 #'   library(ellmer)
@@ -296,28 +299,6 @@ set_id_column <- function(dataset, call = caller_env()) {
   }
   
   invisible(dataset)
-}
-
-#' Convert a chat to a solver function
-#'
-#' @param chat An ellmer chat object, such as from [ellmer::chat_claude()]
-#'
-#' @return A solver function that can be used with Task
-#' @export
-generate <- function(chat) {
-  ch <- chat
-  carrier::crate(
-    function(inputs, ..., chat = ch) {
-      ch <- chat$clone()
-      res <- ch$chat_parallel(inputs)
-
-      list(
-        outputs = purrr::map_chr(res, function(c) c$last_turn()@text),
-        solvers = res
-      )
-    },
-    ch = ch
-  )
 }
 
 join_epochs <- function(samples, epochs) {

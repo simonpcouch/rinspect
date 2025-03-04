@@ -42,6 +42,11 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 }
 
 }
+\seealso{
+\code{\link[=generate]{generate()}} for the simplest possible solver, and
+\link{scorer_model} and \link{scorer_detect} for two built-in approaches to
+scoring.
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
