@@ -31,6 +31,8 @@ test_that("Task R6 class works", {
     tsk$samples,
     c("input", "target", "id", "output", "solver", "score", "scorer", "metadata")
   )
+
+  expect_equal(tsk, .last_task)
 })
 
 test_that("Task with epochs works", {

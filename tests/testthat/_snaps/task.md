@@ -11,6 +11,7 @@
       tsk
     Output
       An evaluation task simple_addition.
+      Explore interactively with `.last_task$view()`.
 
 # check_dataset works
 

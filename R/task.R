@@ -237,7 +237,7 @@ Task <- R6::R6Class("Task",
         )
       }
       env <- as.environment("pkg:rinspect")
-      env$.last_task <- self$samples
+      env$.last_task <- self
       invisible(NULL)
     }
   )
