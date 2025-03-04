@@ -45,3 +45,11 @@
       Error in `initialize()`:
       ! `dataset` is missing required columns input and target.
 
+# Task errors informatively with duplicate ids
+
+    Code
+      Task$new(dataset = d, solver = function() { }, scorer = function() { })
+    Condition
+      Error in `initialize()`:
+      ! Duplicated values found in the id column. Each ID must be unique.
+

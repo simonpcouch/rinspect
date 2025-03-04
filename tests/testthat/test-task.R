@@ -101,3 +101,59 @@ test_that("join_epochs() works", {
   expect_equal(joined$epoch, rep(1:2, 3))
   expect_equal(joined$id, rep(1:3, each = 2))
 })
+
+test_that("set_id_column works", {
+  # no existing `id`
+  df <- tibble::tibble(input = c("a", "b"), target = c("c", "d"))
+  result <- set_id_column(df)
+  
+  expect_equal(nrow(result), 2)
+  expect_true("id" %in% names(result))
+  expect_equal(result$id, 1:2)
+
+  # existing `id``
+  df <- tibble::tibble(input = c("a", "b"), target = c("c", "d"), id = c(5, 10))
+  result <- set_id_column(df)
+  
+  expect_equal(nrow(result), 2)
+  expect_true("id" %in% names(result))
+  expect_equal(result$id, c(5, 10))
+})
+
+test_that("Task preserves existing id column", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  d <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5"),
+    id = c(10, 20)
+  )
+  
+  tsk <- Task$new(
+    dataset = d,
+    solver = function() {},
+    scorer = function() {}
+  )
+  
+  expect_equal(tsk$samples$id, c(10, 20))
+})
+
+test_that("Task errors informatively with duplicate ids", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  
+  d <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5"),
+    id = c(10, 10)
+  )
+  
+  expect_snapshot(
+    Task$new(
+      dataset = d,
+      solver = function() {},
+      scorer = function() {}
+    ),
+    error = TRUE
+  )
+})

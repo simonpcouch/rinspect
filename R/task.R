@@ -93,8 +93,7 @@ Task <- R6::R6Class("Task",
       self$solver <- solver
       self$scorer <- scorer
 
-      dataset$id <- seq_len(nrow(dataset))
-      self$samples <- dataset
+      self$samples <- set_id_column(dataset)
     },
 
     #' @description
@@ -282,6 +281,21 @@ check_dataset <- function(dataset, call = caller_env()) {
     )
   }
 
+  invisible(dataset)
+}
+
+set_id_column <- function(dataset, call = caller_env()) {
+  if ("id" %in% names(dataset)) {
+    if (any(duplicated(dataset$id))) {
+      cli::cli_abort(
+        "Duplicated values found in the {.field id} column. Each ID must be unique.",
+        call = call
+      )
+    }
+  } else {
+    dataset$id <- seq_len(nrow(dataset))
+  }
+  
   invisible(dataset)
 }
 
