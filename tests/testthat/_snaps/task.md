@@ -3,20 +3,14 @@
     Code
       tsk
     Output
-      An evaluation task.
-      Dataset: simple_addition
-      Solver: generate(chat_claude())
-      Scorer: model_graded_qa()
+      An evaluation task simple_addition.
 
 ---
 
     Code
       tsk
     Output
-      An evaluation task.
-      Dataset: simple_addition
-      Solver: generate(chat_claude())
-      Scorer: model_graded_qa()
+      An evaluation task simple_addition.
 
 # check_dataset works
 

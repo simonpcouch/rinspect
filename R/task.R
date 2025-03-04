@@ -81,14 +81,10 @@ Task <- R6::R6Class("Task",
     ) {
       force(name)
       check_dataset(dataset)
-      solver_name <- deparse(substitute(solver))
-      scorer_name <- deparse(substitute(scorer))
       check_log_dir(dir)
       check_function(solver)
 
       private$dataset_name <- name
-      private$solver_name <- solver_name
-      private$scorer_name <- scorer_name
       self$dir <- dir
       self$solver <- solver
       self$scorer <- scorer
@@ -232,8 +228,6 @@ Task <- R6::R6Class("Task",
 
   private = list(
     dataset_name = NULL,
-    solver_name = NULL,
-    scorer_name = NULL,
 
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {
@@ -253,19 +247,24 @@ Task <- R6::R6Class("Task",
 #' @importFrom cli cat_line format_inline col_grey
 print.Task <- function(x, ...) {
   dataset_name <- x$.__enclos_env__$private$dataset_name
-  solver_name <- x$.__enclos_env__$private$solver_name
-  scorer_name <- x$.__enclos_env__$private$scorer_name
 
-  cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')}."))
-  cli::cat_line(cli::format_inline("Dataset: {.field {dataset_name}}"))
-  cli::cat_line(cli::format_inline("Solver: {.field {solver_name}}"))
-  cli::cat_line(cli::format_inline("Scorer: {.field {scorer_name}}"))
+  cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')} {.field {dataset_name}}."))
+
+  if (has_scores(x$samples)) {
+    cli::cat_line(cli::format_inline(
+      "Explore interactively with {.run .last_task$view()}."
+    ))
+  }
 
   invisible(x)
 }
 
 has_output <- function(samples) {
   "output" %in% names(samples) && length(samples$output) > 0
+}
+
+has_scores <- function(samples) {
+  "score" %in% names(samples) && length(samples$score) > 0
 }
 
 check_dataset <- function(dataset, call = caller_env()) {
