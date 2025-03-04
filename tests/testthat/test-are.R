@@ -1,4 +1,5 @@
 test_that("are is an appropriate task dataset", {
+  withr::local_envvar(INSPECT_LOG_DIR = withr::local_tempdir())
   tsk <- Task$new(
     are,
     "The R Eval",
