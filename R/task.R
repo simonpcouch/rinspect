@@ -59,6 +59,12 @@ Task <- R6::R6Class("Task",
     #' @field scorer The scorer function passed to `$new()`.
     scorer = NULL,
 
+    #' @field metric A named list of metric functions to apply to scoring results.
+    metric = NULL,
+
+    #' @field metrics The metrics calculated in `metric()`. 
+    metrics = NULL,
+
     #' @description
     #' Create a new Task object
     #'
@@ -72,13 +78,20 @@ Task <- R6::R6Class("Task",
     #' @param scorer A function that evaluates how well the solver's return value
     #' approximates the corresponding elements of `dataset$target`. See
     #' [model-based scoring][scorer_model] for examples.
+    #' @param metric A metric summarizing the results from the scorer. Built-in
+    #' scorers are associated with default metrics based on Miller (2024).
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
+    #' 
+    #' @source 
+    #' "Adding Error Bars to Evals: A Statistical Approach to Language Model 
+    #' Evaluations." Miller (2024). https://arxiv.org/pdf/2411.00640
     initialize = function(
       dataset,
       solver,
       scorer,
+      metric = NULL,
       name = deparse(substitute(dataset)),
       dir = inspect_log_dir()
     ) {
@@ -86,6 +99,8 @@ Task <- R6::R6Class("Task",
       check_dataset(dataset)
       check_log_dir(dir)
       check_function(solver)
+      # TODO: for non-built in scorers, what to do?
+      check_function(metric, allow_null = TRUE)
 
       private$dataset_name <- name
       self$dir <- dir
@@ -110,7 +125,8 @@ Task <- R6::R6Class("Task",
     },
 
     #' @description
-    #' Score the task by running the scorer
+    #' Score the task by running the scorer and then applying metrics to
+    #' its results.
     #'
     #' @param ... Additional arguments passed to the scorer function.
     #'
@@ -134,6 +150,20 @@ Task <- R6::R6Class("Task",
       }
       self$samples$metadata <- scorer_res$metadata
       
+      self$metrics <- 
+        list2(
+          mean = apply_metric(self$samples$score, mean),
+          standard_error = if ("epoch" %in% names(self$samples)) {
+            apply_metric(
+              self$samples$score,
+              standard_error,
+              cluster = self$samples$id
+            )
+          } else {
+            apply_metric(self$samples$score, standard_error)
+          }
+        )
+
       invisible(self)
     },
 
@@ -210,7 +240,10 @@ Task <- R6::R6Class("Task",
         results = eval_log_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
-          scores = results_scores(self$samples$metadata[[1]]$scorer_name)
+          scores = results_scores(
+            name = self$samples$metadata[[1]]$scorer_name,
+            metrics = self$metrics
+          )
         ),
         stats = eval_log_stats(
           started_at = samples$solver_chat[[1]]$get_turns()[[1]]@completed,

@@ -161,3 +161,26 @@ test_that("Task errors informatively with duplicate ids", {
     error = TRUE
   )
 })
+
+test_that("standard errors are clustered by default when `epochs > 1`", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_claude()),
+    scorer = model_graded_qa()
+  )
+  tsk$eval(epochs = 2)
+  
+  expect_named(tsk$metrics$standard_error$options, "cluster")
+})

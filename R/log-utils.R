@@ -275,11 +275,11 @@ active_file <- function() {
   active_document$path
 }
 
-results_scores <- function(scorer_name) {
+results_scores <- function(name, metrics) {
   list(list(
-    name = scorer_name,
-    scorer = scorer_name,
+    name = name,
+    scorer = name,
     params = structure(list(), names = character(0)),
-    metrics = structure(list(), names = character(0))
+    metrics = metrics
   ))
 }
