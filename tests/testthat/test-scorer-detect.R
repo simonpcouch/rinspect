@@ -15,7 +15,7 @@ test_that("detect_includes works", {
     result = c("The answer is C", "The answer is D"),
     target = c("c", "d")
   )
-  
+
   tsk_insensitive <- Task$new(
     dataset = simple_df,
     solver = function() {},
@@ -25,7 +25,7 @@ test_that("detect_includes works", {
   tsk_insensitive$score()
 
   expect_equal(tsk_insensitive$samples$score, c(1, 1))
-  
+
   tsk_sensitive <- Task$new(
     dataset = simple_df,
     solver = function() {},
@@ -49,7 +49,7 @@ test_that("detect_match works", {
     result = c("The answer is C", "The answer is D"),
     target = c("c", "d")
   )
-  
+
   tsk_insensitive <- Task$new(
     dataset = simple_df,
     solver = function() {},
@@ -58,7 +58,7 @@ test_that("detect_match works", {
   tsk_insensitive$scorer <- detect_match(case_sensitive = FALSE)
   tsk_insensitive$score()
   expect_equal(tsk_insensitive$samples$score, c(1, 1))
-  
+
   tsk_sensitive <- Task$new(
     dataset = simple_df,
     solver = function() {},
@@ -70,6 +70,7 @@ test_that("detect_match works", {
 })
 
 test_that("detect_pattern works", {
+  skip_if(getRversion() > "4.4.3")
   tsk <- example_task(scored = FALSE)
   tsk$scorer <- detect_pattern("(\\d+)\\s*=\\s*(\\d+)")
   tsk$score()
@@ -148,7 +149,7 @@ test_that("detect_exact works", {
     result = c(ex_task$samples$target[1], "non-matching output"),
     target = ex_task$samples$target
   )
-  
+
   tsk <- Task$new(
     dataset = exact_df,
     solver = function() {},
@@ -165,7 +166,7 @@ test_that("detect_exact works", {
     result = c("ANSWER: C", "ANSWER: d"),
     target = c("ANSWER: c", "ANSWER: d")
   )
-  
+
   tsk_insensitive <- Task$new(
     dataset = case_df,
     solver = function() {},
@@ -174,7 +175,7 @@ test_that("detect_exact works", {
   tsk_insensitive$scorer <- detect_exact(case_sensitive = FALSE)
   tsk_insensitive$score()
   expect_equal(tsk_insensitive$samples$score, c(1, 1))
-  
+
   tsk_sensitive <- Task$new(
     dataset = case_df,
     solver = function() {},
@@ -192,7 +193,7 @@ test_that("detect_answer works", {
     result = paste("ANSWER:", ex_task$samples$target),
     target = ex_task$samples$target
   )
-  
+
   tsk <- Task$new(
     dataset = answer_df,
     solver = function() {},
@@ -209,7 +210,7 @@ test_that("detect_answer works", {
     result = paste("ANSWER: ", ex_task$samples$target),
     target = ex_task$samples$target
   )
-  
+
   tsk_whitespace <- Task$new(
     dataset = whitespace_df,
     solver = function() {},
@@ -234,7 +235,7 @@ test_that("detect_answer works", {
       "C"
     )
   )
-  
+
   tsk_line <- Task$new(
     dataset = format_df,
     solver = function() {},
