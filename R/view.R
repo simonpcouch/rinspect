@@ -100,12 +100,7 @@ inspect_view_impl <- function(
                 headers <- lapply(files, function(f) {
                   file_path <- file.path(dir, f)
                   if (file.exists(file_path)) {
-                    # TODO: in Inspect, only these smaller fields are read 
-                    # for performance.
-                    # not clear to me that jsonlite supports this, so may
-                    # need to transition from the package?
-                    content <- jsonlite::fromJSON(file_path)
-                    content[!names(content) %in% c("samples", "logging")]
+                    content <- eval_log_read_headers(file_path)
                   } else {
                     NULL
                   }

@@ -70,3 +70,18 @@ eval_log_write <- function(x = eval_log_new(), dir = inspect_log_dir()) {
     path = file.path(dir, eval_log_filename(x))
   )
 }
+
+# eval log files are quite relational, where the `samples` and `logging` fields
+# take up the most storage by far. reading with `simplifyVector = FALSE` is
+# much faster, so read the whole thing, subset out what we need, and
+# then write/read the simplified version. (#26)
+header_fields <- 
+  c("version", "status", "eval", "plan", "results", "stats", "reductions")
+
+eval_log_read_headers <- function(x) {
+  # read only the needed fields without simplifying
+  res_fields <- jsonlite::fromJSON(x, simplifyVector = FALSE)[header_fields]
+
+  # write/read the small fields, simplifying this time around
+  jsonlite::fromJSON(jsonlite::toJSON(res_fields, auto_unbox = TRUE))
+}
