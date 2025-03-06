@@ -3,6 +3,10 @@
 \name{Task}
 \alias{Task}
 \title{Creating and evaluating tasks}
+\source{
+"Adding Error Bars to Evals: A Statistical Approach to Language Model
+Evaluations." Miller (2024). https://arxiv.org/pdf/2411.00640
+}
 \description{
 Evaluation \code{Task}s provide a flexible data structure for evaluating LLM-based
 tools.
@@ -60,6 +64,10 @@ columns to this data.}
 \item{\code{solver}}{The solver function passed to \verb{$new()}.}
 
 \item{\code{scorer}}{The scorer function passed to \verb{$new()}.}
+
+\item{\code{metric}}{A named list of metric functions to apply to scoring results.}
+
+\item{\code{metrics}}{The metrics calculated in \code{metric()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -85,6 +93,7 @@ Create a new Task object
   dataset,
   solver,
   scorer,
+  metric = NULL,
   name = deparse(substitute(dataset)),
   dir = inspect_log_dir()
 )}\if{html}{\out{</div>}}
@@ -105,6 +114,9 @@ as \code{dataset$input}). See \code{\link[=generate]{generate()}} for the simple
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. See
 \link[=scorer_model]{model-based scoring} for examples.}
+
+\item{\code{metric}}{A metric summarizing the results from the scorer. Built-in
+scorers are associated with default metrics based on Miller (2024).}
 
 \item{\code{name}}{A name for the evaluation task. Defaults to
 \code{deparse(substitute(dataset))}.}
@@ -138,7 +150,8 @@ The Task object (invisibly)
 \if{html}{\out{<a id="method-Task-score"></a>}}
 \if{latex}{\out{\hypertarget{method-Task-score}{}}}
 \subsection{Method \code{score()}}{
-Score the task by running the scorer
+Score the task by running the scorer and then applying metrics to
+its results.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$score(...)}\if{html}{\out{</div>}}
 }

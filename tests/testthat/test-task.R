@@ -182,5 +182,5 @@ test_that("standard errors are clustered by default when `epochs > 1`", {
   )
   tsk$eval(epochs = 2)
   
-  expect_named(tsk$metrics$standard_error$options, "cluster")
+  expect_true("cluster" %in% names(tsk$metrics$standard_error$arguments))
 })

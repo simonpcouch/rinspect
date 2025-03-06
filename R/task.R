@@ -152,15 +152,14 @@ Task <- R6::R6Class("Task",
       
       self$metrics <- 
         list2(
-          mean = apply_metric(self$samples$score, mean),
+          mean = logged(mean)(self$samples$score),
           standard_error = if ("epoch" %in% names(self$samples)) {
-            apply_metric(
-              self$samples$score,
-              standard_error,
+            logged(standard_error)(
+              self$samples$score, 
               cluster = self$samples$id
             )
           } else {
-            apply_metric(self$samples$score, standard_error)
+            logged(standard_error)(self$samples$score)
           }
         )
 
@@ -242,7 +241,7 @@ Task <- R6::R6Class("Task",
           completed_samples = nrow(samples),
           scores = results_scores(
             name = self$samples$metadata[[1]]$scorer_name,
-            metrics = self$metrics
+            metrics = rename_metric_fields(self$metrics)
           )
         ),
         stats = eval_log_stats(
@@ -361,4 +360,10 @@ has_last_task <- function() {
   }
 
   exists(".last_task", as.environment("pkg:rinspect"))
+}
+
+rename_metric_fields <- function(metrics) {
+  metrics$options <- metrics$arguments
+  metrics$arguments <- NULL
+  metrics
 }

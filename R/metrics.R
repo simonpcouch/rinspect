@@ -1,11 +1,3 @@
-apply_metric <- function(scores,
-                         metric,
-                         ...,
-                         name = deparse(substitute(metric))) {
-  force(name)
-  
-  list2(name = name, value = metric(scores, ...), options = dots_list(...))
-}
 
 # ad-hoc metric functions ---------------------------------------------------
 standard_error <- function(x, cluster = NULL) {
