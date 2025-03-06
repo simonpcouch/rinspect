@@ -1,0 +1,214 @@
+---
+title: "Custom solvers"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = rlang::is_installed("ggplot2")
+)
+
+cat <- function(x, width = 0.9 * getOption("width")) {
+  lines <- unlist(strsplit(x, "\n"))
+  wrapped <- unlist(lapply(lines, strwrap, width = width))
+  base::cat(wrapped, sep = "\n")
+}
+
+withr::local_envvar(list(INSPECT_LOG_DIR = "vignettes/data/logs/"))
+
+# don't set this as the default `eval`, but use it as a
+# flag for the computationally intensive steps
+should_eval <- identical(Sys.getenv("RINSPECT_SHOULD_EVAL"), "true")
+
+if (!should_eval) {
+  load("data/btw_claude.rda")
+  load("data/btw_openai.rda")
+}
+```
+
+In the "Getting started with rinspect" vignette, we introduced evaluation `Task`s with a basic analysis on "An R Eval." Using the built-in solver `generate()`, we passed inputs to models and treated their raw responses as the final result. rinspect supports supplying arbitrary functions as solvers, though. In this example, we'll use a custom solver to explore the following question:
+
+> Does equipping models with the ability to peruse package documentation make them better at writing R code?
+
+We'll briefly reintroduce the `are` dataset, define the custom solver, and then see whether Claude does any better on the `are` Task using the custom solver compared to plain `generate()`.
+
+First, loading the required packages:
+
+```{r setup}
+#| message: false
+#| warning: false
+#| eval: true
+library(rinspect)
+library(ellmer)
+library(btw)
+
+library(dplyr)
+library(ggplot2)
+```
+
+## An R eval dataset
+
+From the `are` docs:
+
+> An R Eval is a dataset of challenging R coding problems. Each `input` is a question about R code which could be solved on first-read only by human experts and, with a chance to read documentation and run some code, by  fluent data scientists. Solutions are in `target` and enable a fluent  data scientist to evaluate whether the solution deserves full, partial, or no credit.
+
+```{r explore-dataset}
+glimpse(are)
+```
+
+At a high level:
+
+- `title`:  A unique identifier for the problem.
+- `input`: The question to be answered.
+- `target`: The solution, often with a description of notable features of a correct solution.
+- `domain`, `task`, and `knowledge` are pieces of metadata describing the kind of R coding challenge.
+- `source`: Where the problem came from, as a URL. Many of these coding problems are adapted "from the wild" and include the kinds of context usually available to those answering questions.
+
+In the introductory vignette, we just provided the `input`s as-is to an ellmer chat's `$chat()` method (via the built-in `generate()` solver). In this vignette, we'll compare those results to an approach resulting from first giving the models a chance to read relevant R package documentation.
+
+## Custom solvers
+
+To help us better understand how solvers work, lets look at the implementation of `generate()`. `generate()` is a function factory, meaning that the function itself outputs a function.
+
+TODO: should generate actually just take a vector and then call `as.list()` internally?
+
+```{r}
+generate(solver_chat = chat_claude)
+```
+
+While, in documentation, I've mostly written "`generate()` just calls `$chat()`," there are a couple extra tricks up `generate()`'s sleeves:
+
+1) The chat is first cloned with `$clone()` so that the original chat object isn't modified once rinspect calls it.
+2) Rather than `$chat()`, `generate()` calls `$chat_parallel()`. This is why `generate()` takes `inputs`--e.g. the whole `input` column--rather than a single `input`. `$chat_parallel()` will send off all of the requests in parallel (not in the usual R sense of multiple R processes, but in the sense of asychronous HTTP requests), greatly reducing the amount of time it takes to run evaluations.
+
+The function that `generate` outputs takes in a list of `inputs` and outputs a list with two elements:
+
+* `result` is the final result from the solver. In this case, `purrr::map_chr(res, function(c) c$last_turn()@text)` just grabs the text from the last assistant run and returns it. `result` is a vector of length equal to `inputs`—it should be able to be tacked onto `task$samples` as another column.
+* `solver_chat` is a list of chats that led to the `result`. This may seem redundant with `result`, but is important to supply to rinspect so that the package can log what happened during the solving process and display it in the log viewer.
+
+We will work with a slightly modified version of `generate()` that equips models with the ability to peruse R package documentation before answering. We will do so using the btw package, available on GitHub at <https://posit-dev.github.io/btw/>. Among other things, btw provides a function `btw_register_tools()` that registers an ellmer chat with tools to explore documentation.
+
+```{r}
+#| eval: false
+ch <- chat_claude()
+btw_register_tools(ch, include = "docs")
+```
+
+```
+✔ Registered tool btw_tool_get_installed_packages
+✔ Registered tool btw_tool_get_package_help_topics
+✔ Registered tool btw_tool_get_help_page
+✔ Registered tool btw_tool_get_available_vignettes_in_package
+✔ Registered tool btw_tool_get_vignette_from_package
+```
+
+`btw_register_tools()` modifies the chat object in place, so I can use the chat's `$chat()` method to interact with it like before. As an example, after registering btw with a Claude Sonnet 3.7 chat object, I can ask it about this package. At the time of writing, rinspect is not on CRAN, and Claude Sonnet 3.7 completed training several months before I started working on it. Nonetheless, the model is able to tell me about how custom solvers work:
+
+```{r}
+#| eval: false
+ch$chat("How do custom solvers work in rinspect?")
+```
+
+
+> I'll help you find information about custom solvers in the 
+> rinspect package. Let me first check if the rinspect package is 
+> installed and then explore its documentation.
+> 
+> <snip>The models lets us know it's reading a bunch of documentation.<\snip>
+> 
+> To create a custom solver, you need to:
+> 
+> 1. Define a function that:
+>    - Takes a vector of inputs as its first argument
+>    - Returns a list with two elements:
+>      - `result`: A vector of final responses (same length as 
+> input)
+>      - `solver_chat`: The list of ellmer chat objects used (same 
+> length as input)
+> 
+> 2. Your custom solver can include additional logic to:
+>    - Preprocess inputs before sending to the LLM
+>    - Post-process model responses
+>    - Implement special handling like multi-turn conversations
+>    - Incorporate tools or external knowledge
+>    - Add retry mechanisms or fallbacks
+>
+> <snip> Yada yada yada. </yada>
+
+Pretty spot-on. But will this capability help the models better answer questions in R? `are` is built from questions about base R and popular packages like dplyr and shiny, information about which is presumably baked into their weights.
+
+The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_register_tools()` before calling `$chat_parallel()`.
+
+```{r}
+btw_solver <- function(inputs, ..., solver_chat) {
+  ch <- solver_chat$clone()
+  btw_register_tools(ch, include = "docs")
+  res <- ch$chat_parallel(inputs)
+  browser()
+  list(
+    result = purrr::map_chr(res, function(c) c$last_turn()@text), 
+    solver_chat = res
+  )
+}
+```
+
+This solver is ready to situate in a Task and get solving!
+
+## Running the solver
+
+Situate a custom solver in a dataset in the same way you would with a built-in one:
+
+```{r create-task, eval = should_eval}
+are_task_btw <- Task$new(
+  dataset = are,
+  solver = btw_solver,
+  scorer = model_graded_qa(partial_credit = TRUE),
+  name = "An R Eval"
+)
+
+are_task_btw
+```
+
+As in the introductory vignette, we supply the `are` dataset and the built-in scorer `model_graded_qa()`. Then, we use `$eval()` to evaluate our custom solver, evaluate the scorer, and then explore a persistent log of the results in the interactive Inspect log viewer.
+
+```{r solve-and-score, eval = should_eval}
+are_task_btw$eval(solver_chat = chat_claude())
+```
+
+Any arguments to solving or scoring functions can be passed directly to `$eval()`, allowing for quickly evaluating tasks across several parameterizations. We'll just use Claude Sonnet 3.7 for now.
+
+```{r save-are-task-scored}
+#| include: false
+if (should_eval) {
+  save(are_task_btw, file = "vignettes/articles/data/solvers-are_task_btw.rda")
+}
+```
+
+Claude answered fully correctly in `r sum(are_task_data$grade == "Correct")` out of `r nrow(are_task_data)` samples, and partially correctly `r sum(are_task_data$grade == "Partially Correct")` times. What were we initially interested in, though?
+
+> Does equipping models with the ability to peruse package documentation make them better at writing R code?
+
+In order to quantify "better," we need to also run this evaluation _without_ the model being able to access documentation.
+
+Using the same code from the introductory vignette:
+
+```{r}
+are_task <- Task$new(
+  dataset = are,
+  solver = generate(solver_chat = chat_claude()),
+  scorer = model_graded_qa(partial_credit = TRUE),
+  name = "An R Eval"
+)
+
+are_task$eval()
+```
+
+(Note that we also could have used `are_task_btw$set_solver()` here if we didn't want to recreate the task.)
+
+```{r save-are-task-openai}
+#| include: false
+if (should_eval) {
+  save(are_task, file = "vignettes/articles/data/solvers-are_task.rda")
+}
+```

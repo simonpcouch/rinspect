@@ -13,3 +13,4 @@ inst/inspect_ai
 ^data-raw$
 .mypy_cache
 CLAUDE.md
+^vignettes/articles$
