@@ -63,10 +63,7 @@ eval_log_eval <- function(
 
 eval_log_plan <- function(
     name = "plan",
-    steps = list(list(
-      solver = "generate",
-      params = structure(list(), names = character(0))
-    )),
+    steps = eval_log_plan_steps(),
     config = list()
 ) {
   list(
@@ -86,6 +83,13 @@ eval_log_results <- function(
     completed_samples = completed_samples,
     scores = scores
   )
+}
+
+eval_log_plan_steps <- function(name, arguments) {
+  list(list(
+    solver = name,
+    params = arguments
+  ))
 }
 
 eval_log_stats <- function(

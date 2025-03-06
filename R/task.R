@@ -98,6 +98,7 @@ Task <- R6::R6Class("Task",
     ) {
       force(name)
 
+      solver_name <- deparse(substitute(solver))
       scorer_name <- deparse(substitute(scorer))
 
       check_dataset(dataset)
@@ -108,7 +109,7 @@ Task <- R6::R6Class("Task",
 
       private$dataset_name <- name
       self$dir <- dir
-      self$solver <- solver
+      self$solver <- logged(solver, fn_name = solver_name)
       self$scorer <- logged(scorer, fn_name = scorer_name)
 
       self$samples <- set_id_column(dataset)
@@ -121,9 +122,9 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     solve = function(...) {
-      solver_res <- self$solver(as.list(self$samples$input), ...)
-      self$samples$result <- solver_res$result
-      self$samples$solver_chat <- solver_res$solver_chat
+      private$solutions <- self$solver(as.list(self$samples$input), ...)
+      self$samples$result <- private$solutions$value$result
+      self$samples$solver_chat <- private$solutions$value$solver_chat
       
       invisible(self)
     },
@@ -143,13 +144,13 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
       
-      self$scores <- self$scorer(self$samples, ...)
-      scorer_res <- self$scores$value
+      private$scores <- self$scorer(self$samples, ...)
+      scorer_res <- private$scores$value
       self$samples$score <- scorer_res$score
       if ("scorer_chat" %in% names(scorer_res)) {
         self$samples$scorer_chat <- scorer_res$scorer_chat
       }
-      self$samples$scorer <- self$scores$name
+      self$samples$scorer <- private$scores$name
       self$samples$metadata <- scorer_res$metadata
       
       self$metrics <- 
@@ -235,11 +236,15 @@ Task <- R6::R6Class("Task",
           ),
           model = .turn_model(.last_assistant_turn(samples$solver_chat[[1]]$get_turns())),
         ),
+        plan = eval_log_plan(steps = eval_log_plan_steps(
+          name = private$solutions$name,
+          arguments = private$solutions$arguments
+        )),
         results = eval_log_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
           scores = results_scores(
-            name = self$scores$name,
+            name = private$scores$name,
             metrics = rename_metric_fields(self$metrics)
           )
         ),
@@ -248,7 +253,7 @@ Task <- R6::R6Class("Task",
           completed_at = Sys.time(),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
-        samples = eval_log_samples(samples, scores = self$scores)
+        samples = eval_log_samples(samples, scores = private$scores)
       )
 
       if (is.na(dir)) {
@@ -280,6 +285,9 @@ Task <- R6::R6Class("Task",
       env$.last_task <- self
       invisible(NULL)
     },
+
+    # The output of `logged(solver)(...)`
+    solutions = NULL,
 
     # The output of `logged(scorer)(...)`.
     scores = NULL
