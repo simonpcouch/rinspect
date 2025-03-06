@@ -101,8 +101,7 @@ model_graded_qa_impl <- function(
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
   partial_credit = FALSE,
-  scorer_chat = NULL,
-  scorer_name = "model_graded_qa"
+  scorer_chat = NULL
 ) {
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
@@ -133,8 +132,7 @@ model_graded_qa_impl <- function(
     list(
       prompt = prompts[i],
       response = responses[[i]]$last_turn()@text,
-      grade_pattern = grade_pattern,
-      scorer_name = scorer_name
+      grade_pattern = grade_pattern
     )
   })
   
@@ -219,8 +217,7 @@ model_graded_fact <- function(
       instructions = instructions,
       grade_pattern = grade_pattern,
       partial_credit = partial_credit,
-      scorer_chat = scorer_chat,
-      scorer_name = "model_graded_fact"
+      scorer_chat = scorer_chat
     )
   }
 }

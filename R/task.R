@@ -57,6 +57,7 @@ Task <- R6::R6Class("Task",
     solver = NULL,
     
     #' @field scorer The scorer function passed to `$new()`.
+    # TODO: does the setter for this need to be adjusted to apply `logged()`?
     scorer = NULL,
 
     #' @field metric A named list of metric functions to apply to scoring results.
@@ -96,6 +97,9 @@ Task <- R6::R6Class("Task",
       dir = inspect_log_dir()
     ) {
       force(name)
+
+      scorer_name <- deparse(substitute(scorer))
+
       check_dataset(dataset)
       check_log_dir(dir)
       check_function(solver)
@@ -105,7 +109,7 @@ Task <- R6::R6Class("Task",
       private$dataset_name <- name
       self$dir <- dir
       self$solver <- solver
-      self$scorer <- scorer
+      self$scorer <- logged(scorer, fn_name = scorer_name)
 
       self$samples <- set_id_column(dataset)
     },
@@ -139,25 +143,20 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
       
-      scorer_res <- self$scorer(self$samples, ...)
+      self$scores <- self$scorer(self$samples, ...)
+      scorer_res <- self$scores$value
       self$samples$score <- scorer_res$score
       if ("scorer_chat" %in% names(scorer_res)) {
         self$samples$scorer_chat <- scorer_res$scorer_chat
       }
-      # TODO: this probably should go in metadata
-      if ("scorer_name" %in% names(scorer_res$metadata[[1]])) {
-        self$samples$scorer <- scorer_res$metadata[[1]]$scorer_name
-      }
+      self$samples$scorer <- self$scores$name
       self$samples$metadata <- scorer_res$metadata
       
       self$metrics <- 
         list2(
           mean = logged(mean)(self$samples$score),
           standard_error = if ("epoch" %in% names(self$samples)) {
-            logged(standard_error)(
-              self$samples$score, 
-              cluster = self$samples$id
-            )
+            logged(standard_error)(self$samples$score, cluster = self$samples$id)
           } else {
             logged(standard_error)(self$samples$score)
           }
@@ -240,7 +239,7 @@ Task <- R6::R6Class("Task",
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
           scores = results_scores(
-            name = self$samples$metadata[[1]]$scorer_name,
+            name = self$scores$name,
             metrics = rename_metric_fields(self$metrics)
           )
         ),
@@ -249,7 +248,7 @@ Task <- R6::R6Class("Task",
           completed_at = Sys.time(),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
-        samples = eval_log_samples(samples)
+        samples = eval_log_samples(samples, scores = self$scores)
       )
 
       if (is.na(dir)) {
@@ -280,7 +279,10 @@ Task <- R6::R6Class("Task",
       env <- as.environment("pkg:rinspect")
       env$.last_task <- self
       invisible(NULL)
-    }
+    },
+
+    # The output of `logged(scorer)(...)`.
+    scores = NULL
   )
 )
 

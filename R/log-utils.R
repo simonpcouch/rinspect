@@ -100,18 +100,18 @@ eval_log_stats <- function(
   )
 }
 
-eval_log_samples <- function(dataset) {
+eval_log_samples <- function(dataset, scores) {
   res <- list()
   for (i in seq_len(nrow(dataset))) {
     sample <- dataset[i, , drop = FALSE]
-    res[[i]] <- eval_log_sample(sample)
+    res[[i]] <- eval_log_sample(sample, scores = scores)
   }
   res
 }
 
-eval_log_sample <- function(sample) {
+eval_log_sample <- function(sample, scores) {
   chat <- sample$solver_chat[[1]]
-  scorer_name <- sample$metadata[[1]]$scorer_name
+  scorer_name <- scores$name
 
   turns <- chat$get_turns()
   list(
