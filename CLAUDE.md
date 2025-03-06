@@ -2,6 +2,8 @@ You are situated inside of an R package source directory. The subdirectory `R/` 
 
 Do not add new code comments, and only remove existing code comments if the comment isn't relevant anymore.
 
+The package has not yet been published and does not have any users; remove functionality outright when it's no longer needed rather than beginning a deprecation process. No need to worry about breaking changes.
+
 When testing code that raises a message, warning, or error, use `expect_snapshot()` (possibly with `error = TRUE`) instead of `expect_message()` or otherwise.
 
 To get a sense for the style used to write and test code, read `R/task.R` and `tests/testthat/test-task.R`, respectively.
