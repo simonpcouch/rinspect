@@ -52,19 +52,36 @@ Task <- R6::R6Class("Task",
     #' `epochs` may duplicate rows, and the solver and scorer will append 
     #' columns to this data.
     samples = NULL,
-    
-    #' @field solver The solver function passed to `$new()`.
-    solver = NULL,
-    
-    #' @field scorer The scorer function passed to `$new()`.
-    # TODO: does the setter for this need to be adjusted to apply `logged()`?
-    scorer = NULL,
 
     #' @field metric A named list of metric functions to apply to scoring results.
     metric = NULL,
 
     #' @field metrics The metrics calculated in `metric()`. 
     metrics = NULL,
+    
+    #' @description
+    #' Set the solver function
+    #' 
+    #' @param x A solver function
+    #' 
+    #' @return The Task object (invisibly)
+    set_solver = function(x) {
+      x_name <- deparse(substitute(x))
+      private$solver <- logged(x, fn_name = x_name)
+      invisible(self)
+    },
+    
+    #' @description
+    #' Set the scorer function
+    #' 
+    #' @param x A scorer function
+    #' 
+    #' @return The Task object (invisibly)
+    set_scorer = function(x) {
+      x_name <- deparse(substitute(x))
+      private$scorer <- logged(x, fn_name = x_name)
+      invisible(self)
+    },
 
     #' @description
     #' Create a new Task object
@@ -109,8 +126,8 @@ Task <- R6::R6Class("Task",
 
       private$dataset_name <- name
       self$dir <- dir
-      self$solver <- logged(solver, fn_name = solver_name)
-      self$scorer <- logged(scorer, fn_name = scorer_name)
+      private$solver <- logged(solver, fn_name = solver_name)
+      private$scorer <- logged(scorer, fn_name = scorer_name)
 
       self$samples <- set_id_column(dataset)
     },
@@ -122,7 +139,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     solve = function(...) {
-      private$solutions <- self$solver(as.list(self$samples$input), ...)
+      private$solutions <- private$solver(as.list(self$samples$input), ...)
       self$samples$result <- private$solutions$value$result
       self$samples$solver_chat <- private$solutions$value$solver_chat
       
@@ -144,7 +161,7 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
       
-      private$scores <- self$scorer(self$samples, ...)
+      private$scores <- private$scorer(self$samples, ...)
       scorer_res <- private$scores$value
       self$samples$score <- scorer_res$score
       if ("scorer_chat" %in% names(scorer_res)) {
@@ -273,6 +290,10 @@ Task <- R6::R6Class("Task",
 
   private = list(
     dataset_name = NULL,
+    
+    solver = NULL,
+    
+    scorer = NULL,
 
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {
