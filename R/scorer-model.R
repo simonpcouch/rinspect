@@ -121,7 +121,7 @@ model_graded_qa_impl <- function(
   }
   
   scorer_chat <- scorer_chat$clone()
-  responses <- scorer_chat$chat_parallel(as.list(prompts), max_active = 2, rpm = 20)
+  responses <- scorer_chat$chat_parallel(as.list(prompts))
   
   scores <- purrr::map_dbl(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
