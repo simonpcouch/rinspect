@@ -104,26 +104,18 @@ copy_log_files <- function(log_dir, target_dir) {
 }
 
 write_log_dir_manifest <- function(log_dir) {
-  manifest_file <- file.path(log_dir, "manifest.json")
+  manifest_file <- file.path(log_dir, "logs.json")
   
-  log_files <- list.files(log_dir, pattern = "\\.json$", recursive = TRUE)
-  log_files <- setdiff(log_files, "manifest.json")
-  
-  file_entries <- lapply(log_files, function(f) {
-    file_path <- file.path(log_dir, f)
-    info <- file.info(file_path)
-    
-    list(
-      name = f,
-      size = as.numeric(info$size),
-      mtime = as.numeric(info$mtime) * 1000
-    )
-  })
-  
-  manifest <- list(
-    dir = normalizePath(log_dir),
-    files = file_entries
+  log_files <- list.files(
+    log_dir,
+    pattern = "\\.json$",
+    recursive = TRUE,
+    full.names = TRUE
   )
+  log_files <- setdiff(log_files, file.path(log_dir, "logs.json"))
+  
+  manifest <- lapply(log_files, eval_log_read_headers)
+  manifest <- setNames(file_entries, basename(log_files))
   
   jsonlite::write_json(
     manifest, 
@@ -136,7 +128,16 @@ write_log_dir_manifest <- function(log_dir) {
 inject_configuration <- function(html_file, log_dir) {
   content <- readLines(html_file, warn = FALSE)
   
-  log_dir_script <- sprintf('  <script id="log_dir_context" type="application/json">{"log_dir": "%s"}</script>', log_dir)
+  config_data <- list(
+    log_dir = log_dir,
+    web_path = ".",
+    deployment_type = "static",
+    version = "1.0"
+  )
+  
+  # Convert to JSON string and properly escape for HTML embedding
+  config_json <- jsonlite::toJSON(config_data, auto_unbox = TRUE)
+  log_dir_script <- sprintf('  <script id="log_dir_context" type="application/json">%s</script>', config_json)
   
   head_close_pos <- grep("</head>", content, fixed = TRUE)[1]
   if (!is.na(head_close_pos)) {
