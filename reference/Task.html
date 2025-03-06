@@ -72,6 +72,11 @@ comparisons (like <code><a href="scorer_detect.html">detect_match()</a></code>),
 
 
     <div class="section level2">
+    <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
+    <p>"Adding Error Bars to Evals: A Statistical Approach to Language Model
+Evaluations." Miller (2024). https://arxiv.org/pdf/2411.00640</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="generate.html">generate()</a></code> for the simplest possible solver, and
 <a href="scorer_model.html">scorer_model</a> and <a href="scorer_detect.html">scorer_detect</a> for two built-in approaches to
@@ -98,6 +103,14 @@ columns to this data.</p></dd>
 <dd><p>The scorer function passed to <code>$new()</code>.</p></dd>
 
 
+<dt><code>metric</code></dt>
+<dd><p>A named list of metric functions to apply to scoring results.</p></dd>
+
+
+<dt><code>metrics</code></dt>
+<dd><p>The metrics calculated in <code>metric()</code>.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -121,6 +134,7 @@ columns to this data.</p></dd>
 <span>  <span class="va">dataset</span>,</span>
 <span>  <span class="va">solver</span>,</span>
 <span>  <span class="va">scorer</span>,</span>
+<span>  metric <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/deparse.html" class="external-link">deparse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">substitute</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  dir <span class="op">=</span> <span class="fu"><a href="../reference/inspect_log_dir.html">inspect_log_dir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -145,6 +159,11 @@ as <code>dataset$input</code>). See <code><a href="generate.html">generate()</a>
 <dd><p>A function that evaluates how well the solver's return value
 approximates the corresponding elements of <code>dataset$target</code>. See
 <a href="scorer_model.html">model-based scoring</a> for examples.</p></dd>
+
+
+<dt><code>metric</code></dt>
+<dd><p>A metric summarizing the results from the scorer. Built-in
+scorers are associated with default metrics based on Miller (2024).</p></dd>
 
 
 <dt><code>name</code></dt>
@@ -181,7 +200,8 @@ approximates the corresponding elements of <code>dataset$target</code>. See
 
 </div><p></p><hr><a id="method-Task-score"></a><div class="section">
 <h3 id="method-score-">Method <code>score()</code><a class="anchor" aria-label="anchor" href="#method-score-"></a></h3>
-<p>Score the task by running the scorer</p><div class="section">
+<p>Score the task by running the scorer and then applying metrics to
+its results.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">score</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
