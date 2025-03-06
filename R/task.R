@@ -52,18 +52,36 @@ Task <- R6::R6Class("Task",
     #' `epochs` may duplicate rows, and the solver and scorer will append 
     #' columns to this data.
     samples = NULL,
-    
-    #' @field solver The solver function passed to `$new()`.
-    solver = NULL,
-    
-    #' @field scorer The scorer function passed to `$new()`.
-    scorer = NULL,
 
     #' @field metric A named list of metric functions to apply to scoring results.
     metric = NULL,
 
     #' @field metrics The metrics calculated in `metric()`. 
     metrics = NULL,
+    
+    #' @description
+    #' Set the solver function
+    #' 
+    #' @param x A solver function
+    #' 
+    #' @return The Task object (invisibly)
+    set_solver = function(x) {
+      x_name <- deparse(substitute(x))
+      private$solver <- logged(x, fn_name = x_name)
+      invisible(self)
+    },
+    
+    #' @description
+    #' Set the scorer function
+    #' 
+    #' @param x A scorer function
+    #' 
+    #' @return The Task object (invisibly)
+    set_scorer = function(x) {
+      x_name <- deparse(substitute(x))
+      private$scorer <- logged(x, fn_name = x_name)
+      invisible(self)
+    },
 
     #' @description
     #' Create a new Task object
@@ -96,6 +114,10 @@ Task <- R6::R6Class("Task",
       dir = inspect_log_dir()
     ) {
       force(name)
+
+      solver_name <- deparse(substitute(solver))
+      scorer_name <- deparse(substitute(scorer))
+
       check_dataset(dataset)
       check_log_dir(dir)
       check_function(solver)
@@ -104,8 +126,8 @@ Task <- R6::R6Class("Task",
 
       private$dataset_name <- name
       self$dir <- dir
-      self$solver <- solver
-      self$scorer <- scorer
+      private$solver <- logged(solver, fn_name = solver_name)
+      private$scorer <- logged(scorer, fn_name = scorer_name)
 
       self$samples <- set_id_column(dataset)
     },
@@ -117,9 +139,9 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     solve = function(...) {
-      solver_res <- self$solver(as.list(self$samples$input), ...)
-      self$samples$result <- solver_res$result
-      self$samples$solver_chat <- solver_res$solver_chat
+      private$solutions <- private$solver(as.list(self$samples$input), ...)
+      self$samples$result <- private$solutions$value$result
+      self$samples$solver_chat <- private$solutions$value$solver_chat
       
       invisible(self)
     },
@@ -139,28 +161,22 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
       
-      scorer_res <- self$scorer(self$samples, ...)
+      private$scores <- private$scorer(self$samples, ...)
+      scorer_res <- private$scores$value
       self$samples$score <- scorer_res$score
       if ("scorer_chat" %in% names(scorer_res)) {
         self$samples$scorer_chat <- scorer_res$scorer_chat
       }
-      # TODO: this probably should go in metadata
-      if ("scorer_name" %in% names(scorer_res$metadata[[1]])) {
-        self$samples$scorer <- scorer_res$metadata[[1]]$scorer_name
-      }
+      self$samples$scorer <- private$scores$name
       self$samples$metadata <- scorer_res$metadata
       
       self$metrics <- 
         list2(
-          mean = apply_metric(self$samples$score, mean),
+          mean = logged(mean)(self$samples$score),
           standard_error = if ("epoch" %in% names(self$samples)) {
-            apply_metric(
-              self$samples$score,
-              standard_error,
-              cluster = self$samples$id
-            )
+            logged(standard_error)(self$samples$score, cluster = self$samples$id)
           } else {
-            apply_metric(self$samples$score, standard_error)
+            logged(standard_error)(self$samples$score)
           }
         )
 
@@ -237,12 +253,16 @@ Task <- R6::R6Class("Task",
           ),
           model = .turn_model(.last_assistant_turn(samples$solver_chat[[1]]$get_turns())),
         ),
+        plan = eval_log_plan(steps = eval_log_plan_steps(
+          name = private$solutions$name,
+          arguments = private$solutions$arguments
+        )),
         results = eval_log_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
           scores = results_scores(
-            name = self$samples$metadata[[1]]$scorer_name,
-            metrics = self$metrics
+            name = private$scores$name,
+            metrics = rename_metric_fields(self$metrics)
           )
         ),
         stats = eval_log_stats(
@@ -250,7 +270,7 @@ Task <- R6::R6Class("Task",
           completed_at = Sys.time(),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
-        samples = eval_log_samples(samples)
+        samples = eval_log_samples(samples, scores = private$scores)
       )
 
       if (is.na(dir)) {
@@ -270,6 +290,10 @@ Task <- R6::R6Class("Task",
 
   private = list(
     dataset_name = NULL,
+    
+    solver = NULL,
+    
+    scorer = NULL,
 
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {
@@ -281,7 +305,13 @@ Task <- R6::R6Class("Task",
       env <- as.environment("pkg:rinspect")
       env$.last_task <- self
       invisible(NULL)
-    }
+    },
+
+    # The output of `logged(solver)(...)`
+    solutions = NULL,
+
+    # The output of `logged(scorer)(...)`.
+    scores = NULL
   )
 )
 
@@ -361,4 +391,10 @@ has_last_task <- function() {
   }
 
   exists(".last_task", as.environment("pkg:rinspect"))
+}
+
+rename_metric_fields <- function(metrics) {
+  metrics$options <- metrics$arguments
+  metrics$arguments <- NULL
+  metrics
 }

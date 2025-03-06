@@ -182,5 +182,47 @@ test_that("standard errors are clustered by default when `epochs > 1`", {
   )
   tsk$eval(epochs = 2)
   
-  expect_named(tsk$metrics$standard_error$options, "cluster")
+  expect_true("cluster" %in% names(tsk$metrics$standard_error$arguments))
+})
+
+test_that("set_solver and set_scorer methods work", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_df <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    result = c("4", "5"),
+    target = c("4", "5")
+  )
+  
+  tsk <- Task$new(
+    dataset = simple_df,
+    solver = function() {},
+    scorer = function() {}
+  )
+  
+  new_solver <- function(inputs) {
+    list(
+      result = c("4", "5"),
+      solver_chat = list(NULL, NULL)
+    )
+  }
+  tsk$set_solver(new_solver)
+  tsk$solve()
+  
+  expect_equal(tsk$samples$result, c("4", "5"))
+  
+  new_scorer <- function(samples) {
+    list(
+      score = c(1, 1),
+      metadata = list(NULL, NULL)
+    )
+  }
+  tsk$set_scorer(new_scorer)
+  tsk$score()
+  
+  expect_equal(tsk$samples$score, c(1, 1))
 })

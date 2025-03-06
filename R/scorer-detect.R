@@ -71,7 +71,6 @@ detect_includes <- function(case_sensitive = FALSE) {
     
     list(
       score = purrr::map_dbl(results, "result"),
-      scorer = "includes",
       metadata = purrr::map(results, "metadata")
     )
   }
@@ -90,11 +89,9 @@ detect_includes_impl <- function(sample, case_sensitive) {
 
   list(
     result = result,
-    scorer = "includes",
     metadata = list(
       matched = result == 1,
-      answer = answer,
-      scorer_name = "detect_includes"
+      answer = answer
     )
   )
 }
@@ -120,7 +117,6 @@ detect_match <- function(
     
     list(
       score = purrr::map_dbl(results, "result"),
-      scorer = "match",
       metadata = purrr::map(results, "metadata")
     )
   }
@@ -145,11 +141,9 @@ detect_match_impl <- function(sample, location, case_sensitive) {
 
   list(
     result = as.numeric(result),
-    scorer = "match",
     metadata = list(
       matched = result,
-      answer = answer,
-      scorer_name = "detect_match"
+      answer = answer
     )
   )
 }
@@ -174,7 +168,6 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
     
     list(
       score = purrr::map_dbl(results, "result"),
-      scorer = "pattern",
       metadata = purrr::map(results, "metadata")
     )
   }
@@ -186,11 +179,9 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
   if (matches[[1]][1] == -1) {
     return(list(
       result = 0,
-      scorer = "pattern",
       metadata = list(
         matched = FALSE,
-        answer = NA,
-        scorer_name = "detect_pattern"
+        answer = NA
       )
     ))
   }
@@ -211,11 +202,9 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
 
   list(
     result = as.numeric(matched),
-    scorer = "pattern",
     metadata = list(
       matched = matched,
-      answer = groups[1],
-      scorer_name = "detect_pattern"
+      answer = groups[1]
     )
   )
 }
@@ -236,7 +225,6 @@ detect_exact <- function(case_sensitive = FALSE) {
     
     list(
       score = purrr::map_dbl(results, "result"),
-      scorer = "exact",
       metadata = purrr::map(results, "metadata")
     )
   }
@@ -258,8 +246,7 @@ detect_exact_impl <- function(sample, case_sensitive) {
     scorer = "exact",
     metadata = list(
       matched = matched,
-      answer = answer,
-      scorer_name = "detect_exact"
+      answer = answer
     )
   )
 }
@@ -280,7 +267,6 @@ detect_answer <- function(format = c("line", "word", "letter")) {
 
     list(
       score = purrr::map_dbl(results, "result"),
-      scorer = "answer",
       metadata = purrr::map(results, "metadata")
     )
   }
@@ -298,11 +284,9 @@ detect_answer_impl <- function(sample, format) {
   if (matches[[1]][1] == -1) {
     return(list(
       result = 0,
-      scorer = "answer",
       metadata = list(
         matched = FALSE,
-        answer = NA,
-        scorer_name = "detect_answer"
+        answer = NA
       )
     ))
   }
@@ -312,11 +296,9 @@ detect_answer_impl <- function(sample, format) {
 
   list(
     result = as.numeric(matched),
-    scorer = "answer",
     metadata = list(
       matched = matched,
-      answer = answer,
-      scorer_name = "detect_answer"
+      answer = answer
     )
   )
 }
