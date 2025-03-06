@@ -35,6 +35,7 @@
 
 <p>You are situated inside of an R package source directory. The subdirectory <code>R/</code> contains source files. The subdirectory <code>tests/testthat/</code> contains corresponding tests. e.g. <code>R/task.R</code> is tested primarily in <code>tests/testthat/test-task.R</code>.</p>
 <p>Do not add new code comments, and only remove existing code comments if the comment isn’t relevant anymore.</p>
+<p>The package has not yet been published and does not have any users; remove functionality outright when it’s no longer needed rather than beginning a deprecation process. No need to worry about breaking changes.</p>
 <p>When testing code that raises a message, warning, or error, use <code>expect_snapshot()</code> (possibly with <code>error = TRUE</code>) instead of <code>expect_message()</code> or otherwise.</p>
 <p>To get a sense for the style used to write and test code, read <code>R/task.R</code> and <code>tests/testthat/test-task.R</code>, respectively.</p>
 
