@@ -166,11 +166,3 @@ move_output <- function(from_dir, to_dir) {
   
   copy_dir_contents(from_dir, to_dir)
 }
-
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
-
-caller_env <- function() {
-  parent.frame()
-}
