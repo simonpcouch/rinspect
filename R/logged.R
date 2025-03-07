@@ -23,10 +23,20 @@ logged <- function(fn, ..., fn_name = deparse(substitute(fn))) {
   # TODO: `deparse_substitute()` may not be the intended value? may want a 
   # call name instead. we'll see.
   function(...) {
-    list(
+    res <- list(
       name = fn_name,
       value = fn(...),
       arguments = dots_list(...)
     )
+
+    # R6 objects (namely, Chats and Tasks themselves) can't be written
+    # to json. Just describe them rather than logging the value.
+    for (i in seq_along(res$arguments)) {
+      if (inherits(res$arguments[[i]], "R6")) {
+        res$arguments[[i]] <- class(res$arguments[[i]])
+      }
+    }
+
+    res
   }
 }
