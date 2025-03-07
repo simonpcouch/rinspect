@@ -2,7 +2,7 @@
 % Please edit documentation in R/bundle.R
 \name{inspect_bundle}
 \alias{inspect_bundle}
-\title{Prepare viewer for deployment}
+\title{Prepare logs for deployment}
 \usage{
 inspect_bundle(
   log_dir = inspect_log_dir(),
