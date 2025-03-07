@@ -2,23 +2,57 @@
 % Please edit documentation in R/bundle.R
 \name{inspect_bundle}
 \alias{inspect_bundle}
-\title{Bundle a log directory into a static viewer}
+\title{Prepare viewer for deployment}
 \usage{
-inspect_bundle(log_dir = NULL, output_dir = NULL, overwrite = FALSE)
+inspect_bundle(
+  log_dir = inspect_log_dir(),
+  output_dir = NULL,
+  overwrite = FALSE
+)
 }
 \arguments{
-\item{log_dir}{Path to the directory containing log files. Defaults to the value of
-INSPECT_LOG_DIR environment variable or "./logs".}
+\item{log_dir}{Path to the directory containing log files. Defaults to
+\code{inspect_log_dir()}.}
 
 \item{output_dir}{Path to the directory where the bundled output will be placed.}
 
 \item{overwrite}{Whether to overwrite an existing output directory. Defaults to FALSE.}
 }
 \value{
-Invisibly returns the output directory path.
+Invisibly returns the output directory path. That directory contains:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{output_dir
+|-- index.html
+|-- robots.txt
+|-- assets
+    |--  ..
+|-- logs
+    |--  ..
+}\if{html}{\out{</div>}}
+
+\code{robots.txt} prevents crawlers from indexing the viewer. That said, many
+crawlers only read the \code{robots.txt} at the root directory of a package, so
+the file will likely be ignored if this folder isn't the root directory of
+the deployed page. \verb{assets/} is the bundled source for the viewer. \verb{logs/}
+is the \code{log_dir} as well as a \code{logs.json}, which is a manifest file for the
+directory.
 }
 \description{
 This function creates a standalone bundle of the Inspect viewer with log files
 that can be deployed statically. It copies the UI viewer files, log files, and
 generates the necessary configuration files.
 }
+\section{Deployment}{
+
+
+This function generates a directory that's ready for deployment to any
+static web server such as GitHub Pages, S3 buckets, or Netlify. If you
+have a connection to Posit Connect configured, you can deploy a directory
+of log files with the following:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{tmp_dir <- withr::local_tempdir()
+inspect_bundle(output_dir = tmp_dir, overwrite = TRUE)
+rsconnect::deployApp(tmp_dir)
+}\if{html}{\out{</div>}}
+}
+

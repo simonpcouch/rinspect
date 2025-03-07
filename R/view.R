@@ -1,4 +1,4 @@
-#' Interactive evaluation log viewer
+#' Interactively view local evaluation logs
 #'
 #' @description
 #' rinspect bundles the Inspect log viewer, an interactive app for exploring

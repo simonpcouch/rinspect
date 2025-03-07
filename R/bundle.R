@@ -1,4 +1,4 @@
-#' Bundle a log directory into a static viewer
+#' Prepare logs for deployment
 #'
 #' @description
 #' This function creates a standalone bundle of the Inspect viewer with log files
@@ -10,7 +10,37 @@
 #' @param output_dir Path to the directory where the bundled output will be placed.
 #' @param overwrite Whether to overwrite an existing output directory. Defaults to FALSE.
 #'
-#' @return Invisibly returns the output directory path.
+#' @section Deployment:
+#' 
+#' This function generates a directory that's ready for deployment to any
+#' static web server such as GitHub Pages, S3 buckets, or Netlify. If you 
+#' have a connection to Posit Connect configured, you can deploy a directory
+#' of log files with the following:
+#' 
+#' ```r
+#' tmp_dir <- withr::local_tempdir()
+#' inspect_bundle(output_dir = tmp_dir, overwrite = TRUE)
+#' rsconnect::deployApp(tmp_dir)
+#' ```
+#' 
+#' @return Invisibly returns the output directory path. That directory contains:
+#' 
+#' ```
+#' output_dir
+#' |-- index.html
+#' |-- robots.txt
+#' |-- assets
+#'     |--  ..
+#' |-- logs
+#'     |--  ..
+#' ```
+#' 
+#' `robots.txt` prevents crawlers from indexing the viewer. That said, many 
+#' crawlers only read the `robots.txt` at the root directory of a package, so
+#' the file will likely be ignored if this folder isn't the root directory of
+#' the deployed page. `assets/` is the bundled source for the viewer. `logs/`
+#' is the `log_dir` as well as a `logs.json`, which is a manifest file for the
+#' directory.
 #'
 #' @export
 inspect_bundle <- function(log_dir = inspect_log_dir(),

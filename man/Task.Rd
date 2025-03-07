@@ -61,10 +61,6 @@ to \code{inspect_log_dir()}.}
 \code{epochs} may duplicate rows, and the solver and scorer will append
 columns to this data.}
 
-\item{\code{solver}}{The solver function passed to \verb{$new()}.}
-
-\item{\code{scorer}}{The scorer function passed to \verb{$new()}.}
-
 \item{\code{metric}}{A named list of metric functions to apply to scoring results.}
 
 \item{\code{metrics}}{The metrics calculated in \code{metric()}.}
@@ -74,6 +70,8 @@ columns to this data.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-Task-set_solver}{\code{Task$set_solver()}}
+\item \href{#method-Task-set_scorer}{\code{Task$set_scorer()}}
 \item \href{#method-Task-new}{\code{Task$new()}}
 \item \href{#method-Task-solve}{\code{Task$solve()}}
 \item \href{#method-Task-score}{\code{Task$score()}}
@@ -81,6 +79,46 @@ columns to this data.}
 \item \href{#method-Task-view}{\code{Task$view()}}
 \item \href{#method-Task-log}{\code{Task$log()}}
 \item \href{#method-Task-clone}{\code{Task$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-set_solver"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-set_solver}{}}}
+\subsection{Method \code{set_solver()}}{
+Set the solver function
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_solver(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{A solver function}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-set_scorer"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-set_scorer}{}}}
+\subsection{Method \code{set_scorer()}}{
+Set the scorer function
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_scorer(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{A scorer function}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
 }
 }
 \if{html}{\out{<hr>}}
