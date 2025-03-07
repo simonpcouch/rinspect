@@ -155,6 +155,8 @@ if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
 }
 ```
 
+<br>
+
 Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval above (on the package's pkgdown site).
 
 For a cursory analysis, though, we can visualize correct vs. partially correct vs. incorrect answers:
