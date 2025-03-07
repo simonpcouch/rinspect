@@ -145,7 +145,7 @@ write_log_dir_manifest <- function(log_dir) {
   log_files <- setdiff(log_files, file.path(log_dir, "logs.json"))
   
   manifest <- lapply(log_files, eval_log_read_headers)
-  manifest <- setNames(file_entries, basename(log_files))
+  manifest <- setNames(manifest, basename(log_files))
   
   jsonlite::write_json(
     manifest, 
