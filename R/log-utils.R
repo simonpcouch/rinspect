@@ -23,10 +23,10 @@ eval_log_new <- function(
 
 # top-level entries ------------------------------------------------------------
 eval_log_eval <- function(
-    run_id = generate_id(),
+    run_id,
     created = eval_log_timestamp(),
     task,
-    task_id = generate_id(),
+    task_id,
     task_version = 0,
     task_file = active_file(),
     task_attribs = list(),

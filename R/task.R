@@ -128,6 +128,7 @@ Task <- R6::R6Class("Task",
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
+      private$task_id <- generate_id()
 
       self$samples <- set_id_column(dataset)
     },
@@ -139,6 +140,8 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     solve = function(...) {
+      private$run_id <- generate_id()
+
       private$solutions <- private$solver(as.list(self$samples$input), ...)
       self$samples$result <- private$solutions$value$result
       self$samples$solver_chat <- private$solutions$value$solver_chat
@@ -245,7 +248,9 @@ Task <- R6::R6Class("Task",
 
       eval_log <- eval_log_new(
         eval = eval_log_eval(
+          run_id = private$run_id,
           task = private$dataset_name,
+          task_id = private$task_id,
           dataset = list(
             samples = length(unique(samples$id)), 
             sample_ids = seq_len(length(unique(samples$id))), 
@@ -311,7 +316,10 @@ Task <- R6::R6Class("Task",
     solutions = NULL,
 
     # The output of `logged(scorer)(...)`.
-    scores = NULL
+    scores = NULL,
+
+    task_id = NULL,
+    run_id = NULL
   )
 )
 
