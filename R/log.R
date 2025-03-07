@@ -67,7 +67,9 @@ eval_log_write <- function(x = eval_log_new(), dir = inspect_log_dir()) {
 
   jsonlite::write_json(
     x = structure(x, class = "list"),
-    path = file.path(dir, eval_log_filename(x))
+    path = file.path(dir, eval_log_filename(x)),
+    auto_unbox = TRUE,
+    pretty = TRUE
   )
 }
 

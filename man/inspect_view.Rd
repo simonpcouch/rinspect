@@ -2,7 +2,7 @@
 % Please edit documentation in R/view.R
 \name{inspect_view}
 \alias{inspect_view}
-\title{Interactive evaluation log viewer}
+\title{Interactively view local evaluation logs}
 \usage{
 inspect_view(dir, host = "127.0.0.1", port = 7576)
 }

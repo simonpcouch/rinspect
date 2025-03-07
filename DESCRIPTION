@@ -33,6 +33,7 @@ Imports:
     rstudioapi
 Suggests: 
     ggplot2,
+    htmltools,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

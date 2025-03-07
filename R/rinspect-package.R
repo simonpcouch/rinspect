@@ -16,5 +16,7 @@ utils::globalVariables(c(
   "chat_claude",
   "head",
   "path",
-  "res"
+  "res",
+  "sd",
+  "setNames"
 ))

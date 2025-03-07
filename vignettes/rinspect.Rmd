@@ -142,18 +142,26 @@ Especially the first few times you run an eval, you'll want to inspect (ha!) its
 ```{r}
 #| label: tsk-view
 #| echo: false
-#| fig-alt: "A screenshot of the Inspect log viewer, an interactive app displaying information on the samples evaluated in this eval."
-knitr::include_graphics("data/are_viewer.png")
+#| fig-alt: "The Inspect log viewer, an interactive app displaying information on the samples evaluated in this eval."
+if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  htmltools::tags$iframe(
+    src = "../example-logs/rinspect/index.html",
+    width = "100%", 
+    height = "600px",
+    style = "border-radius: 10px; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);"
+  ) 
+} else {
+  knitr::include_graphics("data/are_viewer.png")
+}
 ```
 
-Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval specifically with the following code (TODO: code to grab from github and view).
+Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval above (on the package's pkgdown site).
 
 For a cursory analysis, though, we can visualize correct vs. partially correct vs. incorrect answers:
 
 ```{r plot-1}
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
 are_task_data <- 
-  # TODO: rename data
   are_task$samples %>% 
   mutate(grade = case_when(
     score == 1 ~ "Correct",
@@ -217,3 +225,16 @@ are_task_eval %>%
 ```
 
 If you're interested in these questions as well, check out the other vignettes in this package!
+
+```{r}
+#| include: false
+#| eval: false
+# deploy the resulting logs inside of the page by bundling them into
+# `pkgdown/assets/`
+dest_dir <- here::here("pkgdown/assets/example-logs/rinspect")
+inspect_bundle(
+  log_dir = here::here("vignettes/data/logs"), 
+  output_dir = dest_dir, 
+  overwrite = TRUE
+)
+```
