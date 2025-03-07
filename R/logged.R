@@ -14,28 +14,24 @@
 # 
 # * `name`: A string representing the name of the function called.
 # * `value`: The original return value of `fn()`.
-# * `arguments`: Arguments passed to `fn()`, captured with [rlang::dots_list()].
+# * `arguments`: Expressions representing arguments passed to `fn()`, 
+# captured with [rlang::enexprs()].
 # 
 # @examples
 # logged(mean)(x = 1:3)
 # @keywords internal
-logged <- function(fn, ..., fn_name = deparse(substitute(fn))) {
+logged <- function(fn, fn_name = deparse(substitute(fn))) {
   # TODO: `deparse_substitute()` may not be the intended value? may want a 
   # call name instead. we'll see.
   function(...) {
+    arg_exprs <- enexprs(...)
+    arg_exprs <- map(arg_exprs, expr_deparse)
+
     res <- list(
       name = fn_name,
       value = fn(...),
-      arguments = dots_list(...)
+      arguments = arg_exprs
     )
-
-    # R6 objects (namely, Chats and Tasks themselves) can't be written
-    # to json. Just describe them rather than logging the value.
-    for (i in seq_along(res$arguments)) {
-      if (inherits(res$arguments[[i]], "R6")) {
-        res$arguments[[i]] <- class(res$arguments[[i]])
-      }
-    }
 
     res
   }

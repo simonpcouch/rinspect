@@ -4,7 +4,7 @@ test_that("`logged()` works", {
     list(
       name = "mean",
       value = 2,
-      arguments = list(x = 1:3)
+      arguments = list(x = "1:3")
     )
   )
 })
