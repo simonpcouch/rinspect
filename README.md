@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rinspect
+# rinspect <a href="https://simonpcouch.github.io/rinspect/"><img src="man/figures/logo.png" align="right" height="240" alt="rinspect website" /></a>
 
 <!-- badges: start -->
 
@@ -62,6 +62,7 @@ tsk <- Task$new(
   solver = generate(chat_claude()), 
   scorer = model_graded_qa()
 )
+#> Using model = "claude-3-7-sonnet-latest".
 ```
 
 Tasks are composed of three main components:
@@ -95,7 +96,7 @@ I wanted to evaluate `chat_openai()` on this task rather than
 
 ``` r
 tsk_openai <- tsk$clone()
-tsk_openai$eval(chat = chat_openai())
+tsk_openai$eval(solver_chat = chat_openai())
 ```
 
 For an applied example, see the “Getting started with rinspect” vignette
