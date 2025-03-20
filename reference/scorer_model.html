@@ -13,7 +13,7 @@ in its response.
 
 
 The two scorers are quite similar in their implementation, but use a different
-default template to evaluate correctness."></head><body>
+default template to evaluate correctness."><meta property="og:image" content="https://simonpcouch.github.io/rinspect/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -41,8 +41,7 @@ default template to evaluate correctness."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Model-based scoring</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Model-based scoring</h1>
       <small class="dont-index">Source: <a href="https://github.com/simonpcouch/rinspect/blob/main/R/scorer-model.R" class="external-link"><code>R/scorer-model.R</code></a></small>
       <div class="d-none name"><code>scorer_model.Rd</code></div>
     </div>
@@ -137,6 +136,8 @@ The function that <code>model_graded_qa()</code>'s outputs can be passed directl
 <span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-3-7-sonnet-latest"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
 <span class="r-in"><span></span></span>
