@@ -11,9 +11,9 @@ are_task_3e <- Task$new(
   scorer = model_graded_qa(partial_credit = TRUE),
   name = "An R Eval"
 )
+are_task_openai_3e <- are_task_3e$clone()
 
 are_task_3e$eval(epochs = 3)
-are_task_openai_3e <- are_task_3e$clone()
 are_task_openai_3e$eval(epochs = 3, solver_chat = chat_openai(model = "gpt-4o"))
 
 save(are_task_3e, file = "inst/test-objects/are_task_3e.rda")
