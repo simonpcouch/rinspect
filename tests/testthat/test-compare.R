@@ -68,3 +68,24 @@ test_that("inspect_compare errors informatively", {
   expect_error(inspect_compare(are_task, are_task, conf_level = 1.1))
   expect_error(inspect_compare(are_task, are_task, conf_level = -0.1))
 })
+
+test_that("clustered standard errors behave as expected", {
+  skip_on_cran()
+  load(system.file("test-objects/are_task_3e.rda", package = "rinspect"))
+  load(system.file("test-objects/are_task_openai_3e.rda", package = "rinspect"))
+
+  comparison_clustered <- inspect_compare(are_task_3e, are_task_openai_3e)
+
+  are_task_3e$samples$epoch <- NULL
+  are_task_openai_3e$samples$epoch <- NULL
+
+  comparison_unclustered <- inspect_compare(are_task_3e, are_task_openai_3e)
+
+  expect_equal(comparison_clustered$mean_x, comparison_unclustered$mean_x)
+  expect_equal(comparison_clustered$mean_y, comparison_unclustered$mean_y)
+  expect_lte(comparison_clustered$paired_se, comparison_unclustered$paired_se)
+  expect_lte(
+    diff(comparison_clustered$conf_int),
+    diff(comparison_unclustered$conf_int)
+  )
+})
