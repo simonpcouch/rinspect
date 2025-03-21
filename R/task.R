@@ -158,6 +158,12 @@ Task <- R6::R6Class("Task",
       self$samples$solver_chat <- NA
 
       private$solutions <- private$solver(as.list(self$samples$input), ...)
+
+      # TODO: it might be nice to just run one of the inputs async and check for
+      # this earlier on so that a full eval's worth of results isn't thrown
+      # away if the output format isn't quite right.
+      private$check_solver_outputs()
+
       self$samples$result <- private$solutions$value$result
       self$samples$solver_chat <- private$solutions$value$solver_chat
       
@@ -363,6 +369,25 @@ Task <- R6::R6Class("Task",
         self$samples$epoch <- NULL
       }
       invisible(NULL)
+    },
+
+    check_solver_outputs = function() {
+      if (!all(c("result", "solver_chat") %in% names(private$solutions$value))) {
+        cli::cli_abort(
+          "{.arg solver} must return slots {.field result} and 
+           {.field solver_chat}.",
+           call = call2("$solve")
+        )
+      }
+
+      first_solver_chat <- private$solutions$value$solver_chat[[1]]
+      if (!inherits(first_solver_chat, "Chat")) {
+        cli::cli_abort(
+          "Elements in the {.field solver_chat} output from {.arg solver} must be
+           ellmer Chat objects, not {.obj_type_friendly {first_solver_chat}}.",
+           call = call2("$solve")
+        )
+      }
     },
 
     # The output of `logged(solver)(...)`

@@ -192,14 +192,14 @@ test_that("set_solver and set_scorer methods work", {
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
-  simple_df <- tibble::tibble(
+  simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     result = c("4", "5"),
     target = c("4", "5")
   )
   
   tsk <- Task$new(
-    dataset = simple_df,
+    dataset = simple_addition,
     solver = function() {},
     scorer = function() {}
   )
@@ -207,7 +207,7 @@ test_that("set_solver and set_scorer methods work", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(NULL, NULL)
+      solver_chat = list(ellmer::chat_claude(), ellmer::chat_claude())
     )
   }
   tsk$set_solver(new_solver)
@@ -259,7 +259,7 @@ test_that("Task completeness is tracked and preserved", {
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
   
-  simple_df <- tibble::tibble(
+  simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
@@ -272,7 +272,7 @@ test_that("Task completeness is tracked and preserved", {
   }
   
   tsk <- Task$new(
-    dataset = simple_df,
+    dataset = simple_addition,
     solver = generate(chat_claude()),
     scorer = mock_scorer
   )
@@ -303,23 +303,75 @@ test_that("Task completeness is tracked and preserved", {
   original_scores <- tsk$samples$score
   
   tsk_clone$eval()
-  expect_equal(nrow(tsk_clone$samples), nrow(simple_df))
+  expect_equal(nrow(tsk_clone$samples), nrow(simple_addition))
   
   expect_equal(tsk$samples$result, original_results)
   expect_equal(tsk$samples$score, original_scores)
   
   # test re-evaluation with epochs
   tsk_epochs <- Task$new(
-    dataset = simple_df,
+    dataset = simple_addition,
     solver = generate(chat_claude()),
     scorer = mock_scorer
   )
   
   tsk_epochs$eval(epochs = 2)
-  expect_equal(nrow(tsk_epochs$samples), nrow(simple_df) * 2)
+  expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 2)
   expect_true("epoch" %in% names(tsk_epochs$samples))
   
   tsk_epochs$eval(epochs = 3)
-  expect_equal(nrow(tsk_epochs$samples), nrow(simple_df) * 3)
+  expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 3)
   expect_true("epoch" %in% names(tsk_epochs$samples))
+})
+
+test_that("Task errors informatively with bad solver output", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+  
+  bad_solver_missing_fields <- function(inputs) {
+    list(
+      wrong_name = c("4", "5")
+      # missing solver_chat
+    )
+  }
+  
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = bad_solver_missing_fields,
+    scorer = function() {}
+  )
+  
+  expect_snapshot(tsk$solve(), error = TRUE)
+})
+
+test_that("Task detects non-Chat objects in solver_chat", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+  
+  bad_solver_wrong_type <- function(inputs) {
+    list(
+      result = c("4", "5"),
+      solver_chat = list("not a Chat object", "also not a Chat object")
+    )
+  }
+  
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = bad_solver_wrong_type,
+    scorer = function() {}
+  )
+  
+  expect_snapshot(tsk$solve(), error = TRUE)
 })

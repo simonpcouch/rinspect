@@ -64,3 +64,19 @@
       Warning:
       Clearing scores from previous scorer.
 
+# Task errors informatively with bad solver output
+
+    Code
+      tsk$solve()
+    Condition
+      Error in `$solve`:
+      ! `solver` must return slots result and solver_chat.
+
+# Task detects non-Chat objects in solver_chat
+
+    Code
+      tsk$solve()
+    Condition
+      Error in `$solve`:
+      ! Elements in the solver_chat output from `solver` must be ellmer Chat objects, not a string.
+
