@@ -6,4 +6,6 @@ The package has not yet been published and does not have any users; remove funct
 
 When testing code that raises a message, warning, or error, use `expect_snapshot()` (possibly with `error = TRUE`) instead of `expect_message()` or otherwise.
 
-To get a sense for the style used to write and test code, read `R/task.R` and `tests/testthat/test-task.R`, respectively.
+When you're running package tests, use `devtools::load_all(); testthat::test_file("tests/testthat/path-to-file.R")`. If you encounter namespacing issues, don't delete tests that otherwise should work, and instead ask me what to do.
+
+To get a sense for the style used to write and test code, read `R/task.R` and `tests/testthat/test-task.R`, respectively. Notable, **do not comment your code** besides roxygen comments.
