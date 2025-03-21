@@ -242,12 +242,16 @@ Task <- R6::R6Class("Task",
         private$reset_for_new_eval()
       }
 
+      cli::cli_progress_step("Solving")
       self$solve(..., epochs = epochs)
+
+      cli::cli_progress_step("Scoring")
       self$score(...)
       
       self$log(self$dir)
       private$stash_last_task()
 
+      cli::cli_process_done()
       if (view) {
         self$view()
       }
