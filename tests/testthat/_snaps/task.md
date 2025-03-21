@@ -48,3 +48,19 @@
       Error in `initialize()`:
       ! Duplicated values found in the id column. Each ID must be unique.
 
+# Task completeness is tracked and preserved
+
+    Code
+      .res <- tsk$set_solver(generate(chat_claude()))
+    Condition
+      Warning:
+      Clearing results from previous solver.
+
+---
+
+    Code
+      .res <- tsk$set_scorer(mock_scorer)
+    Condition
+      Warning:
+      Clearing scores from previous scorer.
+

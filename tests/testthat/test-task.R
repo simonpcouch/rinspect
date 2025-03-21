@@ -250,3 +250,76 @@ test_that("task ids are deterministic", {
   expect_equal(tsk_id_1, tsk_id_2)
   expect_equal(nchar(tsk_id_1), 22)
 })
+
+test_that("Task completeness is tracked and preserved", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+  
+  simple_df <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+  
+  mock_scorer <- function(samples) {
+    list(
+      score = c(1),
+      metadata = list(NULL)
+    )
+  }
+  
+  tsk <- Task$new(
+    dataset = simple_df,
+    solver = generate(chat_claude()),
+    scorer = mock_scorer
+  )
+  
+  expect_false(tsk$.__enclos_env__$private$solved)
+  expect_false(tsk$.__enclos_env__$private$scored)
+  
+  tsk$solve()
+  expect_true(tsk$.__enclos_env__$private$solved)
+  
+  tsk$score()
+  expect_true(tsk$.__enclos_env__$private$scored)
+  
+  expect_snapshot(.res <- tsk$set_solver(generate(chat_claude())))
+  expect_false(tsk$.__enclos_env__$private$solved)
+  
+  tsk$solve()
+  expect_true(tsk$.__enclos_env__$private$solved)
+  
+  expect_snapshot(.res <- tsk$set_scorer(mock_scorer))
+  expect_false(tsk$.__enclos_env__$private$scored)
+  
+  tsk$solve()
+  tsk$score()
+  
+  tsk_clone <- tsk$clone()
+  original_results <- tsk$samples$result
+  original_scores <- tsk$samples$score
+  
+  tsk_clone$eval()
+  expect_equal(nrow(tsk_clone$samples), nrow(simple_df))
+  
+  expect_equal(tsk$samples$result, original_results)
+  expect_equal(tsk$samples$score, original_scores)
+  
+  # test re-evaluation with epochs
+  tsk_epochs <- Task$new(
+    dataset = simple_df,
+    solver = generate(chat_claude()),
+    scorer = mock_scorer
+  )
+  
+  tsk_epochs$eval(epochs = 2)
+  expect_equal(nrow(tsk_epochs$samples), nrow(simple_df) * 2)
+  expect_true("epoch" %in% names(tsk_epochs$samples))
+  
+  tsk_epochs$eval(epochs = 3)
+  expect_equal(nrow(tsk_epochs$samples), nrow(simple_df) * 3)
+  expect_true("epoch" %in% names(tsk_epochs$samples))
+})

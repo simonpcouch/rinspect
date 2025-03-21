@@ -68,6 +68,12 @@ Task <- R6::R6Class("Task",
     set_solver = function(x) {
       x_name <- deparse(substitute(x))
       private$solver <- logged(x, fn_name = x_name)
+      
+      if (private$solved) {
+        cli::cli_warn("Clearing results from previous solver.")
+        private$reset_solutions()
+      }
+      
       invisible(self)
     },
     
@@ -80,6 +86,12 @@ Task <- R6::R6Class("Task",
     set_scorer = function(x) {
       x_name <- deparse(substitute(x))
       private$scorer <- logged(x, fn_name = x_name)
+      
+      if (private$scored) {
+        cli::cli_warn("Clearing scores from previous scorer.")
+        private$reset_scores()
+      }
+      
       invisible(self)
     },
 
@@ -141,11 +153,15 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     solve = function(...) {
       private$run_id <- generate_id()
+      
+      self$samples$result <- NA
+      self$samples$solver_chat <- NA
 
       private$solutions <- private$solver(as.list(self$samples$input), ...)
       self$samples$result <- private$solutions$value$result
       self$samples$solver_chat <- private$solutions$value$solver_chat
       
+      private$solved <- TRUE
       invisible(self)
     },
 
@@ -163,6 +179,8 @@ Task <- R6::R6Class("Task",
         )
         return(invisible(self))
       }
+      
+      self$samples$score <- NA
       
       private$scores <- private$scorer(self$samples, ...)
       scorer_res <- private$scores$value
@@ -182,7 +200,8 @@ Task <- R6::R6Class("Task",
             logged(standard_error)(self$samples$score)
           }
         )
-
+      
+      private$scored <- TRUE
       invisible(self)
     },
 
@@ -200,6 +219,10 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     eval = function(..., epochs = 1L, view = interactive()) {
       check_number_whole(epochs, min = 1)
+      
+      if (private$solved || private$scored) {
+        private$reset_for_new_eval()
+      }
 
       if (epochs > 1) {
         self$samples <- join_epochs(self$samples, epochs)
@@ -299,6 +322,10 @@ Task <- R6::R6Class("Task",
     solver = NULL,
     
     scorer = NULL,
+    
+    solved = FALSE,
+    
+    scored = FALSE,
 
     stash_last_task = function() {
       if (!"pkg:rinspect" %in% search()) {
@@ -309,6 +336,32 @@ Task <- R6::R6Class("Task",
       }
       env <- as.environment("pkg:rinspect")
       env$.last_task <- self
+      invisible(NULL)
+    },
+    
+    reset_solutions = function() {
+      self$samples$result <- NA
+      self$samples$solver_chat <- NULL
+      private$solved <- FALSE
+      invisible(NULL)
+    },
+    
+    reset_scores = function() {
+      self$samples$score <- NA
+      self$samples$scorer_chat <- NULL
+      self$samples$metadata <- NULL
+      private$scored <- FALSE
+      invisible(NULL)
+    },
+    
+    reset_for_new_eval = function() {
+      private$reset_solutions()
+      private$reset_scores()
+      
+      if ("epoch" %in% names(self$samples)) {
+        self$samples <- self$samples[self$samples$epoch == 1, ]
+        self$samples$epoch <- NULL
+      }
       invisible(NULL)
     },
 
