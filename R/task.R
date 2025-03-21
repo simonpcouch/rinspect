@@ -128,7 +128,7 @@ Task <- R6::R6Class("Task",
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
-      private$task_id <- generate_id()
+      private$task_id <- substr(hash(c(name, solver_name, scorer_name)), 1, 22)
 
       self$samples <- set_id_column(dataset)
     },

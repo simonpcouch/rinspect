@@ -226,3 +226,27 @@ test_that("set_solver and set_scorer methods work", {
   
   expect_equal(tsk$samples$score, c(1, 1))
 })
+
+test_that("task ids are deterministic", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+
+  tsk_1 <- 
+    Task$new(
+      dataset = are,
+      solver = generate(chat_claude()),
+      scorer = model_graded_qa()
+    )
+  
+  tsk_2 <- 
+    Task$new(
+      dataset = are,
+      solver = generate(chat_claude()),
+      scorer = model_graded_qa()
+    )
+  
+  tsk_id_1 <- tsk_1$.__enclos_env__$private$task_id
+  tsk_id_2 <- tsk_2$.__enclos_env__$private$task_id
+
+  expect_equal(tsk_id_1, tsk_id_2)
+  expect_equal(nchar(tsk_id_1), 22)
+})
