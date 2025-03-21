@@ -233,14 +233,14 @@ test_that("task ids are deterministic", {
   tsk_1 <- 
     Task$new(
       dataset = are,
-      solver = generate(chat_claude()),
+      solver = generate(),
       scorer = model_graded_qa()
     )
   
   tsk_2 <- 
     Task$new(
       dataset = are,
-      solver = generate(chat_claude()),
+      solver = generate(),
       scorer = model_graded_qa()
     )
   

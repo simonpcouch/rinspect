@@ -22,10 +22,12 @@
 #' `$chat_parallel()`.
 #' 
 #' @export
-generate <- function(solver_chat) {
+generate <- function(solver_chat = NULL) {
   chat <- solver_chat
   carrier::crate(
     function(inputs, ..., solver_chat = chat) {
+      check_inherits(solver_chat, "Chat")
+
       ch <- solver_chat$clone()
       res <- ch$chat_parallel(inputs)
 
@@ -34,6 +36,7 @@ generate <- function(solver_chat) {
         solver_chat = res
       )
     },
-    chat = chat
+    chat = chat,
+    check_inherits = check_inherits
   )
 }

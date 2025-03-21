@@ -13,3 +13,9 @@ test_that("generate works", {
   expect_type(chat_res[["result"]][[1]], "character")
   expect_s3_class(chat_res[["solver_chat"]][[1]], "Chat")
 })
+
+test_that("generate() allows NULL default model", {
+  res <- generate()
+  expect_s3_class(res, "crate")
+  expect_snapshot(res(), error = TRUE)
+})
