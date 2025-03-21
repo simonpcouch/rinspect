@@ -17,6 +17,7 @@ test_that("detect_includes works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_includes(case_sensitive = FALSE))
   tsk_insensitive$score()
 
@@ -27,6 +28,7 @@ test_that("detect_includes works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_includes(case_sensitive = TRUE))
   tsk_sensitive$score()
   expect_equal(tsk_sensitive$samples$score, c(0, 0))
@@ -50,6 +52,7 @@ test_that("detect_match works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_match(case_sensitive = FALSE))
   tsk_insensitive$score()
   expect_equal(tsk_insensitive$samples$score, c(1, 1))
@@ -59,6 +62,7 @@ test_that("detect_match works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_match(case_sensitive = TRUE))
   tsk_sensitive$score()
   expect_equal(tsk_sensitive$samples$score, c(0, 0))
@@ -83,6 +87,7 @@ test_that("detect_pattern works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_pattern(
     "contains\\s+([A-Za-z])",
     case_sensitive = FALSE
@@ -95,6 +100,7 @@ test_that("detect_pattern works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_pattern(
     "contains\\s+([A-Za-z])",
     case_sensitive = TRUE
@@ -116,6 +122,7 @@ test_that("detect_pattern works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_all_false$.__enclos_env__$private$solved <- TRUE
   tsk_all_false$set_scorer(detect_pattern(
     "colors\\s+(\\w+)\\s+and\\s+(\\w+)",
     all = FALSE
@@ -128,6 +135,7 @@ test_that("detect_pattern works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_all_true$.__enclos_env__$private$solved <- TRUE
   tsk_all_true$set_scorer(detect_pattern(
     "colors\\s+(\\w+)\\s+and\\s+(\\w+)",
     all = TRUE
@@ -149,6 +157,7 @@ test_that("detect_exact works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk$.__enclos_env__$private$solved <- TRUE
   tsk$set_scorer(detect_exact())
   tsk$score()
 
@@ -165,6 +174,7 @@ test_that("detect_exact works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_exact(case_sensitive = FALSE))
   tsk_insensitive$score()
   expect_equal(tsk_insensitive$samples$score, c(1, 1))
@@ -174,6 +184,7 @@ test_that("detect_exact works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_exact(case_sensitive = TRUE))
   tsk_sensitive$score()
   expect_equal(tsk_sensitive$samples$score, c(0, 1))
@@ -192,6 +203,7 @@ test_that("detect_answer works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk$.__enclos_env__$private$solved <- TRUE
   tsk$set_scorer(detect_answer())
   tsk$score()
 
@@ -208,6 +220,7 @@ test_that("detect_answer works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_whitespace$.__enclos_env__$private$solved <- TRUE
   tsk_whitespace$set_scorer(detect_answer())
   tsk_whitespace$score()
   expect_equal(tsk_whitespace$samples$score, c(1, 1))
@@ -229,6 +242,7 @@ test_that("detect_answer works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_line$.__enclos_env__$private$solved <- TRUE
   tsk_line$set_scorer(detect_answer(format = "line"))
   tsk_line$score()
   expect_equal(tsk_line$samples$score, c(1, 0))
@@ -238,6 +252,7 @@ test_that("detect_answer works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_word$.__enclos_env__$private$solved <- TRUE
   tsk_word$set_scorer(detect_answer(format = "word"))
   tsk_word$score()
   expect_equal(tsk_word$samples$score, c(0, 1))
@@ -247,6 +262,7 @@ test_that("detect_answer works", {
     solver = function() {},
     scorer = function() {}
   )
+  tsk_letter$.__enclos_env__$private$solved <- TRUE
   tsk_letter$set_scorer(detect_answer(format = "letter"))
   tsk_letter$score()
   expect_equal(tsk_letter$samples$score, c(0, 1))

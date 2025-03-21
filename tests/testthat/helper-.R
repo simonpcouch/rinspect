@@ -26,10 +26,20 @@ example_inspect_log <- function() {
 }
 
 example_task <- function(solved = TRUE, scored = TRUE) {
-  # loads a cached `tsk` with example output
+  # loads a cached `tsk` with example output.
+  # regenerate with:
+  #> tsk <- Task$new(
+  #>   dataset = simple_addition, 
+  #>   solver = generate(chat_claude()), 
+  #>   scorer = model_graded_qa()
+  #> )
+  #> 
+  #> tsk$eval()
+  #>
+  #> save(tsk, file = "inst/test-objects/example-task.rda")
   load(
     system.file(
-      "sandbox/example-task.rda",
+      "test-objects/example-task.rda",
       package = "rinspect"
     )
   )
@@ -51,6 +61,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res$samples$result <- tsk$samples$result
   res$samples$solver_chat <- tsk$samples$solver_chat
+  res$.__enclos_env__$private$solved <- TRUE
 
   if (!scored) {
     return(res)
@@ -58,6 +69,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res$samples$score <- tsk$samples$score
   res$samples$scorer_chat <- tsk$samples$scorer_chat
+  res$.__enclos_env__$private$scored <- TRUE
 
   res
 }
