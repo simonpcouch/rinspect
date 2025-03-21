@@ -170,13 +170,16 @@ scorers are associated with default metrics based on Miller (2024).}
 \subsection{Method \code{solve()}}{
 Solve the task by running the solver
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$solve(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$solve(..., epochs = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{Additional arguments passed to the solver function.}
+
+\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to \code{1L}.}
 }
 \if{html}{\out{</div>}}
 }

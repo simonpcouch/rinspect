@@ -4,7 +4,7 @@
 \alias{generate}
 \title{Convert a chat to a solver function}
 \usage{
-generate(solver_chat)
+generate(solver_chat = NULL)
 }
 \arguments{
 \item{solver_chat}{An ellmer chat object, such as from \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}

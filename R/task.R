@@ -148,10 +148,22 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Solve the task by running the solver
     #'
+    #' @param epochs The number of times to repeat each sample. Evaluate each sample
+    #' multiple times to measure variation. Optional, defaults to `1L`.
     #' @param ... Additional arguments passed to the solver function.
     #'
     #' @return The Task object (invisibly)
-    solve = function(...) {
+    solve = function(..., epochs = 1L) {
+      check_number_whole(epochs, min = 1)
+      
+      if (private$solved) {
+        private$reset_for_new_eval()
+      }
+
+      if (epochs > 1) {
+        self$samples <- join_epochs(self$samples, epochs)
+      }
+
       private$run_id <- generate_id()
       
       self$samples$result <- NA
@@ -230,11 +242,7 @@ Task <- R6::R6Class("Task",
         private$reset_for_new_eval()
       }
 
-      if (epochs > 1) {
-        self$samples <- join_epochs(self$samples, epochs)
-      }
-
-      self$solve(...)
+      self$solve(..., epochs = epochs)
       self$score(...)
       
       self$log(self$dir)

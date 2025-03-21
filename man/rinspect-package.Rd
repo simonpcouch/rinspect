@@ -6,6 +6,8 @@
 \alias{rinspect-package}
 \title{rinspect: Large Language Model Evaluation for R}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 A port of 'Inspect', a widely adopted 'Python' framework for large language model evaluation. Specifically aimed at 'ellmer' users who want to measure the effectiveness of their LLM-based apps, the package includes facilities for prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.
 }
 \seealso{
