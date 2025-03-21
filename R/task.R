@@ -173,7 +173,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     score = function(...) {
-      if (!has_result(self$samples)) {
+      if (!private$solved) {
         cli::cli_alert_warning(
           "Task has not been solved yet. Run task$solve() first."
         )
@@ -246,7 +246,7 @@ Task <- R6::R6Class("Task",
     #'
     #' @return The Task object (invisibly)
     view = function() {
-      if (!has_result(self$samples)) {
+      if (!private$solved) {
         cli::cli_alert_warning(
           "Task has not been evaluated yet. Run task$eval() first."
         )
@@ -383,7 +383,7 @@ print.Task <- function(x, ...) {
 
   cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')} {.field {dataset_name}}."))
 
-  if (has_scores(x$samples)) {
+  if (x$.__enclos_env__$private$scored) {
     cli::cat_line(cli::format_inline(
       "Explore interactively with {.run .last_task$view()}."
     ))
@@ -392,13 +392,6 @@ print.Task <- function(x, ...) {
   invisible(x)
 }
 
-has_result <- function(samples) {
-  "result" %in% names(samples) && length(samples$result) > 0
-}
-
-has_scores <- function(samples) {
-  "score" %in% names(samples) && length(samples$score) > 0
-}
 
 check_dataset <- function(dataset, call = caller_env()) {
   check_data_frame(dataset)
