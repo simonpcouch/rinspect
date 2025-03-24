@@ -492,3 +492,22 @@ rename_metric_fields <- function(metrics) {
   metrics$arguments <- NULL
   metrics
 }
+
+rename_token_fields <- function(input_list) {
+  name_mapping <- c(
+    "input_tokens" = "input_tokens",
+    "output_tokens" = "output_tokens", 
+    "total_tokens" = "total_tokens",
+    "cache_creation_input_tokens" = "input_tokens_cache_write",
+    "cache_read_input_tokens" = "input_tokens_cache_read"
+  )
+  
+  result <- list()
+  for (name in names(input_list)) {
+    if (name %in% names(name_mapping)) {
+      result[[name_mapping[name]]] <- input_list[[name]]
+    }
+  }
+  
+  result
+}

@@ -220,16 +220,23 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
   )
 }
 
+# Inspect formats the content a bit differently depending
+# on whether the turn role is user vs. assistant.
 eval_log_metadata_grading <- function(turn) {
+  if (turn@role == "user") {
+    return(
+      list(
+        id = generate_id(),
+        content = turn@text,
+        role = "user"
+      )
+    )
+  }
+
   list(
     id = generate_id(),
-    content = list(
-      list(
-        type = "text",
-        text = turn@text
-      )
-    ),
-    source = if(turn@role == "user") "input" else "generate", 
+    content = list(list(type = "text", text = turn@text)),
+    source = "generate", 
     role = turn@role
   )
 }
