@@ -141,7 +141,7 @@ eval_log_sample <- function(sample, scores) {
     ),
     metadata = c(),
     store = c(),
-    events = translate_to_events(chat, sample = sample),
+    events = translate_to_events(sample = sample),
     model_usage = translate_to_model_usage(turns),
     # TODO: these seem to be prompts passed to the judges
     attachments = c()

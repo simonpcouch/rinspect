@@ -1,76 +1,3 @@
-translate_to_events <- function(chat, sample) {
-  turns <- chat$get_turns()
-  events <- list()
-  
-  for (i in seq_along(turns)) {
-    turn <- turns[[i]]
-    if (turn@role == "assistant") {
-      events[[i]] <- translate_to_events_assistant(turn)
-    } else {
-      events[[i]]<- translate_to_events_user(turn, sample)
-    }
-  }
-  
-  events
-}
-
-translate_to_events_user <- function(turn, sample) {
-  list(
-    sample = list(
-      input = sample$input,
-      target = sample$target, 
-      id = sample$id
-    ),
-    timestamp = eval_log_timestamp(turn@completed),
-    event = "sample_init",
-    state = list(
-      messages = list(
-        list(
-          content = turn@text,
-          source = "input",
-          role = "user"
-        )
-      ),
-      tools = list(),
-      # TODO: this is written `"tool_choice": null` from Inspect, but 
-      # jsonlite evaluates the below to `{}`
-      tool_choice = NULL,
-      store = c(),
-      output = list(
-        model = turn@json$model,
-        choices = list()
-      ),
-      completed = FALSE,
-      metadata = list()
-    )
-  )
-}
-
-translate_to_events_assistant <- function(turn) {
-  list(
-    timestamp = eval_log_timestamp(turn@completed),
-    event = "model",
-    model = turn@json$model,
-    input = list(list(
-      content = turn@text,
-      source = "generate",
-      role = turn@role
-    )),
-    tools = c(),
-    tool_choice = "none",
-    config = list(max_tokens = NA),
-    output = list(
-      model = turn@json$model,
-      choices = translate_assistant_choices(turn),
-      usage = c(
-        turn@json$usage,
-        list(total_tokens = sum(unlist(turn@json$usage)))
-      ),
-      time = 0.8
-    )
-  )
-}
-
 translate_assistant_choices <- function(turn) {
   list(list(
     message = list(
@@ -87,4 +14,350 @@ translate_assistant_choices <- function(turn) {
     # Inspect requires "Input should be 'stop', 'max_tokens', 'model_length', 'tool_calls', 'content_filter' or 'unknown' " . (#7)
     stop_reason = "stop"
   ))
+}
+
+# translates a Chat object and its corresponding sample to
+# Inspect's "event" data structure. Each pair of turns maps to
+# something like:
+# - Initialization (via the user turn)
+#   - step (action: "begin")
+#   - sample init (the user turn)
+#   - step (action: "end")
+# - Solver (same goes, with `sample_init` event being "model")
+# - Scorer (same goes, with `sample_init` event being "model")
+translate_to_events <- function(sample) {
+  solver_chat <- sample$solver_chat[[1]]
+  solver_turns <- solver_chat$get_turns()
+  solver_turn <- .last_assistant_turn(solver_turns)
+
+  time_user <- solver_turns[[1]]@completed
+  time_solver <- solver_turn@completed
+
+  events <- list()
+  events <- c(events, create_init_begin_event(time_user))
+  events <- c(events, create_sample_init_event(solver_turns[[1]], sample, time_user))
+  events <- c(events, create_init_end_event(time_user))
+  events <- c(events, create_solver_begin_event(time_user))
+  
+  events <- c(events, create_model_event(solver_turn, sample, time_solver))
+  events <- c(events, create_solver_end_event(time_solver))
+
+  if ("scorer_chat" %in% names(sample)) {
+    scorer_chat <- sample$scorer_chat[[1]]
+    scorer_turns <- solver_chat$get_turns()
+    scorer_turn <- .last_assistant_turn(scorer_turns)
+    time_scorer <- .last_assistant_turn(scorer_turns)@completed
+    
+
+    events <- c(events, create_scorer_begin_event(time_scorer))
+    events <- c(events, create_scoring_model_event(scorer_turn, sample, time_scorer))
+    events <- c(events, create_score_event(scorer_turn, sample, time_scorer))
+    events <- c(events, create_scorer_end_event(time_scorer))
+  }
+
+  events
+}
+
+create_init_begin_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "begin",
+    name = "init"
+  ))
+}
+
+create_sample_init_event <- function(turn, sample, timestamp) {
+  user_message_id <- generate_id()
+  
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "sample_init",
+    sample = list(
+      input = sample$input,
+      target = sample$target,
+      id = sample$id
+    ),
+    state = list(
+      messages = list(
+        list(
+          id = user_message_id,
+          content = sample$input,
+          source = "input",
+          role = "user"
+        )
+      ),
+      tools = list(),
+      tool_choice = NULL,
+      store = list(),
+      output = list(
+        # TODO: deduce this from the turn
+        model = "claude",
+        choices = list()
+      ),
+      completed = FALSE,
+      metadata = c()
+    )
+  ))
+}
+
+create_init_end_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "end",
+    name = "init"
+  ))
+}
+
+create_solver_begin_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "begin",
+    type = "solver",
+    name = "generate"
+  ))
+}
+
+create_model_event <- function(turn, sample, timestamp) {
+  user_message_id <- generate_id()
+  
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "model",
+    model = turn@json$model,
+    input = list(
+      list(
+        id = user_message_id,
+        content = sample$input,
+        source = "input",
+        role = "user"
+      )
+    ),
+    tools = list(),
+    tool_choice = "none",
+    config = list(
+      max_tokens = 4096
+    ),
+    output = list(
+      model = turn@json$model,
+      choices = list(
+        list(
+          message = list(
+            id = generate_id(),
+            content = list(
+              list(
+                type = "text",
+                text = turn@text
+              )
+            ),
+            source = "generate",
+            role = "assistant"
+          ),
+          stop_reason = "stop"
+        )
+      ),
+      usage = rename_token_fields(turn@json$usage),
+      time = 100000
+    ),
+    call = list(
+      request = list(
+        messages = list(
+          list(
+            role = "user",
+            content = sample$input
+          )
+        ),
+        tools = list(),
+        model = turn@json$model,
+        max_tokens = 4096,
+        extra_headers = list(
+          `x-irid` = generate_id()
+        )
+      ),
+      response = list(
+        id = paste0("msg_", generate_id()),
+        content = list(
+          list(
+            citations = NULL,
+            text = turn@text,
+            type = "text"
+          )
+        ),
+        model = turn@json$model,
+        role = "assistant",
+        stop_reason = "end_turn",
+        stop_sequence = NULL,
+        type = "message",
+        usage = list(
+          cache_creation_input_tokens = 0,
+          cache_read_input_tokens = 0,
+          input_tokens = turn@json$usage$input_tokens,
+          output_tokens = turn@json$usage$output_tokens
+        )
+      ),
+      time = 100000
+    ),
+    completed = events_timestamp(timestamp),
+    working_time = 100000
+  ))
+}
+
+create_solver_end_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "end",
+    type = "solver",
+    name = "generate"
+  ))
+}
+
+create_scorer_begin_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "begin",
+    type = "scorer",
+    name = "model_graded_qa"
+  ))
+}
+
+create_scoring_model_event <- function(turn, sample, timestamp) {
+  user_id <- generate_id()
+  
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "model",
+    model = turn@json$model,
+    input = list(
+      list(
+        id = user_id,
+        content = c(),
+        role = "user"
+      )
+    ),
+    tools = list(),
+    tool_choice = "none",
+    config = list(
+      max_tokens = 4096
+    ),
+    output = list(
+      model = turn@json$model,
+      choices = list(
+        list(
+          message = list(
+            id = generate_id(),
+            content = list(
+              list(
+                type = "text",
+                text = c()
+              )
+            ),
+            source = "generate",
+            role = "assistant"
+          ),
+          stop_reason = "stop"
+        )
+      ),
+      usage = rename_token_fields(turn@json$usage),
+      time = 100000
+    ),
+    call = list(
+      request = list(
+        messages = list(
+          list(
+            role = "user",
+            content = c()
+          )
+        ),
+        tools = list(),
+        model = turn@json$model,
+        max_tokens = 4096,
+        extra_headers = list(
+          `x-irid` = generate_id()
+        )
+      ),
+      response = list(
+        id = paste0("msg_", generate_id()),
+        content = list(
+          list(
+            citations = NULL,
+            text = c(),
+            type = "text"
+          )
+        ),
+        model = turn@json$model,
+        role = "assistant",
+        stop_reason = "end_turn",
+        stop_sequence = NULL,
+        type = "message",
+        usage = rename_token_fields(turn@json$usage),
+        time = 100000
+      )),
+    completed = events_timestamp(timestamp),
+    working_time = 100000
+  ))
+}
+
+create_score_event <- function(turn, sample, timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "score",
+    score = list(
+      value = "C",
+      answer = turn@text,
+      explanation = turn@text,
+      metadata = list(
+        grading = list(
+          list(
+            id = generate_id(),
+            content = c(),
+            role = "user"
+          ),
+          list(
+            id = generate_id(),
+            content = list(
+              list(
+                type = "text",
+                text = turn@text
+              )
+            ),
+            source = "generate",
+            role = "assistant"
+          )
+        )
+      )
+    ),
+    target = sample$target,
+    intermediate = FALSE
+  ))
+}
+
+create_scorer_end_event <- function(timestamp) {
+  list(list(
+    timestamp = events_timestamp(timestamp),
+    working_start = 100000,
+    event = "step",
+    action = "end",
+    type = "scorer",
+    name = "model_graded_qa"
+  ))
+}
+
+# the events log the timestamp a bit differently than everywhere
+# else in the log
+events_timestamp <- function(time) {
+  sub(pattern = "(\\d{2})(\\d{2})$", replacement = "\\1:\\2", 
+    x = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"))
 }
