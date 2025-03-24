@@ -308,12 +308,12 @@ Task <- R6::R6Class("Task",
           completed_samples = nrow(samples),
           scores = results_scores(
             name = private$scores$name,
-            metrics = rename_metric_fields(self$metrics)
+            metrics = map(self$metrics, rename_metric_fields)
           )
         ),
         stats = eval_log_stats(
-          started_at = samples$solver_chat[[1]]$get_turns()[[1]]@completed,
-          completed_at = Sys.time(),
+          started_at = format(samples$solver_chat[[1]]$get_turns()[[1]]@completed, "%Y-%m-%dT%H:%M:%S%z"),
+          completed_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
         samples = eval_log_samples(samples, scores = private$scores)
@@ -485,7 +485,7 @@ has_last_task <- function() {
 }
 
 rename_metric_fields <- function(metrics) {
-  metrics$options <- metrics$arguments
+  metrics$params <- metrics$arguments
   metrics$arguments <- NULL
   metrics
 }

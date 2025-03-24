@@ -21,7 +21,7 @@ translate_to_events_user <- function(turn, sample) {
       target = sample$target, 
       id = sample$id
     ),
-    timestamp = turn@completed,
+    timestamp = eval_log_timestamp(turn@completed),
     event = "sample_init",
     state = list(
       messages = list(
@@ -31,7 +31,9 @@ translate_to_events_user <- function(turn, sample) {
           role = "user"
         )
       ),
-      tools = c(),
+      tools = list(),
+      # TODO: this is written `"tool_choice": null` from Inspect, but 
+      # jsonlite evaluates the below to `{}`
       tool_choice = NULL,
       store = c(),
       output = list(
@@ -46,7 +48,7 @@ translate_to_events_user <- function(turn, sample) {
 
 translate_to_events_assistant <- function(turn) {
   list(
-    timestamp = turn@completed,
+    timestamp = eval_log_timestamp(turn@completed),
     event = "model",
     model = turn@json$model,
     input = list(list(
@@ -72,6 +74,7 @@ translate_to_events_assistant <- function(turn) {
 translate_assistant_choices <- function(turn) {
   list(list(
     message = list(
+      id = generate_id(),
       content = list(list(
         type = turn@json$content[[1]]$type,
         text = turn@json$content[[1]]$text

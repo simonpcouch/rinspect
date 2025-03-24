@@ -7,6 +7,7 @@ translate_to_message <- function(turn) {
   source <- if (role == "user") "input" else "generate"
   
   list(
+    id = generate_id(),
     content = if (role == "user") {
       turn@text
     } else {

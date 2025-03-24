@@ -64,7 +64,7 @@ eval_log_eval <- function(
 eval_log_plan <- function(
     name = "plan",
     steps = eval_log_plan_steps(),
-    config = list()
+    config = c()
 ) {
   list(
     name = name,
@@ -220,6 +220,7 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
 
 eval_log_metadata_grading <- function(turn) {
   list(
+    id = generate_id(),
     content = list(
       list(
         type = "text",
