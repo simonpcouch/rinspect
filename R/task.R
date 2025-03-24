@@ -312,8 +312,8 @@ Task <- R6::R6Class("Task",
           )
         ),
         stats = eval_log_stats(
-          started_at = format(samples$solver_chat[[1]]$get_turns()[[1]]@completed, "%Y-%m-%dT%H:%M:%S%z"),
-          completed_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
+          started_at = eval_log_timestamp(samples$solver_chat[[1]]$get_turns()[[1]]@completed),
+          completed_at = eval_log_timestamp(Sys.time()),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
         samples = eval_log_samples(samples, scores = private$scores)
