@@ -29,12 +29,12 @@ eval_log_eval <- function(
     task_id,
     task_version = 0,
     task_file = active_file(),
-    task_attribs = list(),
-    task_args = list(),
+    task_attribs = c(),
+    task_args = c(),
     dataset,
     model,
-    model_args = list(),
-    config = list(),
+    model_args = c(),
+    config = c(),
     # TODO: look into what this actually does
     revision = list(
       type = "git",
@@ -137,12 +137,12 @@ eval_log_sample <- function(sample, scores) {
         }
       )
     ),
-    metadata = list(),
-    store = list(),
+    metadata = c(),
+    store = c(),
     events = translate_to_events(chat, sample = sample),
     model_usage = translate_to_model_usage(turns),
     # TODO: these seem to be prompts passed to the judges
-    attachments = list()
+    attachments = c()
   )
 } 
 
