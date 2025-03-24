@@ -41,7 +41,8 @@ eval_log_eval <- function(
       origin = "https://github.com/UKGovernmentBEIS/inspect_ai.git",
       commit = "9140d8a2"
     ),
-    packages = list(inspect_ai = "0.3.63")
+    packages = list(inspect_ai = "0.3.63"),
+    scorers
 ) {
   list(
     run_id = run_id,
@@ -57,7 +58,8 @@ eval_log_eval <- function(
     model_args = model_args,
     config = config,
     revision = revision,
-    packages = packages
+    packages = packages,
+    scorers = scorers
   )
 }
 
@@ -230,6 +232,19 @@ eval_log_metadata_grading <- function(turn) {
     source = if(turn@role == "user") "input" else "generate", 
     role = turn@role
   )
+}
+
+eval_log_eval_scorers <- function(name) {
+  list(list(
+    name = name,
+    options = c(),
+    # TODO: make this dynamic once implemented
+    metrics = list(
+      list(name = "mean", options = c()),
+      list(name = "standard_error", options = c())
+    ),
+    metadata = c()
+  ))
 }
 
 eval_log_timestamp <- function(time = Sys.time()) {

@@ -298,6 +298,9 @@ Task <- R6::R6Class("Task",
             shuffled = FALSE
           ),
           model = .turn_model(.last_assistant_turn(samples$solver_chat[[1]]$get_turns())),
+          scorers = eval_log_eval_scorers(
+            name = environment(private$scorer)$fn_name
+          )
         ),
         plan = eval_log_plan(steps = eval_log_plan_steps(
           name = private$solutions$name,
