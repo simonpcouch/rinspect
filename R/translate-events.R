@@ -91,7 +91,7 @@ create_sample_init_event <- function(turn, sample, timestamp) {
       ),
       tools = list(),
       tool_choice = NULL,
-      store = list(),
+      store = c(),
       output = list(
         # TODO: deduce this from the turn
         model = "claude",
@@ -242,7 +242,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
     input = list(
       list(
         id = user_id,
-        content = c(),
+        content = turn@text,
         role = "user"
       )
     ),
@@ -277,7 +277,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         messages = list(
           list(
             role = "user",
-            content = c()
+            content = turn@text
           )
         ),
         tools = list(),
@@ -322,7 +322,7 @@ create_score_event <- function(turn, sample, timestamp) {
         grading = list(
           list(
             id = generate_id(),
-            content = c(),
+            content = turn@text,
             role = "user"
           ),
           list(
