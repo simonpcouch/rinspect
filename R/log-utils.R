@@ -3,8 +3,7 @@ eval_log_new <- function(
     plan = eval_log_plan(),
     results = eval_log_results(),
     stats = eval_log_stats(),
-    samples,
-    reductions = eval_log_reductions()
+    samples
 ) {
   res <-
     list(
@@ -14,8 +13,7 @@ eval_log_new <- function(
       plan = plan,
       results = results,
       stats = stats,
-      samples = samples,
-      reductions = reductions
+      samples = samples
     )
 
   structure(res, class = c("eval_log", class(res)))
@@ -148,18 +146,6 @@ eval_log_sample <- function(sample, scores) {
   )
 } 
 
-eval_log_reductions <- function(
-    scorer = character(),
-    samples = list()
-) {
-  list(
-    list(
-      scorer = scorer,
-      samples = samples
-    )
-  )
-}
-
 # sub-level entries ------------------------------------------------------------
 eval_log_model_usage <- function(
     input_tokens = 1L,
@@ -278,7 +264,7 @@ sum_model_usage <- function(solvers) {
   chat <- solvers[[1]]
   provider <- chat$.__enclos_env__$private$provider
   if (!inherits(provider, "ellmer::ProviderClaude")) {
-    return(list())
+    return(c())
   }
   
   usage_per_solver <- lapply(

@@ -19,7 +19,7 @@ example_ellmer_solver <- function() {
 example_inspect_log <- function() {
   eval_log_read(
     system.file(
-      "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
+      "logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
       package = "rinspect"
     )
   )

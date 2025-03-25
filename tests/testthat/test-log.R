@@ -37,11 +37,7 @@ test_that("inspect_view() works with read + written eval file", {
   withr::defer(unlink(log_dir, recursive = TRUE))
 
   # file generated from Python Inspect
-  file <- system.file(
-    "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
-    package = "rinspect"
-  )
-  eval_log <- eval_log_read(file)
+  eval_log <- example_inspect_log()
   eval_log_write(x = eval_log, dir = log_dir)
 
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
