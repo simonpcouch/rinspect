@@ -228,9 +228,8 @@ are_task_eval %>%
 
 If you're interested in these questions as well, check out the other vignettes in this package!
 
-```{r}
+```{r, eval = should_eval}
 #| include: false
-#| eval: false
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`
 dest_dir <- here::here("pkgdown/assets/example-logs/rinspect")

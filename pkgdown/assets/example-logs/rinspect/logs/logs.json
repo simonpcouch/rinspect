@@ -72,13 +72,7 @@
       "started_at": "2025-03-07 10:28:51",
       "completed_at": "2025-03-07 10:30:46",
       "model_usage": []
-    },
-    "reductions": [
-      {
-        "scorer": [],
-        "samples": []
-      }
-    ]
+    }
   },
   "2025-03-07T10-33-51-06-00_An-R-Eval_mrCzyQ8UZhRawqj50RejmW.json": {
     "version": 2,
@@ -160,12 +154,6 @@
           "total_tokens": 28270
         }
       }
-    },
-    "reductions": [
-      {
-        "scorer": [],
-        "samples": []
-      }
-    ]
+    }
   }
 }

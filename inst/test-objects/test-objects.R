@@ -2,7 +2,6 @@
 # but with three epochs.
 withr::local_envvar(list(INSPECT_LOG_DIR = "inst/test-objects/logs/"))
 
-library(rinspect)
 library(ellmer)
 
 are_task_3e <- Task$new(

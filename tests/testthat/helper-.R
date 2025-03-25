@@ -27,16 +27,7 @@ example_inspect_log <- function() {
 
 example_task <- function(solved = TRUE, scored = TRUE) {
   # loads a cached `tsk` with example output.
-  # regenerate with:
-  #> tsk <- Task$new(
-  #>   dataset = simple_addition, 
-  #>   solver = generate(chat_claude()), 
-  #>   scorer = model_graded_qa()
-  #> )
-  #> 
-  #> tsk$eval()
-  #>
-  #> save(tsk, file = "inst/test-objects/example-task.rda")
+  # regenerate with `inst/regenerate-example-objects.R`
   load(
     system.file(
       "test-objects/example-task.rda",
