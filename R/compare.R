@@ -62,7 +62,8 @@
 #'   # do note that this is a rather silly comparison :)
 #'   inspect_compare(tsk_claude, tsk_openai)
 #' }
-#' @export
+#' @keywords internal
+#' @noRd
 inspect_compare <- function(x, y, conf_level = .95) {
   check_inherits(x, "Task")
   check_inherits(y, "Task")
