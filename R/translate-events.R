@@ -260,7 +260,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
             content = list(
               list(
                 type = "text",
-                text = c()
+                text = turn@text
               )
             ),
             source = "generate",
@@ -292,7 +292,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         content = list(
           list(
             citations = NULL,
-            text = c(),
+            text = turn@text,
             type = "text"
           )
         ),
