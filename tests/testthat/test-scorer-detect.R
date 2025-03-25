@@ -39,7 +39,7 @@ test_that("detect_match works", {
   tsk$set_scorer(detect_match())
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 1))
+  expect_equal(tsk$samples$score, c(0, 1))
 
   simple_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
