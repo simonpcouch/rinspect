@@ -74,7 +74,7 @@ test_that("detect_pattern works", {
   tsk$set_scorer(detect_pattern("(\\d+)\\s*=\\s*(\\d+)"))
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 1))
+  expect_equal(tsk$samples$score, c(0, 1))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),

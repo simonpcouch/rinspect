@@ -29,6 +29,7 @@ Imports:
     rlang,
     R6,
     tibble,
+    tidyr,
     withr,
     rstudioapi
 Suggests: 

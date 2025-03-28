@@ -8,9 +8,6 @@ regenerate_example_objects <- function() {
   cli::cli_progress_step("Regenerating `are` on 1 epoch")
   regenerate_are_1e()
 
-  cli::cli_progress_step("Regenerating `are` on 3 epochs")
-  regenerate_are_3e()
-
   cli::cli_progress_done()
 }
 
@@ -38,12 +35,6 @@ regenerate_example_task <- function() {
 regenerate_are_1e <- function() {
   withr::local_envvar(RINSPECT_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/rinspect.Rmd')
-}
-
-
-# An R Eval on 3 epochs, via `inst/test-objects` ----------------------
-regenerate_are_3e <- function() {
-  source("inst/test-objects/test-objects.R")
 }
 
 regenerate_example_objects()
