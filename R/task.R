@@ -208,7 +208,7 @@ Task <- R6::R6Class("Task",
          (any(c("C", "I") %in% levels(self$samples$score)))) {
         # map factor to numeric for a simple accuracy (#51, #53)
         numeric_scores <- as.numeric(self$samples$score) - 1
-        numeric_scores <- numeric_scores / (max(numeric_scores, na.rm = TRUE) || 1)
+        numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
         self$metrics <- 
           list2(
             accuracy = logged(accuracy)(numeric_scores)
