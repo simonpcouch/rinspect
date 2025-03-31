@@ -424,7 +424,7 @@ print.Task <- function(x, ...) {
 
   cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')} {.field {dataset_name}}."))
 
-  if (x$.__enclos_env__$private$scored) {
+  if ("score" %in% names(x$samples)) {
     cli::cat_line(cli::format_inline(
       "Explore interactively with {.run .last_task$view()}."
     ))
