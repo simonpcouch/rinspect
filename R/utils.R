@@ -42,3 +42,7 @@ interactive <- NULL
 regenerate_example_objects <- function() {
   source("inst/regenerate-example-objects.R")
 }
+
+accuracy <- function(...) {
+  mean(...) * 100
+}

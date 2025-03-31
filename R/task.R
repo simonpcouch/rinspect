@@ -211,12 +211,12 @@ Task <- R6::R6Class("Task",
         numeric_scores <- numeric_scores / (max(numeric_scores, na.rm = TRUE) || 1)
         self$metrics <- 
           list2(
-            mean = logged(mean)(numeric_scores)
+            accuracy = logged(accuracy)(numeric_scores)
           )
       } else {
         self$metrics <- 
           list2(
-            mean = logged(mean)(self$samples$score)
+            accuracy = logged(accuracy)(self$samples$score)
           )
       }
       
