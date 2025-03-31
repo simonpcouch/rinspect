@@ -22,8 +22,8 @@ reference:
   - inspect_log_dir_set
   - inspect_view
   - inspect_bundle
-  - inspect_compare
-
+  - inspect_bind
+  
 - title: "Example Evals"
   contents:
   - are
