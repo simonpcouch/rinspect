@@ -33,6 +33,13 @@ regenerate_example_task <- function() {
 
 # An R Eval on 1 epoch, via the intro vignette ------------------------
 regenerate_are_1e <- function() {
+  json_files <- list.files(
+    "vignettes/vignettes/data/logs",
+    pattern = "\\.json$",
+    full.names = TRUE
+  )
+  if (length(json_files) > 0) {file.remove(json_files)}
+
   withr::local_envvar(RINSPECT_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/rinspect.Rmd')
 }
