@@ -38,6 +38,7 @@
 <p>When testing code that raises a message, warning, or error, use <code>expect_snapshot()</code> (possibly with <code>error = TRUE</code>) instead of <code>expect_message()</code> or otherwise.</p>
 <p>When you’re running package tests, use <code>devtools::load_all(); testthat::test_file("tests/testthat/path-to-file.R")</code>. If you encounter namespacing issues, don’t delete tests that otherwise should work, and instead ask me what to do.</p>
 <p>To get a sense for the style used to write and test code, read <code>R/task.R</code> and <code>tests/testthat/test-task.R</code>, respectively. Notable, <strong>do not comment your code</strong> besides roxygen comments.</p>
+<p>You’ve been provided with a number of tools that allow you to peruse package documentation; use them liberally. When writing non-base or -tidyverse code, check the help page for functions you use to ensure that you’ve set function arguments correctly.</p>
 
 
   </main></div>
