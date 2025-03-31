@@ -13,7 +13,9 @@
 NULL
 
 utils::globalVariables(c(
+  "any_of",
   "chat_claude",
+  "everything",
   "head",
   "path",
   "qnorm",
