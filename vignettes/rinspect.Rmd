@@ -27,8 +27,8 @@ withr::local_envvar(list(INSPECT_LOG_DIR = "vignettes/data/logs/"))
 should_eval <- identical(Sys.getenv("RINSPECT_SHOULD_EVAL"), "true")
 
 if (!should_eval) {
-  load("data/are_task.rda")
-  load("data/are_task_openai.rda")
+  load(here::here("vignettes/data/are_task.rda"))
+  load(here::here("vignettes/data/are_task_openai.rda"))
 }
 ```
 
@@ -159,32 +159,26 @@ if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
 
 Under the hood, when you call `task$eval()`, results are written to a `.json` file that the Inspect log viewer can read. The Task object automatically launches the viewer when you call `task$eval()` in an interactive session. You can also view results any time with `are_task$view()`. You can explore this eval above (on the package's pkgdown site).
 
-For a cursory analysis, though, we can visualize correct vs. partially correct vs. incorrect answers:
+For a cursory analysis, we can start off by visualizing correct vs. partially correct vs. incorrect answers:
 
 ```{r plot-1}
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
-are_task_data <- 
-  are_task$samples %>% 
-  mutate(grade = case_when(
-    score == 1 ~ "Correct",
-    score == .5 ~ "Partially Correct",
-    score == 0 ~ "Incorrect"
-    ),
-    grade = factor(grade, levels = c("Correct", "Partially Correct", "Incorrect"))
-  )
+are_task_data <- inspect_bind(are_task)
+
+are_task_data
 
 are_task_data %>%
   ggplot() +
-  aes(x = grade) +
+  aes(x = score) +
   geom_bar()
 ```
 
-Claude answered fully correctly in `r sum(are_task_data$grade == "Correct")` out of `r nrow(are_task_data)` samples, and partially correctly `r sum(are_task_data$grade == "Partially Correct")` times. For me, this leads to all sorts of questions:
+Claude answered fully correctly in `r sum(are_task_data$score == "C")` out of `r nrow(are_task_data)` samples, and partially correctly `r sum(are_task_data$score == "P")` times.For me, this leads to all sorts of questions:
 
 * Are there any models that are cheaper than Claude that would do just as well? Or even a local model?
 * Are there other models available that would do better out of the box?
 * Would Claude do better if I allow it to "reason" briefly before answering?
-* Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::register_btw_tools()`](https://simonpcouch.github.io/btw/reference/register_btw_tools.html) if you're interested in this.)
+* Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::btw_register_tools()`](https://posit-dev.github.io/btw/reference/btw_register_tools.html) if you're interested in this.)
 
 These questions can be explored by evaluating Tasks against different solvers and scorers. For example, to compare Claude's performance with OpenAI's GPT-4o, we just need to clone the object and then run `$eval()` with a different solver `chat`:
 
@@ -202,31 +196,49 @@ if (should_eval) {
 
 Any arguments to solving or scoring functions can be passed directly to `$eval()`, allowing for quickly evaluating tasks across several parameterizations.
 
-Using this data, we can quickly juxtapose those evaluation results (TODO: this should be a "Adding Error Bars to Evals"-based viz):
+Using this data, we can quickly juxtapose those evaluation results:
 
 ```{r}
-get_model <- function(c) c$get_model()
 are_task_eval <-
-  bind_rows(
-    mutate(are_task_data, model = purrr::map_chr(solver_chat, get_model)), 
-    mutate(are_task_openai$samples, model = purrr::map_chr(solver_chat, get_model))
+  inspect_bind(are_task, are_task_openai) %>%
+  mutate(
+    task = if_else(task == "are_task", "Claude", "GPT-4o")
   ) %>%
-    mutate(grade = case_when(
-      score == 1 ~ "Correct",
-      score == .5 ~ "Partially Correct",
-      score == 0 ~ "Incorrect"
-      ),
-      grade = factor(grade, levels = c("Correct", "Partially Correct", "Incorrect"))
-    ) 
+  rename(model = task)
 
 are_task_eval %>%
-  ggplot(aes(x = grade, fill = model, group = model)) +
+  ggplot(aes(x = score, fill = model, group = model)) +
   geom_bar(position = "dodge") +
   scale_fill_brewer(type = "qual") +
   theme(legend.position="bottom")
 ```
 
-If you're interested in these questions as well, check out the other vignettes in this package!
+Is this difference in performance just a result of noise, though? We can supply the scores to an ordinal regression model to answer this question.
+
+```{r}
+library(MASS)
+
+are_mod <- polr(score ~ model, data = are_task_eval)
+
+are_mod
+```
+
+```{r}
+#| include: false
+grade_descriptor <- if (are_mod[["coefficients"]] > 0) "higher" else "lower"
+```
+
+The coefficient for `model == "GPT-4o"` is `r round(are_mod[["coefficients"]], 3)`, indicating that GPT-4o tends to be associated with `r grade_descriptor` grades. If a 95% confidence interval for this coefficient contains zero, we can conclude that there is not sufficient evidence to reject the null hypothesis that the difference between GPT-4o and Claude's performance on this eval is zero at the 0.05 significance level.
+
+```{r}
+confint(are_mod)
+```
+
+:::callout-note
+If we had evaluated this model across multiple epochs, `samples$epoch` could become a "nuisance parameter" in a mixed model.
+:::
+
+This vignette demonstrated the simplest possible evaluation based on the `are` dataset. If you're interested in carrying out more advanced evals, check out the other vignettes in this package!
 
 ```{r, eval = should_eval}
 #| include: false
