@@ -18,7 +18,7 @@ additional fields
 Combine multiple \code{Task} objects into a single tibble for comparison.
 
 This function takes multiple (optionally named) \code{Task} objects and row-binds
-their samples together, adding a \code{task} column to identify the source of each
+their \code{samples} together, adding a \code{task} column to identify the source of each
 row. The resulting tibble nests additional columns into a \code{metadata} column
 and is ready for further analysis.
 }

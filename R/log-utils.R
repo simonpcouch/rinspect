@@ -233,8 +233,7 @@ eval_log_eval_scorers <- function(name) {
     options = c(),
     # TODO: make this dynamic once implemented
     metrics = list(
-      list(name = "mean", options = c()),
-      list(name = "standard_error", options = c())
+      list(name = "mean", options = c())
     ),
     metadata = c()
   ))

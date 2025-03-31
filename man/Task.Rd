@@ -3,10 +3,6 @@
 \name{Task}
 \alias{Task}
 \title{Creating and evaluating tasks}
-\source{
-"Adding Error Bars to Evals: A Statistical Approach to Language Model
-Evaluations." Miller (2024). https://arxiv.org/pdf/2411.00640
-}
 \description{
 Evaluation \code{Task}s provide a flexible data structure for evaluating LLM-based
 tools.
@@ -153,8 +149,7 @@ as \code{dataset$input}). See \code{\link[=generate]{generate()}} for the simple
 approximates the corresponding elements of \code{dataset$target}. See
 \link[=scorer_model]{model-based scoring} for examples.}
 
-\item{\code{metric}}{A metric summarizing the results from the scorer. Built-in
-scorers are associated with default metrics based on Miller (2024).}
+\item{\code{metric}}{A metric summarizing the results from the scorer.}
 
 \item{\code{name}}{A name for the evaluation task. Defaults to
 \code{deparse(substitute(dataset))}.}

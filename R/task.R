@@ -108,15 +108,10 @@ Task <- R6::R6Class("Task",
     #' @param scorer A function that evaluates how well the solver's return value
     #' approximates the corresponding elements of `dataset$target`. See
     #' [model-based scoring][scorer_model] for examples.
-    #' @param metric A metric summarizing the results from the scorer. Built-in
-    #' scorers are associated with default metrics based on Miller (2024).
+    #' @param metric A metric summarizing the results from the scorer.
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
-    #' 
-    #' @source 
-    #' "Adding Error Bars to Evals: A Statistical Approach to Language Model 
-    #' Evaluations." Miller (2024). https://arxiv.org/pdf/2411.00640
     initialize = function(
       dataset,
       solver,
@@ -211,12 +206,7 @@ Task <- R6::R6Class("Task",
       
       self$metrics <- 
         list2(
-          mean = logged(mean)(self$samples$score),
-          standard_error = if ("epoch" %in% names(self$samples)) {
-            logged(standard_error)(self$samples$score, cluster = self$samples$id)
-          } else {
-            logged(standard_error)(self$samples$score)
-          }
+          mean = logged(mean)(self$samples$score)
         )
       
       private$scored <- TRUE
