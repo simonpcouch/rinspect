@@ -9,3 +9,5 @@ When testing code that raises a message, warning, or error, use `expect_snapshot
 When you're running package tests, use `devtools::load_all(); testthat::test_file("tests/testthat/path-to-file.R")`. If you encounter namespacing issues, don't delete tests that otherwise should work, and instead ask me what to do.
 
 To get a sense for the style used to write and test code, read `R/task.R` and `tests/testthat/test-task.R`, respectively. Notable, **do not comment your code** besides roxygen comments.
+
+You've been provided with a number of tools that allow you to peruse package documentation; use them liberally. When writing non-base or -tidyverse code, check the help page for functions you use to ensure that you've set function arguments correctly.
