@@ -123,10 +123,24 @@ model_graded_qa_impl <- function(
   scorer_chat <- scorer_chat$clone()
   responses <- scorer_chat$chat_parallel(as.list(prompts), max_active = 2, rpm = 20)
   
-  scores <- purrr::map_dbl(responses, function(response_chat) {
+  grades <- purrr::map_chr(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
     qa_extract_grade(response_text, grade_pattern, partial_credit)
   })
+  
+  if (partial_credit) {
+    scores <- factor(
+      grades,
+      levels = c("I", "P", "C"),
+      ordered = TRUE
+    )
+  } else {
+    scores <- factor(
+      grades,
+      levels = c("I", "C"),
+      ordered = TRUE
+    )
+  }
   
   metadata <- purrr::map(seq_along(prompts), function(i) {
     list(
@@ -160,14 +174,8 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
   )[[1]][2]
 
   if (is.na(grade_letter)) return(NA)
-
-  switch(
-    toupper(grade_letter),
-    "C" = 1.0,
-    "P" = if (partial_credit) 0.5 else 0.0,
-    "I" = 0.0,
-    NA
-  )
+  
+  toupper(grade_letter)
 }
 
 qa_default_instructions <- function(partial_credit = FALSE) {

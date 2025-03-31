@@ -203,11 +203,22 @@ Task <- R6::R6Class("Task",
       }
       self$samples$scorer <- private$scores$name
       self$samples$metadata <- scorer_res$metadata
-      
-      self$metrics <- 
-        list2(
-          mean = logged(mean)(self$samples$score)
-        )
+
+      if (is.factor(self$samples$score) && 
+         (any(c("C", "I") %in% levels(self$samples$score)))) {
+        # map factor to numeric for a simple accuracy (#51, #53)
+        numeric_scores <- as.numeric(self$samples$score) - 1
+        numeric_scores <- numeric_scores / (max(numeric_scores, na.rm = TRUE) || 1)
+        self$metrics <- 
+          list2(
+            mean = logged(mean)(numeric_scores)
+          )
+      } else {
+        self$metrics <- 
+          list2(
+            mean = logged(mean)(self$samples$score)
+          )
+      }
       
       private$scored <- TRUE
       invisible(self)

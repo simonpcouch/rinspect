@@ -176,17 +176,9 @@ eval_log_metrics <- function(
 }
 
 eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
-  value <- if (score == 1) {
-    "C"
-  } else if (score == .5) {
-    "P"
-  } else {
-    "I"
-  }
-  
   if (is.null(scorer_chat)) {
     return(list(
-      value = value,
+      value = score,
       answer = output,
       explanation = paste0("Detected correct answer."),
       metadata = list()
@@ -197,7 +189,7 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
   explanation <- .last_assistant_turn(turns)@text
   
   list(
-    value = value,
+    value = score,
     answer = output,
     explanation = explanation,
     metadata = list(

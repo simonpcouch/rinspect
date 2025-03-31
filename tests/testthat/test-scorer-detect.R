@@ -3,7 +3,9 @@ test_that("detect_includes works", {
   tsk$set_scorer(detect_includes())
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 1))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(is.ordered(tsk$samples$score))
+  expect_equal(as.character(tsk$samples$score), c("C", "C"))
   # TODO: include and test for `metadata` slots (here and in model-based)
 
   simple_df <- tibble::tibble(
@@ -21,7 +23,9 @@ test_that("detect_includes works", {
   tsk_insensitive$set_scorer(detect_includes(case_sensitive = FALSE))
   tsk_insensitive$score()
 
-  expect_equal(tsk_insensitive$samples$score, c(1, 1))
+  expect_s3_class(tsk_insensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_insensitive$samples$score))
+  expect_equal(as.character(tsk_insensitive$samples$score), c("C", "C"))
 
   tsk_sensitive <- Task$new(
     dataset = simple_df,
@@ -31,7 +35,9 @@ test_that("detect_includes works", {
   tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_includes(case_sensitive = TRUE))
   tsk_sensitive$score()
-  expect_equal(tsk_sensitive$samples$score, c(0, 0))
+  expect_s3_class(tsk_sensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_sensitive$samples$score))
+  expect_equal(as.character(tsk_sensitive$samples$score), c("I", "I"))
 })
 
 test_that("detect_match works", {
@@ -39,7 +45,9 @@ test_that("detect_match works", {
   tsk$set_scorer(detect_match())
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(0, 1))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(is.ordered(tsk$samples$score))
+  expect_equal(as.character(tsk$samples$score), c("I", "C"))
 
   simple_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -55,7 +63,9 @@ test_that("detect_match works", {
   tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_match(case_sensitive = FALSE))
   tsk_insensitive$score()
-  expect_equal(tsk_insensitive$samples$score, c(1, 1))
+  expect_s3_class(tsk_insensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_insensitive$samples$score))
+  expect_equal(as.character(tsk_insensitive$samples$score), c("C", "C"))
 
   tsk_sensitive <- Task$new(
     dataset = simple_df,
@@ -65,7 +75,9 @@ test_that("detect_match works", {
   tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_match(case_sensitive = TRUE))
   tsk_sensitive$score()
-  expect_equal(tsk_sensitive$samples$score, c(0, 0))
+  expect_s3_class(tsk_sensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_sensitive$samples$score))
+  expect_equal(as.character(tsk_sensitive$samples$score), c("I", "I"))
 })
 
 test_that("detect_pattern works", {
@@ -74,7 +86,9 @@ test_that("detect_pattern works", {
   tsk$set_scorer(detect_pattern("(\\d+)\\s*=\\s*(\\d+)"))
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(0, 1))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(is.ordered(tsk$samples$score))
+  expect_equal(as.character(tsk$samples$score), c("I", "C"))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -93,7 +107,9 @@ test_that("detect_pattern works", {
     case_sensitive = FALSE
   ))
   tsk_insensitive$score()
-  expect_equal(tsk_insensitive$samples$score, c(1, 1))
+  expect_s3_class(tsk_insensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_insensitive$samples$score))
+  expect_equal(as.character(tsk_insensitive$samples$score), c("C", "C"))
 
   tsk_sensitive <- Task$new(
     dataset = case_df,
@@ -106,7 +122,9 @@ test_that("detect_pattern works", {
     case_sensitive = TRUE
   ))
   tsk_sensitive$score()
-  expect_equal(tsk_sensitive$samples$score, c(0, 0))
+  expect_s3_class(tsk_sensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_sensitive$samples$score))
+  expect_equal(as.character(tsk_sensitive$samples$score), c("I", "I"))
 
   all_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -128,7 +146,9 @@ test_that("detect_pattern works", {
     all = FALSE
   ))
   tsk_all_false$score()
-  expect_equal(tsk_all_false$samples$score, c(1, 1))
+  expect_s3_class(tsk_all_false$samples$score, "factor")
+  expect_true(is.ordered(tsk_all_false$samples$score))
+  expect_equal(as.character(tsk_all_false$samples$score), c("C", "C"))
 
   tsk_all_true <- Task$new(
     dataset = all_df,
@@ -141,7 +161,9 @@ test_that("detect_pattern works", {
     all = TRUE
   ))
   tsk_all_true$score()
-  expect_equal(tsk_all_true$samples$score, c(0, 0))
+  expect_s3_class(tsk_all_true$samples$score, "factor")
+  expect_true(is.ordered(tsk_all_true$samples$score))
+  expect_equal(as.character(tsk_all_true$samples$score), c("I", "I"))
 })
 
 test_that("detect_exact works", {
@@ -161,7 +183,9 @@ test_that("detect_exact works", {
   tsk$set_scorer(detect_exact())
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 0))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(is.ordered(tsk$samples$score))
+  expect_equal(as.character(tsk$samples$score), c("C", "I"))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -177,7 +201,9 @@ test_that("detect_exact works", {
   tsk_insensitive$.__enclos_env__$private$solved <- TRUE
   tsk_insensitive$set_scorer(detect_exact(case_sensitive = FALSE))
   tsk_insensitive$score()
-  expect_equal(tsk_insensitive$samples$score, c(1, 1))
+  expect_s3_class(tsk_insensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_insensitive$samples$score))
+  expect_equal(as.character(tsk_insensitive$samples$score), c("C", "C"))
 
   tsk_sensitive <- Task$new(
     dataset = case_df,
@@ -187,7 +213,9 @@ test_that("detect_exact works", {
   tsk_sensitive$.__enclos_env__$private$solved <- TRUE
   tsk_sensitive$set_scorer(detect_exact(case_sensitive = TRUE))
   tsk_sensitive$score()
-  expect_equal(tsk_sensitive$samples$score, c(0, 1))
+  expect_s3_class(tsk_sensitive$samples$score, "factor")
+  expect_true(is.ordered(tsk_sensitive$samples$score))
+  expect_equal(as.character(tsk_sensitive$samples$score), c("I", "C"))
 })
 
 test_that("detect_answer works", {
@@ -207,7 +235,9 @@ test_that("detect_answer works", {
   tsk$set_scorer(detect_answer())
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 1))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(is.ordered(tsk$samples$score))
+  expect_equal(as.character(tsk$samples$score), c("C", "C"))
 
   whitespace_df <- tibble::tibble(
     input = ex_task$samples$input,
@@ -223,7 +253,9 @@ test_that("detect_answer works", {
   tsk_whitespace$.__enclos_env__$private$solved <- TRUE
   tsk_whitespace$set_scorer(detect_answer())
   tsk_whitespace$score()
-  expect_equal(tsk_whitespace$samples$score, c(1, 1))
+  expect_s3_class(tsk_whitespace$samples$score, "factor")
+  expect_true(is.ordered(tsk_whitespace$samples$score))
+  expect_equal(as.character(tsk_whitespace$samples$score), c("C", "C"))
 
   format_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -245,7 +277,9 @@ test_that("detect_answer works", {
   tsk_line$.__enclos_env__$private$solved <- TRUE
   tsk_line$set_scorer(detect_answer(format = "line"))
   tsk_line$score()
-  expect_equal(tsk_line$samples$score, c(1, 0))
+  expect_s3_class(tsk_line$samples$score, "factor")
+  expect_true(is.ordered(tsk_line$samples$score))
+  expect_equal(as.character(tsk_line$samples$score), c("C", "I"))
 
   tsk_word <- Task$new(
     dataset = format_df,
@@ -255,7 +289,9 @@ test_that("detect_answer works", {
   tsk_word$.__enclos_env__$private$solved <- TRUE
   tsk_word$set_scorer(detect_answer(format = "word"))
   tsk_word$score()
-  expect_equal(tsk_word$samples$score, c(0, 1))
+  expect_s3_class(tsk_word$samples$score, "factor")
+  expect_true(is.ordered(tsk_word$samples$score))
+  expect_equal(as.character(tsk_word$samples$score), c("I", "C"))
 
   tsk_letter <- Task$new(
     dataset = format_df,
@@ -265,5 +301,7 @@ test_that("detect_answer works", {
   tsk_letter$.__enclos_env__$private$solved <- TRUE
   tsk_letter$set_scorer(detect_answer(format = "letter"))
   tsk_letter$score()
-  expect_equal(tsk_letter$samples$score, c(0, 1))
+  expect_s3_class(tsk_letter$samples$score, "factor")
+  expect_true(is.ordered(tsk_letter$samples$score))
+  expect_equal(as.character(tsk_letter$samples$score), c("I", "C"))
 })
