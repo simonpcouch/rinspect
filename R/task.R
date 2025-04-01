@@ -317,7 +317,7 @@ Task <- R6::R6Class("Task",
         ),
         stats = eval_log_stats(
           started_at = eval_log_timestamp(samples$solver_chat[[1]]$get_turns()[[1]]@completed),
-          completed_at = eval_log_timestamp(Sys.time()),
+          completed_at = eval_log_completed_at(samples),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
         samples = eval_log_samples(samples, scores = private$scores)
@@ -511,4 +511,13 @@ rename_token_fields <- function(input_list) {
   }
   
   result
+}
+
+eval_log_completed_at <- function(samples) {
+  if ("scorer_chat" %in% names(samples)) {
+    last_scorer_chat <- samples[nrow(samples), ]$scorer_chat[[1]]
+    return(eval_log_timestamp(last_scorer_chat$last_turn()@completed))
+  }
+
+  eval_log_timestamp(Sys.time())
 }
