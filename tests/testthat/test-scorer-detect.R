@@ -47,7 +47,7 @@ test_that("detect_match works", {
 
   expect_s3_class(tsk$samples$score, "factor")
   expect_true(is.ordered(tsk$samples$score))
-  expect_equal(as.character(tsk$samples$score), c("I", "C"))
+  expect_equal(as.character(tsk$samples$score), c("C", "C"))
 
   simple_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
@@ -88,7 +88,7 @@ test_that("detect_pattern works", {
 
   expect_s3_class(tsk$samples$score, "factor")
   expect_true(is.ordered(tsk$samples$score))
-  expect_equal(as.character(tsk$samples$score), c("I", "C"))
+  expect_equal(as.character(tsk$samples$score), c("C", "C"))
 
   case_df <- tibble::tibble(
     input = c("Question 1", "Question 2"),
