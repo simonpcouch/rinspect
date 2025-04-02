@@ -3,7 +3,7 @@ translate_to_output <- function(chat) {
   last_assistant_turn <- .last_assistant_turn(turns)
 
   list(
-    model = .turn_model(last_assistant_turn),
+    model = chat$get_model(),
     choices = translate_assistant_choices(last_assistant_turn),
     usage = rename_token_fields(translate_to_model_usage(chat)[[1]]),
     # TODO: is this the last time or the beginning time in Inspect?

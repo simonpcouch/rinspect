@@ -6,7 +6,3 @@
   }
   return(NULL)
 }
-
-.turn_model <- function(turn) {
-  turn@json$model
-}

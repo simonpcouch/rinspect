@@ -298,7 +298,7 @@ Task <- R6::R6Class("Task",
             sample_ids = seq_len(length(unique(samples$id))), 
             shuffled = FALSE
           ),
-          model = .turn_model(.last_assistant_turn(samples$solver_chat[[1]]$get_turns())),
+          model = samples$solver_chat[[1]]$get_model(),
           scorers = eval_log_eval_scorers(
             name = environment(private$scorer)$fn_name
           )
@@ -370,7 +370,7 @@ Task <- R6::R6Class("Task",
         self$samples <- self$samples[self$samples$epoch == 1, ]
         self$samples$epoch <- NULL
       }
-      
+
       invisible(NULL)
     },
     
