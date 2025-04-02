@@ -1,17 +1,14 @@
-translate_to_model_usage <- function(turns) {
-  last_assistant_turn <- .last_assistant_turn(turns)
-  model <- .turn_model(last_assistant_turn)
+translate_to_model_usage <- function(chat) {
+  tokens <- as.data.frame(chat$tokens())
+  model <- chat$get_model()
 
-  # TODO: the names of these usage statistics differ slightly between Inspect
-  # and what's returned from anthropic's API
-  # TODO: this is used in a couple places, and
-  # the format that Inspect expects is different
-  # in each. for the [["stats"]] slot, this is as
-  # it should be. it may not be elsewhere.
   dots_list(
-    !!model := c(
-      last_assistant_turn@json$usage,
-      list(total_tokens = sum(unlist(last_assistant_turn@json$usage)))
+    !!model := list(
+      input_tokens = sum(tokens$tokens[tokens$role == "user"]),
+      cache_creation_input_tokens = 0,
+      cache_read_input_tokens = 0,
+      output_tokens = sum(tokens$tokens[tokens$role == "assistant"]),
+      total_tokens = sum(tokens$tokens)
     )
   )
 }

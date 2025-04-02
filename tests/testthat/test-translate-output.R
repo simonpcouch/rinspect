@@ -1,6 +1,5 @@
 test_that("translate_to_output works with example turns", {
-  ellmer_turns <- example_ellmer_solver()$get_turns()
-  ellmer_output <- translate_to_output(ellmer_turns)
+  ellmer_output <- translate_to_output(example_ellmer_solver())
 
   inspect_output <- example_inspect_log()[["samples"]][[1]][["output"]]
 

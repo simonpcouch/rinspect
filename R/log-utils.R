@@ -124,7 +124,7 @@ eval_log_sample <- function(sample, scores) {
     input = sample$input,
     target = sample$target,
     messages = translate_to_messages(turns),
-    output = translate_to_output(turns),
+    output = translate_to_output(chat),
     scores = dots_list(
       !!scorer_name := eval_log_score(
         output = sample$result[[1]],
@@ -140,29 +140,13 @@ eval_log_sample <- function(sample, scores) {
     metadata = c(),
     store = c(),
     events = translate_to_events(sample = sample),
-    model_usage = translate_to_model_usage(turns),
+    model_usage = sum_model_usage(list(chat)),
     # TODO: these seem to be prompts passed to the judges
     attachments = c()
   )
 } 
 
 # sub-level entries ------------------------------------------------------------
-eval_log_model_usage <- function(
-    input_tokens = 1L,
-    output_tokens = 1L,
-    total_tokens = 2L,
-    input_tokens_cache_write = 0L,
-    input_tokens_cache_read = 0L
-) {
-  list(
-    input_tokens = input_tokens,
-    output_tokens = output_tokens,
-    total_tokens = total_tokens,
-    input_tokens_cache_write = input_tokens_cache_write,
-    input_tokens_cache_read = input_tokens_cache_read
-  )
-}
-
 eval_log_metrics <- function(
     name = character(),
     value = numeric(),
@@ -253,21 +237,15 @@ eval_log_filename <- function(eval_log) {
 # TODO: this doesn't work for non-Claude?
 sum_model_usage <- function(solvers) {
   chat <- solvers[[1]]
-  provider <- chat$.__enclos_env__$private$provider
-  if (!inherits(provider, "ellmer::ProviderClaude")) {
-    return(c())
-  }
   
   usage_per_solver <- lapply(
     solvers,
-    function(chat) {translate_to_model_usage(chat$get_turns())[[1]]}
+    function(chat) {translate_to_model_usage(chat)[[1]]}
   )
   res <- Reduce(function(x, y) Map(`+`, x, y), usage_per_solver)
 
   # TODO: ultimately, this needs to be per-model
-  dots_list(
-    !!.turn_model(.last_assistant_turn(solvers[[1]]$get_turns())) := res
-  )
+  dots_list(!!chat$get_model() := res)
 }
 
 active_file <- function() {
