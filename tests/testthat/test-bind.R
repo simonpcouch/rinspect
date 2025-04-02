@@ -1,6 +1,6 @@
 test_that("inspect_bind works", {
-  load(here::here("vignettes/vignettes/data/are_task.rda"))
-  load(here::here("vignettes/vignettes/data/are_task_openai.rda"))
+  load(here::here("vignettes/data/are_task.rda"))
+  load(here::here("vignettes/data/are_task_openai.rda"))
   
   res <- inspect_bind(are_task, are_task_openai)
 
