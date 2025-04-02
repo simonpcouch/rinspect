@@ -131,7 +131,7 @@ Task <- R6::R6Class("Task",
       # TODO: for non-built in scorers, what to do?
       check_function(metric, allow_null = TRUE)
 
-      private$dataset_name <- name
+      private$dataset_name <- gsub("[^[:alnum:]]", "", name)
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
