@@ -365,6 +365,12 @@ Task <- R6::R6Class("Task",
       self$samples$result <- NA
       self$samples$solver_chat <- NULL
       private$solved <- FALSE
+
+      if ("epoch" %in% names(self$samples)) {
+        self$samples <- self$samples[self$samples$epoch == 1, ]
+        self$samples$epoch <- NULL
+      }
+      
       invisible(NULL)
     },
     
@@ -379,11 +385,6 @@ Task <- R6::R6Class("Task",
     reset_for_new_eval = function() {
       private$reset_solutions()
       private$reset_scores()
-      
-      if ("epoch" %in% names(self$samples)) {
-        self$samples <- self$samples[self$samples$epoch == 1, ]
-        self$samples$epoch <- NULL
-      }
       invisible(NULL)
     },
 
