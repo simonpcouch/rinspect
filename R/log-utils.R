@@ -170,7 +170,7 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
   }
 
   turns <- scorer_chat$get_turns()
-  explanation <- .last_assistant_turn(turns)@text
+  explanation <- scorer_chat$last_turn()@text
   
   list(
     value = score,

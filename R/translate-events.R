@@ -28,7 +28,7 @@ translate_assistant_choices <- function(turn) {
 translate_to_events <- function(sample) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
-  solver_turn <- .last_assistant_turn(solver_turns)
+  solver_turn <- solver_chat$last_turn()
 
   time_user <- solver_turns[[1]]@completed
   time_solver <- solver_turn@completed
@@ -44,10 +44,8 @@ translate_to_events <- function(sample) {
 
   if ("scorer_chat" %in% names(sample)) {
     scorer_chat <- sample$scorer_chat[[1]]
-    scorer_turns <- solver_chat$get_turns()
-    scorer_turn <- .last_assistant_turn(scorer_turns)
-    time_scorer <- .last_assistant_turn(scorer_turns)@completed
-    
+    scorer_turn <- scorer_chat$last_turn()
+    time_scorer <- scorer_turn@completed
 
     events <- c(events, create_scorer_begin_event(time_scorer))
     events <- c(events, create_scoring_model_event(scorer_turn, sample, time_scorer))

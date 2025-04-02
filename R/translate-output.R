@@ -1,6 +1,5 @@
 translate_to_output <- function(chat) {
-  turns <- chat$get_turns()
-  last_assistant_turn <- .last_assistant_turn(turns)
+  last_assistant_turn <- chat$last_turn()
 
   list(
     model = chat$get_model(),
