@@ -3,14 +3,14 @@
     Code
       tsk
     Output
-      An evaluation task simple_addition.
+      An evaluation task simpleaddition.
 
 ---
 
     Code
       tsk
     Output
-      An evaluation task simple_addition.
+      An evaluation task simpleaddition.
       Explore interactively with `.last_task$view()`.
 
 # check_dataset works
