@@ -5,7 +5,7 @@
 \alias{are}
 \title{An R Eval}
 \format{
-A tibble with 28 rows and 7 columns:
+A tibble with 26 rows and 7 columns:
 \describe{
 \item{title}{Character. Unique identifier/title for the code problem.}
 \item{input}{Character. The question to be answered.}
