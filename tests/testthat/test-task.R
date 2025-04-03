@@ -162,7 +162,55 @@ test_that("Task errors informatively with duplicate ids", {
   )
 })
 
-test_that("set_solver and set_scorer methods work", {
+test_that("set_solver works", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    result = c("4", "5"),
+    target = c("4", "5")
+  )
+  
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = function() {},
+    scorer = function() {}
+  )
+  
+  new_solver <- function(inputs) {
+    list(
+      result = c("4", "5"),
+      solver_chat = list(ellmer::chat_claude(), ellmer::chat_claude())
+    )
+  }
+  tsk$set_solver(new_solver)
+  tsk$solve()
+  
+  expect_equal(tsk$samples$result, c("4", "5"))
+  expect_false("solver_metadata" %in% names(tsk$samples))
+
+  # set a new solver that includes metadata
+  new_solver <- function(inputs) {
+    list(
+      result = c("4", "5"),
+      solver_chat = list(ellmer::chat_claude(), ellmer::chat_claude()),
+      solver_metadata = c("boop!", "bop!")
+    )
+  }
+  expect_snapshot(.res <- tsk$set_solver(new_solver))
+  expect_false(
+    any(c("solver_chat", "solver_metadata") %in% names(tsk$samples))
+  )
+  tsk$solve()
+
+  expect_true("solver_metadata" %in% names(tsk$samples))
+})
+
+test_that("set_scorer method works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))

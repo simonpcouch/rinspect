@@ -29,7 +29,7 @@ generate <- function(solver_chat = NULL) {
       check_inherits(solver_chat, "Chat")
 
       ch <- solver_chat$clone()
-      res <- ch$chat_parallel(inputs, max_active = 2, rpm = 20)
+      res <- ch$chat_parallel(as.list(inputs), max_active = 2, rpm = 20)
 
       list(
         result = purrr::map_chr(res, function(c) c$last_turn()@text),
