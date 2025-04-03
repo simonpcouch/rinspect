@@ -83,13 +83,31 @@ columns to this data.}
 \subsection{Method \code{set_solver()}}{
 Set the solver function
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$set_solver(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_solver(solver)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{A solver function}
+\item{\code{solver}}{A function that takes a vector of inputs from the
+dataset's \code{input} column as its first argument and determines values
+approximating \code{dataset$target}. Its return value must be a list with
+the following elements:
+\itemize{
+\item \code{result} - A character vector of the final responses, with the same length
+as \code{dataset$input}.
+\item \code{solver_chat} - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as \code{dataset$input}.
+}
+
+Additional output elements can be included in a slot \code{solver_metadata} that
+has the same length as \code{dataset$input}, which will be logged in
+\code{solver_metadata}.
+
+Additional arguments can be passed to the solver via \verb{$solve(...)}
+or \verb{$eval(...)}. See the definition of \code{\link[=generate]{generate()}} for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+\verb{$chat()} method in parallel.}
 }
 \if{html}{\out{</div>}}
 }
@@ -138,12 +156,25 @@ Create a new Task object
 \describe{
 \item{\code{dataset}}{A tibble with, minimally, columns \code{input} and \code{target}.}
 
-\item{\code{solver}}{A function that takes the vector \code{dataset$input} as its first
-argument and determines a value approximating \code{dataset$target}.
-Its return value should be a list with elements \code{result} (a vector of the
-final responses, the same length as \code{dataset$input}) and \code{solver_chat}
-(the list of ellmer chats used to solve the inputs, also the same length
-as \code{dataset$input}). See \code{\link[=generate]{generate()}} for the simplest example.}
+\item{\code{solver}}{A function that takes a vector of inputs from the
+dataset's \code{input} column as its first argument and determines values
+approximating \code{dataset$target}. Its return value must be a list with
+the following elements:
+\itemize{
+\item \code{result} - A character vector of the final responses, with the same length
+as \code{dataset$input}.
+\item \code{solver_chat} - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as \code{dataset$input}.
+}
+
+Additional output elements can be included in a slot \code{solver_metadata} that
+has the same length as \code{dataset$input}, which will be logged in
+\code{solver_metadata}.
+
+Additional arguments can be passed to the solver via \verb{$solve(...)}
+or \verb{$eval(...)}. See the definition of \code{\link[=generate]{generate()}} for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+\verb{$chat()} method in parallel.}
 
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. See

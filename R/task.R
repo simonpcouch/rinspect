@@ -15,6 +15,25 @@
 #' The usual flow of LLM evaluation with Tasks calls `$new()` and then
 #' `$eval()`.
 #' 
+#' @param solver A function that takes a vector of inputs from the
+#' dataset's `input` column as its first argument and determines values 
+#' approximating `dataset$target`. Its return value must be a list with 
+#' the following elements:
+#' 
+#' * `result` - A character vector of the final responses, with the same length 
+#'   as `dataset$input`.
+#' * `solver_chat` - A list of ellmer Chat objects that were used to solve 
+#'   each input, also with the same length as `dataset$input`.
+#' 
+#' Additional output elements can be included in a slot `solver_metadata` that
+#' has the same length as `dataset$input`, which will be logged in 
+#' `solver_metadata`.
+#' 
+#' Additional arguments can be passed to the solver via `$solve(...)`
+#' or `$eval(...)`. See the definition of [generate()] for a function that
+#' outputs a valid solver that just passes inputs to ellmer Chat objects'
+#' `$chat()` method in parallel.
+#' 
 #' @seealso [generate()] for the simplest possible solver, and 
 #' [scorer_model] and [scorer_detect] for two built-in approaches to 
 #' scoring.
@@ -62,12 +81,10 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Set the solver function
     #' 
-    #' @param x A solver function
-    #' 
     #' @return The Task object (invisibly)
-    set_solver = function(x) {
-      x_name <- deparse(substitute(x))
-      private$solver <- logged(x, fn_name = x_name)
+    set_solver = function(solver) {
+      solver_name <- deparse(substitute(solver))
+      private$solver <- logged(solver, fn_name = solver_name)
       
       if (private$solved) {
         cli::cli_warn("Clearing results from previous solver.")
@@ -99,12 +116,6 @@ Task <- R6::R6Class("Task",
     #' Create a new Task object
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
-    #' @param solver A function that takes the vector `dataset$input` as its first
-    #' argument and determines a value approximating `dataset$target`.
-    #' Its return value should be a list with elements `result` (a vector of the
-    #' final responses, the same length as `dataset$input`) and `solver_chat`
-    #' (the list of ellmer chats used to solve the inputs, also the same length
-    #' as `dataset$input`). See [generate()] for the simplest example.
     #' @param scorer A function that evaluates how well the solver's return value
     #' approximates the corresponding elements of `dataset$target`. See
     #' [model-based scoring][scorer_model] for examples.
@@ -164,16 +175,13 @@ Task <- R6::R6Class("Task",
       self$samples$result <- NA
       self$samples$solver_chat <- NA
 
-      private$solutions <- private$solver(as.list(self$samples$input), ...)
+      private$solutions <- private$solver(self$samples$input, ...)
 
       # TODO: it might be nice to just run one of the inputs async and check for
       # this earlier on so that a full eval's worth of results isn't thrown
       # away if the output format isn't quite right.
       private$check_solver_outputs()
-
-      self$samples$result <- private$solutions$value$result
-      self$samples$solver_chat <- private$solutions$value$solver_chat
-      
+      private$cbind_solutions()
       private$solved <- TRUE
       invisible(self)
     },
@@ -405,6 +413,17 @@ Task <- R6::R6Class("Task",
            call = call2("$solve")
         )
       }
+    },
+
+    cbind_solutions = function() {
+      self$samples$result <- private$solutions$value$result
+      self$samples$solver_chat <- private$solutions$value$solver_chat
+
+      if ("solver_metadata" %in% names(private$solutions$value)) {
+        self$samples$solver_metadata <- private$solutions$value$solver_metadata
+      }
+
+      invisible()
     },
 
     # The output of `logged(solver)(...)`

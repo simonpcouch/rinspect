@@ -48,6 +48,14 @@
       Error in `initialize()`:
       ! Duplicated values found in the id column. Each ID must be unique.
 
+# set_solver works
+
+    Code
+      .res <- tsk$set_solver(new_solver)
+    Condition
+      Warning:
+      Clearing results from previous solver.
+
 # Task completeness is tracked and preserved
 
     Code
