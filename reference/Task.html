@@ -118,13 +118,26 @@ columns to this data.</p></dd>
 <h3 id="method-set-solver-">Method <code>set_solver()</code><a class="anchor" aria-label="anchor" href="#method-set-solver-"></a></h3>
 <p>Set the solver function</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_solver</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_solver</span><span class="op">(</span><span class="va">solver</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>x</code></dt>
-<dd><p>A solver function</p></dd>
+<p></p><div class="arguments"><dl><dt><code>solver</code></dt>
+<dd><p>A function that takes a vector of inputs from the
+dataset's <code>input</code> column as its first argument and determines values
+approximating <code>dataset$target</code>. Its return value must be a list with
+the following elements:</p><ul><li><p><code>result</code> - A character vector of the final responses, with the same length
+as <code>dataset$input</code>.</p></li>
+<li><p><code>solver_chat</code> - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as <code>dataset$input</code>.</p></li>
+</ul><p>Additional output elements can be included in a slot <code>solver_metadata</code> that
+has the same length as <code>dataset$input</code>, which will be logged in
+<code>solver_metadata</code>.</p>
+<p>Additional arguments can be passed to the solver via <code>$solve(...)</code>
+or <code>$eval(...)</code>. See the definition of <code><a href="generate.html">generate()</a></code> for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+<code>$chat()</code> method in parallel.</p></dd>
 
 
 </dl><p></p></div>
@@ -175,12 +188,20 @@ columns to this data.</p></dd>
 
 
 <dt><code>solver</code></dt>
-<dd><p>A function that takes the vector <code>dataset$input</code> as its first
-argument and determines a value approximating <code>dataset$target</code>.
-Its return value should be a list with elements <code>result</code> (a vector of the
-final responses, the same length as <code>dataset$input</code>) and <code>solver_chat</code>
-(the list of ellmer chats used to solve the inputs, also the same length
-as <code>dataset$input</code>). See <code><a href="generate.html">generate()</a></code> for the simplest example.</p></dd>
+<dd><p>A function that takes a vector of inputs from the
+dataset's <code>input</code> column as its first argument and determines values
+approximating <code>dataset$target</code>. Its return value must be a list with
+the following elements:</p><ul><li><p><code>result</code> - A character vector of the final responses, with the same length
+as <code>dataset$input</code>.</p></li>
+<li><p><code>solver_chat</code> - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as <code>dataset$input</code>.</p></li>
+</ul><p>Additional output elements can be included in a slot <code>solver_metadata</code> that
+has the same length as <code>dataset$input</code>, which will be logged in
+<code>solver_metadata</code>.</p>
+<p>Additional arguments can be passed to the solver via <code>$solve(...)</code>
+or <code>$eval(...)</code>. See the definition of <code><a href="generate.html">generate()</a></code> for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+<code>$chat()</code> method in parallel.</p></dd>
 
 
 <dt><code>scorer</code></dt>
@@ -366,10 +387,10 @@ automatically in <code>$eval()</code>.</p><div class="section">
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `chat_anthropic()` instead.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-3-7-sonnet-latest"</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Solving</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[1.1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[968ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Scoring <span style="color: #B2B2B2;">[9ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Scoring <span style="color: #B2B2B2;">[10ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
