@@ -3,7 +3,7 @@ are <-
   list.files("data-raw/are", pattern = "*.json", full.names = TRUE) %>%
   purrr::map(function(.x) {
     .x <- jsonlite::fromJSON(.x)
-    .x$knowledge <- as.list(.x$knowledge)
+    .x$knowledge <- list(.x$knowledge)
     as_tibble(.x)
   }) %>%
   purrr::list_rbind() %>%
