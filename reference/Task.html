@@ -401,7 +401,7 @@ automatically in <code>$eval()</code>.</p><div class="section">
 <span class="r-in"><span>  <span class="co"># create a new Task</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk</span> <span class="op">&lt;-</span> <span class="va">Task</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    dataset <span class="op">=</span> <span class="va">simple_addition</span>,</span></span>
-<span class="r-in"><span>    solver <span class="op">=</span> <span class="fu"><a href="generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/deprecated.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    solver <span class="op">=</span> <span class="fu"><a href="generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    scorer <span class="op">=</span> <span class="fu"><a href="scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -413,11 +413,9 @@ automatically in <code>$eval()</code>.</p><div class="section">
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   to a temporary directory.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Set a log directory with e.g. `rinspect::inspect_log_dir_set("./logs")`,</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   perhaps in <span style="color: #0000BB;">~/.Rprofile</span>, to quiet this warning.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`chat_claude()` was deprecated in ellmer 0.2.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `chat_anthropic()` instead.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-3-7-sonnet-latest"</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Solving</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[1s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[943ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Scoring</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Scoring <span style="color: #B2B2B2;">[9ms]</span></span>
