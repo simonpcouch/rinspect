@@ -47,7 +47,7 @@
 #'   # create a new Task
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic()), 
 #'     scorer = detect_includes()
 #'   )
 #'   

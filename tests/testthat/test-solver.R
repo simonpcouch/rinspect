@@ -2,7 +2,7 @@ test_that("generate works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   library(ellmer)
 
-  res <- generate(chat_claude())
+  res <- generate(chat_anthropic())
   expect_s3_class(res, "crate")
 
   chat_res <- res(list("hey", "hi", "hello"))

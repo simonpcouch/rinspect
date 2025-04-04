@@ -83,7 +83,7 @@
 # Task completeness is tracked and preserved
 
     Code
-      .res <- tsk$set_solver(generate(chat_claude()))
+      .res <- tsk$set_solver(generate(chat_anthropic()))
     Condition
       Warning:
       Clearing results from previous solver.
