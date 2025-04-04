@@ -5,6 +5,9 @@ regenerate_example_objects <- function() {
   cli::cli_progress_step("Regenerating example task")
   regenerate_example_task()
 
+  cli::cli_progress_step("Regenerating example solver")
+  regenerate_example_solver()
+
   cli::cli_progress_step("Regenerating `are` on 1 epoch")
   regenerate_are_1e()
 
@@ -29,6 +32,15 @@ regenerate_example_task <- function() {
   
   tsk$eval()
   save(tsk, file = "inst/test-objects/example-task.rda")
+}
+
+regenerate_example_solver <- function() {
+  library(ellmer)
+
+  solver <- chat_anthropic(model = "claude-3-7-sonnet-latest")
+  solver$chat("What's 2+2?")
+
+  save(solver, file = "inst/sandbox/solver.rda")
 }
 
 # An R Eval on 1 epoch, via the intro vignette ------------------------

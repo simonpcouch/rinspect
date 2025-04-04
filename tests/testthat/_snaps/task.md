@@ -111,3 +111,4 @@
     Condition
       Error in `$solve`:
       ! Elements in the solver_chat output from `solver` must be ellmer Chat objects, not a string.
+
