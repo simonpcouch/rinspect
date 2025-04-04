@@ -103,13 +103,37 @@ The Task object (invisibly)
 \subsection{Method \code{set_scorer()}}{
 Set the scorer function
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$set_scorer(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_scorer(scorer)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{A scorer function}
+\item{\code{scorer}}{A function that evaluates how well the solver's return value
+approximates the corresponding elements of \code{dataset$target}. The function
+should take in the \verb{$samples} slot of a Task object and return a list with
+the following elements:
+\itemize{
+\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
+Built-in scorers return ordered factors with
+levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.
+}
+
+Optionally:
+\itemize{
+\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length \code{nrow(samples)}.
+\item \code{scorer_metadata} - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to \code{nrow(samples)}.
+}
+
+Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
+\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
+for examples.}
 }
 \if{html}{\out{</div>}}
 }
@@ -138,16 +162,51 @@ Create a new Task object
 \describe{
 \item{\code{dataset}}{A tibble with, minimally, columns \code{input} and \code{target}.}
 
-\item{\code{solver}}{A function that takes the vector \code{dataset$input} as its first
-argument and determines a value approximating \code{dataset$target}.
-Its return value should be a list with elements \code{result} (a vector of the
-final responses, the same length as \code{dataset$input}) and \code{solver_chat}
-(the list of ellmer chats used to solve the inputs, also the same length
-as \code{dataset$input}). See \code{\link[=generate]{generate()}} for the simplest example.}
+\item{\code{solver}}{A function that takes a vector of inputs from the
+dataset's \code{input} column as its first argument and determines values
+approximating \code{dataset$target}. Its return value must be a list with
+the following elements:
+\itemize{
+\item \code{result} - A character vector of the final responses, with the same length
+as \code{dataset$input}.
+\item \code{solver_chat} - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as \code{dataset$input}.
+}
+
+Additional output elements can be included in a slot \code{solver_metadata} that
+has the same length as \code{dataset$input}, which will be logged in
+\code{solver_metadata}.
+
+Additional arguments can be passed to the solver via \verb{$solve(...)}
+or \verb{$eval(...)}. See the definition of \code{\link[=generate]{generate()}} for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+\verb{$chat()} method in parallel.}
 
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
-approximates the corresponding elements of \code{dataset$target}. See
-\link[=scorer_model]{model-based scoring} for examples.}
+approximates the corresponding elements of \code{dataset$target}. The function
+should take in the \verb{$samples} slot of a Task object and return a list with
+the following elements:
+\itemize{
+\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
+Built-in scorers return ordered factors with
+levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.
+}
+
+Optionally:
+\itemize{
+\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length \code{nrow(samples)}.
+\item \code{scorer_metadata} - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to \code{nrow(samples)}.
+}
+
+Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
+\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
+for examples.}
 
 \item{\code{metric}}{A metric summarizing the results from the scorer.}
 

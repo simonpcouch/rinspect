@@ -60,9 +60,9 @@
 detect_includes <- function(case_sensitive = FALSE) {
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_includes_impl(
         list(...),
         case_sensitive = case_sensitive
@@ -75,7 +75,7 @@ detect_includes <- function(case_sensitive = FALSE) {
         levels = c("I", "C"),
         ordered = TRUE
       ),
-      metadata = purrr::map(results, "metadata")
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -109,9 +109,9 @@ detect_match <- function(
   location <- arg_match(location)
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_match_impl(
         list(...),
         location = location,
@@ -125,7 +125,7 @@ detect_match <- function(
         levels = c("I", "C"),
         ordered = TRUE
       ),
-      metadata = purrr::map(results, "metadata")
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -163,9 +163,9 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
   check_bool(case_sensitive)
   check_bool(all)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_pattern_impl(
         list(...),
         pattern = pattern,
@@ -180,7 +180,7 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
         levels = c("I", "C"),
         ordered = TRUE
       ),
-      metadata = purrr::map(results, "metadata")
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -226,9 +226,9 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
 detect_exact <- function(case_sensitive = FALSE) {
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_exact_impl(
         list(...),
         case_sensitive = case_sensitive
@@ -241,7 +241,7 @@ detect_exact <- function(case_sensitive = FALSE) {
         levels = c("I", "C"),
         ordered = TRUE
       ),
-      metadata = purrr::map(results, "metadata")
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -272,9 +272,9 @@ detect_exact_impl <- function(sample, case_sensitive) {
 detect_answer <- function(format = c("line", "word", "letter")) {
   format <- arg_match(format)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_answer_impl(
         list(...),
         format = format
@@ -287,7 +287,7 @@ detect_answer <- function(format = c("line", "word", "letter")) {
         levels = c("I", "C"),
         ordered = TRUE
       ),
-      metadata = purrr::map(results, "metadata")
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }

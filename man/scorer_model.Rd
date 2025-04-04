@@ -38,12 +38,9 @@ judge model's response.}
 }
 \value{
 A function that will grade model responses according to the given instructions.
-The returned function takes a solved \link{Task} and outputs a
-2-element list, where the first element \code{scores} is a vector of scores with
-length \code{nrow(task)} and the second is list of ellmer chats that led to the
-scores, also with length \code{nrow(task)}.
-The function that \code{model_graded_qa()}'s outputs can be passed directly to
-\verb{$eval()}.
+See \link{Task}'s \code{scorer} argument for a description of the returned function.
+The functions that \code{model_graded_qa()} and \code{model_graded_fact()} output
+can be passed directly to \verb{$eval()}.
 }
 \description{
 Model-based scoring makes use of a model to score output from a solver.

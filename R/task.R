@@ -15,6 +15,48 @@
 #' The usual flow of LLM evaluation with Tasks calls `$new()` and then
 #' `$eval()`.
 #' 
+#' @param solver A function that takes a vector of inputs from the
+#' dataset's `input` column as its first argument and determines values 
+#' approximating `dataset$target`. Its return value must be a list with 
+#' the following elements:
+#' 
+#' * `result` - A character vector of the final responses, with the same length 
+#'   as `dataset$input`.
+#' * `solver_chat` - A list of ellmer Chat objects that were used to solve 
+#'   each input, also with the same length as `dataset$input`.
+#' 
+#' Additional output elements can be included in a slot `solver_metadata` that
+#' has the same length as `dataset$input`, which will be logged in 
+#' `solver_metadata`.
+#' 
+#' Additional arguments can be passed to the solver via `$solve(...)`
+#' or `$eval(...)`. See the definition of [generate()] for a function that
+#' outputs a valid solver that just passes inputs to ellmer Chat objects'
+#' `$chat()` method in parallel.
+#' 
+#' @param scorer A function that evaluates how well the solver's return value
+#' approximates the corresponding elements of `dataset$target`. The function
+#' should take in the `$samples` slot of a Task object and return a list with 
+#' the following elements:
+#'
+#' * `score` - A vector of scores with length equal to `nrow(samples)`. 
+#'   Built-in scorers return ordered factors with
+#'   levels `I` < `P` (optionally) < `C` (standing for "Incorrect", "Partially
+#'   Correct", and "Correct"). If your scorer returns this output type, the
+#'   package will automatically calculate metrics.
+#' 
+#' Optionally: 
+#' * `scorer_chat` - If your scorer makes use of ellmer, also include a list of 
+#'   ellmer Chat objects that were used to score each result, also with 
+#'   length `nrow(samples)`.
+#' * `scorer_metadata` - Any intermediate results or other values that you'd
+#'   like to be stored in the persistent log. This should also have length 
+#'   equal to `nrow(samples)`.
+#' 
+#' Scorers will probably make use of `samples$input`, `samples$target`, and 
+#' `samples$result` specifically. See [model-based scoring][scorer_model] 
+#' for examples.
+#' 
 #' @seealso [generate()] for the simplest possible solver, and 
 #' [scorer_model] and [scorer_detect] for two built-in approaches to 
 #' scoring.
@@ -80,12 +122,10 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Set the scorer function
     #' 
-    #' @param x A scorer function
-    #' 
     #' @return The Task object (invisibly)
-    set_scorer = function(x) {
-      x_name <- deparse(substitute(x))
-      private$scorer <- logged(x, fn_name = x_name)
+    set_scorer = function(scorer) {
+      scorer_name <- deparse(substitute(scorer))
+      private$scorer <- logged(scorer, fn_name = scorer_name)
       
       if (private$scored) {
         cli::cli_warn("Clearing scores from previous scorer.")
@@ -99,15 +139,6 @@ Task <- R6::R6Class("Task",
     #' Create a new Task object
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
-    #' @param solver A function that takes the vector `dataset$input` as its first
-    #' argument and determines a value approximating `dataset$target`.
-    #' Its return value should be a list with elements `result` (a vector of the
-    #' final responses, the same length as `dataset$input`) and `solver_chat`
-    #' (the list of ellmer chats used to solve the inputs, also the same length
-    #' as `dataset$input`). See [generate()] for the simplest example.
-    #' @param scorer A function that evaluates how well the solver's return value
-    #' approximates the corresponding elements of `dataset$target`. See
-    #' [model-based scoring][scorer_model] for examples.
     #' @param metric A metric summarizing the results from the scorer.
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
@@ -170,10 +201,8 @@ Task <- R6::R6Class("Task",
       # this earlier on so that a full eval's worth of results isn't thrown
       # away if the output format isn't quite right.
       private$check_solver_outputs()
+      private$cbind_solutions()
 
-      self$samples$result <- private$solutions$value$result
-      self$samples$solver_chat <- private$solutions$value$solver_chat
-      
       private$solved <- TRUE
       invisible(self)
     },
@@ -196,13 +225,7 @@ Task <- R6::R6Class("Task",
       self$samples$score <- NA
       
       private$scores <- private$scorer(self$samples, ...)
-      scorer_res <- private$scores$value
-      self$samples$score <- scorer_res$score
-      if ("scorer_chat" %in% names(scorer_res)) {
-        self$samples$scorer_chat <- scorer_res$scorer_chat
-      }
-      self$samples$scorer <- private$scores$name
-      self$samples$metadata <- scorer_res$metadata
+      private$cbind_scores()
 
       if (is.factor(self$samples$score) && 
          (any(c("C", "I") %in% levels(self$samples$score)))) {
@@ -364,6 +387,7 @@ Task <- R6::R6Class("Task",
     reset_solutions = function() {
       self$samples$result <- NA
       self$samples$solver_chat <- NULL
+      self$samples$solver_metadata <- NULL
       private$solved <- FALSE
 
       if ("epoch" %in% names(self$samples)) {
@@ -377,7 +401,7 @@ Task <- R6::R6Class("Task",
     reset_scores = function() {
       self$samples$score <- NA
       self$samples$scorer_chat <- NULL
-      self$samples$metadata <- NULL
+      self$samples$scorer_metadata <- NULL
       private$scored <- FALSE
       invisible(NULL)
     },
@@ -405,6 +429,30 @@ Task <- R6::R6Class("Task",
            call = call2("$solve")
         )
       }
+    },
+
+    cbind_solutions = function() {
+      self$samples$result <- private$solutions$value$result
+      self$samples$solver_chat <- private$solutions$value$solver_chat
+
+      if ("solver_metadata" %in% names(private$solutions$value)) {
+        self$samples$solver_metadata <- private$solutions$value$solver_metadata
+      }
+
+      invisible()
+    },
+
+    cbind_scores = function() {
+      scorer_res <- private$scores$value
+      self$samples$score <- scorer_res$score
+      if ("scorer_chat" %in% names(scorer_res)) {
+        self$samples$scorer_chat <- scorer_res$scorer_chat
+      }
+      if ("scorer_metadata" %in% names(scorer_res)) {
+        self$samples$scorer_metadata <- scorer_res$scorer_metadata
+      }
+
+      self$samples$scorer <- private$scores$name
     },
 
     # The output of `logged(solver)(...)`
