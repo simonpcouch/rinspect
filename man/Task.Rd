@@ -121,13 +121,37 @@ The Task object (invisibly)
 \subsection{Method \code{set_scorer()}}{
 Set the scorer function
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$set_scorer(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_scorer(scorer)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{A scorer function}
+\item{\code{scorer}}{A function that evaluates how well the solver's return value
+approximates the corresponding elements of \code{dataset$target}. The function
+should take in the \verb{$samples} slot of a Task object and return a list with
+the following elements:
+\itemize{
+\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
+Built-in scorers return ordered factors with
+levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.
+}
+
+Optionally:
+\itemize{
+\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length \code{nrow(samples)}.
+\item \code{scorer_metadata} - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to \code{nrow(samples)}.
+}
+
+Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
+\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
+for examples.}
 }
 \if{html}{\out{</div>}}
 }
@@ -177,8 +201,30 @@ outputs a valid solver that just passes inputs to ellmer Chat objects'
 \verb{$chat()} method in parallel.}
 
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
-approximates the corresponding elements of \code{dataset$target}. See
-\link[=scorer_model]{model-based scoring} for examples.}
+approximates the corresponding elements of \code{dataset$target}. The function
+should take in the \verb{$samples} slot of a Task object and return a list with
+the following elements:
+\itemize{
+\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
+Built-in scorers return ordered factors with
+levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.
+}
+
+Optionally:
+\itemize{
+\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length \code{nrow(samples)}.
+\item \code{scorer_metadata} - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to \code{nrow(samples)}.
+}
+
+Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
+\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
+for examples.}
 
 \item{\code{metric}}{A metric summarizing the results from the scorer.}
 

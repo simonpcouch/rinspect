@@ -21,12 +21,9 @@
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
-#' The returned function takes a solved [Task] and outputs a
-#' 2-element list, where the first element `scores` is a vector of scores with
-#' length `nrow(task)` and the second is list of ellmer chats that led to the
-#' scores, also with length `nrow(task)`.
-#' The function that `model_graded_qa()`'s outputs can be passed directly to 
-#' `$eval()`.
+#' See [Task]'s `scorer` argument for a description of the returned function.
+#' The functions that `model_graded_qa()` and `model_graded_fact()` output
+#' can be passed directly to `$eval()`.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 
@@ -83,9 +80,9 @@ model_graded_qa <- function(
 ) {
   ch <- scorer_chat
 
-  function(task, ..., scorer_chat = ch) {
+  function(samples, ..., scorer_chat = ch) {
     model_graded_qa_impl(
-      task = task,
+      samples = samples,
       template = template,
       instructions = instructions,
       grade_pattern = grade_pattern,
@@ -96,7 +93,7 @@ model_graded_qa <- function(
 }
 
 model_graded_qa_impl <- function(
-  task,
+  samples,
   template = NULL,
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
@@ -106,18 +103,18 @@ model_graded_qa_impl <- function(
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
 
-  prompts <- purrr::map_chr(seq_len(nrow(task)), function(i) {
+  prompts <- purrr::map_chr(seq_len(nrow(samples)), function(i) {
     qa_format_prompt(
       template,
-      task$input[i],
-      task$result[i],
-      task$target[i],
+      samples$input[i],
+      samples$result[i],
+      samples$target[i],
       instructions
     )
   })
   
   if (is.null(scorer_chat)) {
-    scorer_chat <- solver_chat(task[1, ])
+    scorer_chat <- solver_chat(samples[1, ])
   }
   
   scorer_chat <- scorer_chat$clone()
@@ -153,7 +150,7 @@ model_graded_qa_impl <- function(
   list(
     score = scores,
     scorer_chat = responses,
-    metadata = metadata
+    scorer_metadata = metadata
   )
 }
 
@@ -218,9 +215,9 @@ model_graded_fact <- function(
 ) {
   ch <- scorer_chat
   
-  function(task, scorer_chat = ch) {
+  function(samples, scorer_chat = ch) {
     model_graded_qa_impl(
-      task = task,
+      samples = samples,
       template = template %||% fact_default_template(),
       instructions = instructions,
       grade_pattern = grade_pattern,

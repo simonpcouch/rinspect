@@ -56,6 +56,30 @@
       Warning:
       Clearing results from previous solver.
 
+---
+
+    Code
+      .res <- tsk$set_solver(new_solver)
+    Condition
+      Warning:
+      Clearing results from previous solver.
+
+# set_scorer works
+
+    Code
+      .res <- tsk$set_scorer(scorer_chat)
+    Condition
+      Warning:
+      Clearing scores from previous scorer.
+
+---
+
+    Code
+      .res <- tsk$set_scorer(scorer_metadata)
+    Condition
+      Warning:
+      Clearing scores from previous scorer.
+
 # Task completeness is tracked and preserved
 
     Code
