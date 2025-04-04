@@ -58,7 +58,6 @@ test_that("rinspect writes valid eval logs (basic, claude)", {
 })
 
 test_that("rinspect writes valid eval logs (basic, openai)", {
-  skip("Logs generated from OpenAI still produce pydantic validation errors.")
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
@@ -84,7 +83,6 @@ test_that("rinspect writes valid eval logs (basic, openai)", {
 })
 
 test_that("rinspect writes valid eval logs (basic, gemini)", {
-  skip("Logs generated from Gemini still produce pydantic validation errors.")
   skip_if(identical(Sys.getenv("GOOGLE_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
@@ -98,7 +96,7 @@ test_that("rinspect writes valid eval logs (basic, gemini)", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_gemini(model = "gemini-2.0-flash")),
+    solver = generate(ellmer::chat_google_gemini(model = "gemini-2.0-flash")),
     scorer = model_graded_qa()
   )
   tsk$eval()
