@@ -23,7 +23,7 @@ regenerate_example_task <- function() {
     
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat_claude(model = "claude-3-7-sonnet-latest")), 
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_qa()
   )
   

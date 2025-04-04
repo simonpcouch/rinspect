@@ -73,7 +73,7 @@
 #'   # create a new Task
 #'   tsk <- Task$new(
 #'     dataset = simple_addition,
-#'     solver = generate(chat_claude()),
+#'     solver = generate(chat_anthropic()),
 #'     scorer = model_graded_qa()
 #'   )
 #'

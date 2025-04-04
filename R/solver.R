@@ -5,7 +5,7 @@
 #' rinspect; it just passes its inputs to the supplied model and returns
 #' its raw responses.
 #' 
-#' @param solver_chat An ellmer chat object, such as from [ellmer::chat_claude()].
+#' @param solver_chat An ellmer chat object, such as from [ellmer::chat_anthropic()].
 #'
 #' @returns 
 #' The output of `generate()` is another function. That function takes in

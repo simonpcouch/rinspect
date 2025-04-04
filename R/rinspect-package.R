@@ -14,7 +14,7 @@ NULL
 
 utils::globalVariables(c(
   "any_of",
-  "chat_claude",
+  "chat_anthropic",
   "everything",
   "head",
   "path",

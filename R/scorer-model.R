@@ -17,7 +17,7 @@
 #' judge model's response.
 #' @param partial_credit Whether to allow partial credit.
 #' @param scorer_chat An ellmer chat used to grade the model output, e.g.
-#' [ellmer::chat_claude()].
+#' [ellmer::chat_anthropic()].
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
@@ -40,7 +40,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic()), 
 #'     scorer = model_graded_qa()
 #'   )
 #'   
@@ -62,7 +62,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = r_history, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic()), 
 #'     scorer = model_graded_fact()
 #'   )
 #'   

@@ -15,7 +15,7 @@ test_that("model_graded_qa works", {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat_claude()), 
+    solver = generate(chat_anthropic()), 
     scorer = model_graded_qa()
   )
   
@@ -54,7 +54,7 @@ test_that("model_graded_fact works", {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(chat_claude()), 
+    solver = generate(chat_anthropic()), 
     scorer = model_graded_fact()
   )
   

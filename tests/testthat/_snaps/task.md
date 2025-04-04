@@ -83,7 +83,7 @@
 # Task completeness is tracked and preserved
 
     Code
-      .res <- tsk$set_solver(generate(chat_claude()))
+      .res <- tsk$set_solver(generate(chat_anthropic()))
     Condition
       Warning:
       Clearing results from previous solver.
@@ -111,4 +111,3 @@
     Condition
       Error in `$solve`:
       ! Elements in the solver_chat output from `solver` must be ellmer Chat objects, not a string.
-
