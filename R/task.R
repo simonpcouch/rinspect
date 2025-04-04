@@ -104,12 +104,10 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Set the solver function
     #' 
-    #' @param x A solver function
-    #' 
     #' @return The Task object (invisibly)
-    set_solver = function(x) {
-      x_name <- deparse(substitute(x))
-      private$solver <- logged(x, fn_name = x_name)
+    set_solver = function(solver) {
+      solver_name <- deparse(substitute(solver))
+      private$solver <- logged(solver, fn_name = solver_name)
       
       if (private$solved) {
         cli::cli_warn("Clearing results from previous solver.")
@@ -195,7 +193,7 @@ Task <- R6::R6Class("Task",
       self$samples$result <- NA
       self$samples$solver_chat <- NA
 
-      private$solutions <- private$solver(as.list(self$samples$input), ...)
+      private$solutions <- private$solver(self$samples$input, ...)
 
       # TODO: it might be nice to just run one of the inputs async and check for
       # this earlier on so that a full eval's worth of results isn't thrown
