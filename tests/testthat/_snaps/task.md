@@ -56,6 +56,14 @@
       Warning:
       Clearing results from previous solver.
 
+---
+
+    Code
+      .res <- tsk$set_solver(new_solver)
+    Condition
+      Warning:
+      Clearing results from previous solver.
+
 # set_scorer works
 
     Code

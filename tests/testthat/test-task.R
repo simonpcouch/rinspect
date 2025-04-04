@@ -210,7 +210,7 @@ test_that("set_solver works", {
   expect_true("solver_metadata" %in% names(tsk$samples))
 })
 
-test_that("set_scorer works", {
+test_that("set_solver works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
