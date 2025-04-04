@@ -24,19 +24,16 @@
 #' @export
 generate <- function(solver_chat = NULL) {
   chat <- solver_chat
-  carrier::crate(
-    function(inputs, ..., solver_chat = chat) {
-      check_inherits(solver_chat, "Chat")
+  
+  function(inputs, ..., solver_chat = chat) {
+    check_inherits(solver_chat, "Chat")
 
-      ch <- solver_chat$clone()
-      res <- ch$chat_parallel(as.list(inputs), ...)
+    ch <- solver_chat$clone()
+    res <- ch$chat_parallel(as.list(inputs), ...)
 
-      list(
-        result = purrr::map_chr(res, function(c) c$last_turn()@text),
-        solver_chat = res
-      )
-    },
-    chat = chat,
-    check_inherits = check_inherits
-  )
+    list(
+      result = purrr::map_chr(res, function(c) c$last_turn()@text),
+      solver_chat = res
+    )
+  }
 }

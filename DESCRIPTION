@@ -19,7 +19,6 @@ Depends:
     R (>= 4.0)
 Imports: 
     cli,
-    carrier,
     dplyr,
     ellmer,
     glue,

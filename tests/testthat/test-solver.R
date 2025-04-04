@@ -3,7 +3,7 @@ test_that("generate works", {
   library(ellmer)
 
   res <- generate(chat_anthropic())
-  expect_s3_class(res, "crate")
+  expect_contains(class(res), "function")
 
   chat_res <- res(list("hey", "hi", "hello"))
 
@@ -16,6 +16,6 @@ test_that("generate works", {
 
 test_that("generate() allows NULL default model", {
   res <- generate()
-  expect_s3_class(res, "crate")
+  expect_contains(class(res), "function")
   expect_snapshot(res(), error = TRUE)
 })
