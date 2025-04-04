@@ -1,5 +1,5 @@
 translate_to_model_usage <- function(chat) {
-  tokens <- as.data.frame(chat$tokens())
+  tokens <- as.data.frame(chat$get_tokens())
   model <- chat$get_model()
 
   dots_list(
