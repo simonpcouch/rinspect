@@ -316,12 +316,12 @@ Task <- R6::R6Class("Task",
           task_id = private$task_id,
           dataset = list(
             samples = length(unique(samples$id)), 
-            sample_ids = seq_len(length(unique(samples$id))), 
+            sample_ids = as.list(seq_len(length(unique(samples$id)))), 
             shuffled = FALSE
           ),
           model = samples$solver_chat[[1]]$get_model(),
           scorers = eval_log_eval_scorers(
-            name = environment(private$scorer)$fn_name
+            name = samples$scorer[[1]]
           )
         ),
         plan = eval_log_plan(steps = eval_log_plan_steps(

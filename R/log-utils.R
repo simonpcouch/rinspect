@@ -123,7 +123,7 @@ eval_log_sample <- function(sample, scores) {
     epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {1},
     input = sample$input,
     target = sample$target,
-    messages = translate_to_messages(turns),
+    messages = translate_to_messages(chat),
     output = translate_to_output(chat),
     scores = dots_list(
       !!scorer_name := eval_log_score(
@@ -165,7 +165,7 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
       value = score,
       answer = output,
       explanation = paste0("Detected correct answer."),
-      metadata = list()
+      metadata = c()
     ))
   }
 
