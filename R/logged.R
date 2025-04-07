@@ -28,7 +28,7 @@ logged <- function(fn, fn_name = deparse(substitute(fn))) {
     arg_exprs <- map(arg_exprs, expr_deparse)
 
     res <- list(
-      name = fn_name,
+      name = paste0(fn_name, collapse = ""),
       value = fn(...),
       arguments = arg_exprs
     )
