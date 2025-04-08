@@ -46,7 +46,7 @@ test_that("rinspect writes valid eval logs (basic, claude)", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_anthropic()),
+    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = model_graded_qa()
   )
   tsk$eval()

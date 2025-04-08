@@ -59,10 +59,9 @@ simple_addition <- tibble(
 
 tsk <- Task$new(
   dataset = simple_addition, 
-  solver = generate(chat_anthropic()), 
+  solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
   scorer = model_graded_qa()
 )
-#> Using model = "claude-3-7-sonnet-latest".
 ```
 
 Tasks are composed of three main components:
@@ -92,11 +91,11 @@ the Inspect log viewer.
 Any arguments to the solver or scorer can be passed to `$eval()`,
 allowing for straightforward parameterization of tasks. For example, if
 I wanted to evaluate `chat_openai()` on this task rather than
-`chat_anthropic()`, I could write:
+`chat_anthropic(model = "claude-3-7-sonnet-latest")`, I could write:
 
 ``` r
 tsk_openai <- tsk$clone()
-tsk_openai$eval(solver_chat = chat_openai())
+tsk_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
 
 For an applied example, see the “Getting started with rinspect” vignette

@@ -83,7 +83,7 @@
 # Task completeness is tracked and preserved
 
     Code
-      .res <- tsk$set_solver(generate(chat_anthropic()))
+      .res <- tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest")))
     Condition
       Warning:
       Clearing results from previous solver.

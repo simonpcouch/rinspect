@@ -66,7 +66,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(solver_chat = chat_anthropic()), 
+    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_qa()
   )
   
@@ -88,7 +88,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(solver_chat = chat_anthropic()), 
+    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_fact()
   )
   

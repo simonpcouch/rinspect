@@ -32,7 +32,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   # create a new Task
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic()),
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = model_graded_qa()
   )
 

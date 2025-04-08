@@ -13,7 +13,7 @@ test_that("Task R6 class works", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic()),
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = model_graded_qa()
   )
   
@@ -52,7 +52,7 @@ test_that("Task with epochs works", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic()),
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = model_graded_qa()
   )
   
@@ -184,7 +184,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic())
+      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
     )
   }
   tsk$set_solver(new_solver)
@@ -197,7 +197,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic()),
+      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -232,7 +232,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic())
+      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
     )
   }
   tsk$set_solver(new_solver)
@@ -245,7 +245,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic()),
+      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -274,7 +274,7 @@ test_that("set_scorer works", {
   solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic())
+      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
     )
   }
 
@@ -300,7 +300,7 @@ test_that("set_scorer works", {
   scorer_chat <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic())
+      scorer_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
     )
   }
   expect_snapshot(.res <- tsk$set_scorer(scorer_chat))
@@ -312,7 +312,7 @@ test_that("set_scorer works", {
   scorer_metadata <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_anthropic(), ellmer::chat_anthropic()),
+      scorer_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
       scorer_metadata = c("beep", "bop")
     )
   }
@@ -369,7 +369,7 @@ test_that("Task completeness is tracked and preserved", {
   
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic()),
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = mock_scorer
   )
   
@@ -382,7 +382,7 @@ test_that("Task completeness is tracked and preserved", {
   tsk$score()
   expect_true(tsk$.__enclos_env__$private$scored)
   
-  expect_snapshot(.res <- tsk$set_solver(generate(chat_anthropic())))
+  expect_snapshot(.res <- tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest"))))
   expect_false(tsk$.__enclos_env__$private$solved)
   
   tsk$solve()
@@ -407,7 +407,7 @@ test_that("Task completeness is tracked and preserved", {
   # test re-evaluation with epochs
   tsk_epochs <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic()),
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = mock_scorer
   )
   
