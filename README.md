@@ -91,7 +91,7 @@ the Inspect log viewer.
 Any arguments to the solver or scorer can be passed to `$eval()`,
 allowing for straightforward parameterization of tasks. For example, if
 I wanted to evaluate `chat_openai()` on this task rather than
-`chat_anthropic(model = "claude-3-7-sonnet-latest")`, I could write:
+`chat_anthropic()`, I could write:
 
 ``` r
 tsk_openai <- tsk$clone()

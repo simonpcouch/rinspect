@@ -88,7 +88,7 @@ tsk$eval()
 knitr::include_graphics("man/figures/log_viewer.png")
 ```
 
-Any arguments to the solver or scorer can be passed to `$eval()`, allowing for straightforward parameterization of tasks. For example, if I wanted to evaluate `chat_openai()` on this task rather than `chat_anthropic(model = "claude-3-7-sonnet-latest")`, I could write:
+Any arguments to the solver or scorer can be passed to `$eval()`, allowing for straightforward parameterization of tasks. For example, if I wanted to evaluate `chat_openai()` on this task rather than `chat_anthropic()`, I could write:
 
 ```{r}
 #| label: tsk-openai
