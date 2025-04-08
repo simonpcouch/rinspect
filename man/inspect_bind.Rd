@@ -2,7 +2,7 @@
 % Please edit documentation in R/bind.R
 \name{inspect_bind}
 \alias{inspect_bind}
-\title{Bind multiple Task objects}
+\title{Concatenate task samples for analysis}
 \usage{
 inspect_bind(...)
 }
@@ -12,16 +12,13 @@ inspect_bind(...)
 \value{
 A tibble with the combined samples from all tasks, with a \code{task}
 column indicating the source and a nested \code{metadata} column containing
-additional fields
+additional fields.
 }
 \description{
-Combine multiple \code{Task} objects into a single tibble for comparison.
+Combine multiple \link{Task} objects into a single tibble for comparison.
 
-This function takes multiple (optionally named) \code{Task} objects and row-binds
-their \code{samples} together, adding a \code{task} column to identify the source of each
+This function takes multiple (optionally named) \link{Task} objects and row-binds
+their \verb{$samples} together, adding a \code{task} column to identify the source of each
 row. The resulting tibble nests additional columns into a \code{metadata} column
 and is ready for further analysis.
-}
-\seealso{
-\link{Task}
 }

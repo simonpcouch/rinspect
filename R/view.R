@@ -3,7 +3,7 @@
 #' @description
 #' rinspect bundles the Inspect log viewer, an interactive app for exploring
 #' evaluation logs. Supply a path to a directory of tasks written to json.
-#' For Task objects, use the `$view()` method instead.
+#' For individual [Task] objects, use the `$view()` method instead.
 #' 
 #' @param dir Path to a directory containing task eval logs.
 #' @param host Host to serve on. Defaults to "127.0.0.1".

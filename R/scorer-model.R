@@ -24,6 +24,9 @@
 #' See [Task]'s `scorer` argument for a description of the returned function.
 #' The functions that `model_graded_qa()` and `model_graded_fact()` output
 #' can be passed directly to `$eval()`.
+#' 
+#' See the documentation for the `scorer` argument in [Task] for more 
+#' information on the return type.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 

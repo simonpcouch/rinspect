@@ -17,5 +17,5 @@ implementation.}
 \description{
 rinspect bundles the Inspect log viewer, an interactive app for exploring
 evaluation logs. Supply a path to a directory of tasks written to json.
-For Task objects, use the \verb{$view()} method instead.
+For individual \link{Task} objects, use the \verb{$view()} method instead.
 }

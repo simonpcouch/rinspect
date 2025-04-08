@@ -10,16 +10,21 @@ inspect_log_dir()
 inspect_log_dir_set(dir)
 }
 \arguments{
-\item{dir}{A directory to configure \code{INSPECT_LOG_DIR} to.}
+\item{dir}{A directory to configure the environment variable
+\code{INSPECT_LOG_DIR} to.}
 }
 \value{
 Both \code{inspect_log_dir()} and \code{inspect_log_dir_set()} return the current
 value of the environment variable \code{INSPECT_LOG_DIR}. \code{inspect_log_dir_set()}
 additionally sets it to a new value.
+
+To set this variable in every new R session, you might consider adding it
+to your \code{.Rprofile}, perhaps with \code{usethis::edit_r_profile()}.
 }
 \description{
 rinspect supports the \code{INSPECT_LOG_DIR} environment variable,
-which sets a default directory to write logs to in \code{task$eval()}.
+which sets a default directory to write logs to in \link{Task}'s \verb{$eval()}
+and \verb{$log()} methods.
 }
 \examples{
 inspect_log_dir()

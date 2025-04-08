@@ -41,6 +41,9 @@ A function that will grade model responses according to the given instructions.
 See \link{Task}'s \code{scorer} argument for a description of the returned function.
 The functions that \code{model_graded_qa()} and \code{model_graded_fact()} output
 can be passed directly to \verb{$eval()}.
+
+See the documentation for the \code{scorer} argument in \link{Task} for more
+information on the return type.
 }
 \description{
 Model-based scoring makes use of a model to score output from a solver.

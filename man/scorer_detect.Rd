@@ -37,10 +37,11 @@ or \code{"line"}. Defaults to \code{"line"}.}
 }
 \value{
 A function that scores model output based on string matching. Pass the
-returned value to \verb{$eval(scorer)}.
+returned value to \verb{$eval(scorer)}. See the documentation for the \code{scorer}
+argument in \link{Task} for more information on the return type.
 }
 \description{
-Functions for string pattern detection in model outputs:
+The following functions use string pattern detection to score model outputs.
 \itemize{
 \item \code{detect_includes()}: Determine whether the \code{target} from the sample
 appears anywhere inside the model output. Can be case sensitive or

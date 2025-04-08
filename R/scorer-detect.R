@@ -1,7 +1,7 @@
 #' Scoring with string detection
 #'
 #' @description
-#' Functions for string pattern detection in model outputs:
+#' The following functions use string pattern detection to score model outputs.
 #'
 #' - `detect_includes()`: Determine whether the `target` from the sample 
 #' appears anywhere inside the model output. Can be case sensitive or 
@@ -32,7 +32,8 @@
 #' 
 #' @returns
 #' A function that scores model output based on string matching. Pass the
-#' returned value to `$eval(scorer)`.
+#' returned value to `$eval(scorer)`. See the documentation for the `scorer` 
+#' argument in [Task] for more information on the return type.
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {

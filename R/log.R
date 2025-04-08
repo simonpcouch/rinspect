@@ -2,14 +2,19 @@
 #'
 #' @description
 #' rinspect supports the `INSPECT_LOG_DIR` environment variable,
-#' which sets a default directory to write logs to in `task$eval()`.
+#' which sets a default directory to write logs to in [Task]'s `$eval()`
+#' and `$log()` methods.
 #'
-#' @param dir A directory to configure `INSPECT_LOG_DIR` to.
+#' @param dir A directory to configure the environment variable
+#' `INSPECT_LOG_DIR` to.
 #'
 #' @returns
 #' Both `inspect_log_dir()` and `inspect_log_dir_set()` return the current
 #' value of the environment variable `INSPECT_LOG_DIR`. `inspect_log_dir_set()`
 #' additionally sets it to a new value.
+#' 
+#' To set this variable in every new R session, you might consider adding it
+#' to your `.Rprofile`, perhaps with `usethis::edit_r_profile()`.
 #'
 #' @examples
 #' inspect_log_dir()
