@@ -69,12 +69,11 @@ Datasets are just a tibble with columns <code>input</code> and
 <strong>Solvers</strong> evaluate the <code>input</code> in the
 dataset and produce a final result (hopefully) approximating
 <code>target</code>. In rinspect, the simplest solver is just an ellmer
-chat
-(e.g. <code>ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")</code>)
-wrapped in <code><a href="../reference/generate.html">generate()</a></code>,
-i.e. <code>generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")</code>),
-which will call the Chat object’s <code>$chat()</code> method and return
-whatever it returns.</li>
+chat (e.g. <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>) wrapped in
+<code><a href="../reference/generate.html">generate()</a></code>,
+i.e. <code>generate(ellmer::chat_anthropic()</code>), which will call
+the Chat object’s <code>$chat()</code> method and return whatever it
+returns.</li>
 <li>
 <strong>Scorers</strong> evaluate the final output of solvers. They
 may use text comparisons, model grading, or other custom schemes to
