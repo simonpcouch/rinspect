@@ -12,8 +12,9 @@
 #' comparisons (like [detect_match()]), model grading (like
 #' [model_graded_qa()]), or other custom schemes.
 #'
-#' The usual flow of LLM evaluation with Tasks calls `$new()` and then
-#' `$eval()`.
+#' **The usual flow of LLM evaluation with Tasks calls `$new()` and then `$eval()`.**
+#' `$eval()` just calls `$solve()`, `$score()`, `$log()`, and `$view()` in order.
+#' The remaining methods are generally only recommended for expert use.
 #' 
 #' @param solver A function that takes a vector of inputs from the
 #' dataset's `input` column as its first argument and determines values 
@@ -100,41 +101,10 @@ Task <- R6::R6Class("Task",
 
     #' @field metrics The metrics calculated in `metric()`. 
     metrics = NULL,
-    
-    #' @description
-    #' Set the solver function
-    #' 
-    #' @return The Task object (invisibly)
-    set_solver = function(solver) {
-      solver_name <- deparse(substitute(solver))
-      private$solver <- logged(solver, fn_name = solver_name)
-      
-      if (private$solved) {
-        cli::cli_warn("Clearing results from previous solver.")
-        private$reset_solutions()
-      }
-      
-      invisible(self)
-    },
-    
-    #' @description
-    #' Set the scorer function
-    #' 
-    #' @return The Task object (invisibly)
-    set_scorer = function(scorer) {
-      scorer_name <- deparse(substitute(scorer))
-      private$scorer <- logged(scorer, fn_name = scorer_name)
-      
-      if (private$scored) {
-        cli::cli_warn("Clearing scores from previous scorer.")
-        private$reset_scores()
-      }
-      
-      invisible(self)
-    },
 
     #' @description
-    #' Create a new Task object
+    #' The typical flow of LLM evaluation with rinspect tends to involve first
+    #' calling this method and then `$eval()` on the resulting object.
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
     #' @param metric A metric summarizing the results from the scorer.
@@ -167,6 +137,45 @@ Task <- R6::R6Class("Task",
       private$task_id <- substr(hash(c(name, solver_name, scorer_name)), 1, 22)
 
       self$samples <- set_id_column(dataset)
+    },
+
+    #' @description
+    #' Evaluates the task by running the solver, scorer, logging results, and 
+    #' viewing (if interactive). This method works by calling `$solve()`, 
+    #' `$score()`, `$log()`, and `$view()` in sequence.
+    #' 
+    #' The typical flow of LLM evaluation with rinspect tends to involve first
+    #' calling `$new()` and then this method on the resulting object.
+    #'
+    #' @param ... Additional arguments passed to the solver and scorer functions.
+    #' @param epochs The number of times to repeat each sample. Evaluate each sample
+    #' multiple times to measure variation. Optional, defaults to `1L`.
+    #' @param view Automatically open the viewer after evaluation (defaults to
+    #' TRUE if interactive, FALSE otherwise).
+    #'
+    #' @return The Task object (invisibly)
+    eval = function(..., epochs = 1L, view = interactive()) {
+      check_number_whole(epochs, min = 1)
+      
+      if (private$solved || private$scored) {
+        private$reset_for_new_eval()
+      }
+
+      cli::cli_progress_step("Solving")
+      self$solve(..., epochs = epochs)
+
+      cli::cli_progress_step("Scoring")
+      self$score(...)
+      
+      self$log(self$dir)
+      private$stash_last_task()
+
+      cli::cli_process_done()
+      if (view) {
+        self$view()
+      }
+
+      invisible(self)
     },
 
     #' @description
@@ -246,58 +255,6 @@ Task <- R6::R6Class("Task",
     },
 
     #' @description
-    #' Evaluate the task by running the solver, scorer, logging results, and viewing (if interactive)
-    #'
-    #' This method works by calling `$solve()`, `$score()`, `$log()`, and `$view()` in sequence.
-    #'
-    #' @param ... Additional arguments passed to the solver and scorer functions.
-    #' @param epochs The number of times to repeat each sample. Evaluate each sample
-    #' multiple times to measure variation. Optional, defaults to `1L`.
-    #' @param view Automatically open the viewer after evaluation (defaults to
-    #' TRUE if interactive, FALSE otherwise).
-    #'
-    #' @return The Task object (invisibly)
-    eval = function(..., epochs = 1L, view = interactive()) {
-      check_number_whole(epochs, min = 1)
-      
-      if (private$solved || private$scored) {
-        private$reset_for_new_eval()
-      }
-
-      cli::cli_progress_step("Solving")
-      self$solve(..., epochs = epochs)
-
-      cli::cli_progress_step("Scoring")
-      self$score(...)
-      
-      self$log(self$dir)
-      private$stash_last_task()
-
-      cli::cli_process_done()
-      if (view) {
-        self$view()
-      }
-
-      invisible(self)
-    },
-
-    #' @description
-    #' View the task results in the Inspect log viewer
-    #'
-    #' @return The Task object (invisibly)
-    view = function() {
-      if (!private$solved) {
-        cli::cli_alert_warning(
-          "Task has not been evaluated yet. Run task$eval() first."
-        )
-        return(invisible(self))
-      }
-
-      inspect_view(self$dir)
-      invisible(self)
-    },
-
-    #' @description
     #' Log the task to a directory.
     #'
     #' Note that, if an `INSPECT_LOG_DIR` envvar is set, this will happen
@@ -356,6 +313,54 @@ Task <- R6::R6Class("Task",
       eval_log_write(eval_log, dir = dir)
 
       invisible(self$dir)
+    },
+
+    #' @description
+    #' View the task results in the Inspect log viewer
+    #'
+    #' @return The Task object (invisibly)
+    view = function() {
+      if (!private$solved) {
+        cli::cli_alert_warning(
+          "Task has not been evaluated yet. Run task$eval() first."
+        )
+        return(invisible(self))
+      }
+
+      inspect_view(self$dir)
+      invisible(self)
+    },
+    
+    #' @description
+    #' Set the solver function
+    #' 
+    #' @return The Task object (invisibly)
+    set_solver = function(solver) {
+      solver_name <- deparse(substitute(solver))
+      private$solver <- logged(solver, fn_name = solver_name)
+      
+      if (private$solved) {
+        cli::cli_warn("Clearing results from previous solver.")
+        private$reset_solutions()
+      }
+      
+      invisible(self)
+    },
+    
+    #' @description
+    #' Set the scorer function
+    #' 
+    #' @return The Task object (invisibly)
+    set_scorer = function(scorer) {
+      scorer_name <- deparse(substitute(scorer))
+      private$scorer <- logged(scorer, fn_name = scorer_name)
+      
+      if (private$scored) {
+        cli::cli_warn("Clearing scores from previous scorer.")
+        private$reset_scores()
+      }
+      
+      invisible(self)
     }
   ),
 

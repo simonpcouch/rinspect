@@ -16,8 +16,9 @@ comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (l
 \code{\link[=model_graded_qa]{model_graded_qa()}}), or other custom schemes.
 }
 
-The usual flow of LLM evaluation with Tasks calls \verb{$new()} and then
-\verb{$eval()}.
+\strong{The usual flow of LLM evaluation with Tasks calls \verb{$new()} and then \verb{$eval()}.}
+\verb{$eval()} just calls \verb{$solve()}, \verb{$score()}, \verb{$log()}, and \verb{$view()} in order.
+The remaining methods are generally only recommended for expert use.
 }
 \examples{
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -66,15 +67,204 @@ columns to this data.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-Task-set_solver}{\code{Task$set_solver()}}
-\item \href{#method-Task-set_scorer}{\code{Task$set_scorer()}}
 \item \href{#method-Task-new}{\code{Task$new()}}
+\item \href{#method-Task-eval}{\code{Task$eval()}}
 \item \href{#method-Task-solve}{\code{Task$solve()}}
 \item \href{#method-Task-score}{\code{Task$score()}}
-\item \href{#method-Task-eval}{\code{Task$eval()}}
-\item \href{#method-Task-view}{\code{Task$view()}}
 \item \href{#method-Task-log}{\code{Task$log()}}
+\item \href{#method-Task-view}{\code{Task$view()}}
+\item \href{#method-Task-set_solver}{\code{Task$set_solver()}}
+\item \href{#method-Task-set_scorer}{\code{Task$set_scorer()}}
 \item \href{#method-Task-clone}{\code{Task$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-new}{}}}
+\subsection{Method \code{new()}}{
+The typical flow of LLM evaluation with rinspect tends to involve first
+calling this method and then \verb{$eval()} on the resulting object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$new(
+  dataset,
+  solver,
+  scorer,
+  metric = NULL,
+  name = deparse(substitute(dataset)),
+  dir = inspect_log_dir()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dataset}}{A tibble with, minimally, columns \code{input} and \code{target}.}
+
+\item{\code{solver}}{A function that takes a vector of inputs from the
+dataset's \code{input} column as its first argument and determines values
+approximating \code{dataset$target}. Its return value must be a list with
+the following elements:
+\itemize{
+\item \code{result} - A character vector of the final responses, with the same length
+as \code{dataset$input}.
+\item \code{solver_chat} - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as \code{dataset$input}.
+}
+
+Additional output elements can be included in a slot \code{solver_metadata} that
+has the same length as \code{dataset$input}, which will be logged in
+\code{solver_metadata}.
+
+Additional arguments can be passed to the solver via \verb{$solve(...)}
+or \verb{$eval(...)}. See the definition of \code{\link[=generate]{generate()}} for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+\verb{$chat()} method in parallel.}
+
+\item{\code{scorer}}{A function that evaluates how well the solver's return value
+approximates the corresponding elements of \code{dataset$target}. The function
+should take in the \verb{$samples} slot of a Task object and return a list with
+the following elements:
+\itemize{
+\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
+Built-in scorers return ordered factors with
+levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.
+}
+
+Optionally:
+\itemize{
+\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length \code{nrow(samples)}.
+\item \code{scorer_metadata} - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to \code{nrow(samples)}.
+}
+
+Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
+\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
+for examples.}
+
+\item{\code{metric}}{A metric summarizing the results from the scorer.}
+
+\item{\code{name}}{A name for the evaluation task. Defaults to
+\code{deparse(substitute(dataset))}.}
+
+\item{\code{dir}}{Directory where logs should be stored.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-eval"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-eval}{}}}
+\subsection{Method \code{eval()}}{
+Evaluates the task by running the solver, scorer, logging results, and
+viewing (if interactive). This method works by calling \verb{$solve()},
+\verb{$score()}, \verb{$log()}, and \verb{$view()} in sequence.
+
+The typical flow of LLM evaluation with rinspect tends to involve first
+calling \verb{$new()} and then this method on the resulting object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = 1L, view = interactive())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional arguments passed to the solver and scorer functions.}
+
+\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to \code{1L}.}
+
+\item{\code{view}}{Automatically open the viewer after evaluation (defaults to
+TRUE if interactive, FALSE otherwise).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-solve"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-solve}{}}}
+\subsection{Method \code{solve()}}{
+Solve the task by running the solver
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$solve(..., epochs = 1L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional arguments passed to the solver function.}
+
+\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to \code{1L}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-score"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-score}{}}}
+\subsection{Method \code{score()}}{
+Score the task by running the scorer and then applying metrics to
+its results.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$score(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Additional arguments passed to the scorer function.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-log"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-log}{}}}
+\subsection{Method \code{log()}}{
+Log the task to a directory.
+
+Note that, if an \code{INSPECT_LOG_DIR} envvar is set, this will happen
+automatically in \verb{$eval()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = inspect_log_dir())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dir}}{The directory to write the log to.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The path to the logged file, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-view"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-view}{}}}
+\subsection{Method \code{view()}}{
+View the task results in the Inspect log viewer
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$view()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The Task object (invisibly)
 }
 }
 \if{html}{\out{<hr>}}
@@ -157,191 +347,6 @@ for examples.}
 }
 \subsection{Returns}{
 The Task object (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-new}{}}}
-\subsection{Method \code{new()}}{
-Create a new Task object
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$new(
-  dataset,
-  solver,
-  scorer,
-  metric = NULL,
-  name = deparse(substitute(dataset)),
-  dir = inspect_log_dir()
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{dataset}}{A tibble with, minimally, columns \code{input} and \code{target}.}
-
-\item{\code{solver}}{A function that takes a vector of inputs from the
-dataset's \code{input} column as its first argument and determines values
-approximating \code{dataset$target}. Its return value must be a list with
-the following elements:
-\itemize{
-\item \code{result} - A character vector of the final responses, with the same length
-as \code{dataset$input}.
-\item \code{solver_chat} - A list of ellmer Chat objects that were used to solve
-each input, also with the same length as \code{dataset$input}.
-}
-
-Additional output elements can be included in a slot \code{solver_metadata} that
-has the same length as \code{dataset$input}, which will be logged in
-\code{solver_metadata}.
-
-Additional arguments can be passed to the solver via \verb{$solve(...)}
-or \verb{$eval(...)}. See the definition of \code{\link[=generate]{generate()}} for a function that
-outputs a valid solver that just passes inputs to ellmer Chat objects'
-\verb{$chat()} method in parallel.}
-
-\item{\code{scorer}}{A function that evaluates how well the solver's return value
-approximates the corresponding elements of \code{dataset$target}. The function
-should take in the \verb{$samples} slot of a Task object and return a list with
-the following elements:
-\itemize{
-\item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
-Built-in scorers return ordered factors with
-levels \code{I} < \code{P} (optionally) < \code{C} (standing for "Incorrect", "Partially
-Correct", and "Correct"). If your scorer returns this output type, the
-package will automatically calculate metrics.
-}
-
-Optionally:
-\itemize{
-\item \code{scorer_chat} - If your scorer makes use of ellmer, also include a list of
-ellmer Chat objects that were used to score each result, also with
-length \code{nrow(samples)}.
-\item \code{scorer_metadata} - Any intermediate results or other values that you'd
-like to be stored in the persistent log. This should also have length
-equal to \code{nrow(samples)}.
-}
-
-Scorers will probably make use of \code{samples$input}, \code{samples$target}, and
-\code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
-for examples.}
-
-\item{\code{metric}}{A metric summarizing the results from the scorer.}
-
-\item{\code{name}}{A name for the evaluation task. Defaults to
-\code{deparse(substitute(dataset))}.}
-
-\item{\code{dir}}{Directory where logs should be stored.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-solve"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-solve}{}}}
-\subsection{Method \code{solve()}}{
-Solve the task by running the solver
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$solve(..., epochs = 1L)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{Additional arguments passed to the solver function.}
-
-\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
-multiple times to measure variation. Optional, defaults to \code{1L}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The Task object (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-score"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-score}{}}}
-\subsection{Method \code{score()}}{
-Score the task by running the scorer and then applying metrics to
-its results.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$score(...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{Additional arguments passed to the scorer function.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The Task object (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-eval"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-eval}{}}}
-\subsection{Method \code{eval()}}{
-Evaluate the task by running the solver, scorer, logging results, and viewing (if interactive)
-
-This method works by calling \verb{$solve()}, \verb{$score()}, \verb{$log()}, and \verb{$view()} in sequence.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = 1L, view = interactive())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{Additional arguments passed to the solver and scorer functions.}
-
-\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
-multiple times to measure variation. Optional, defaults to \code{1L}.}
-
-\item{\code{view}}{Automatically open the viewer after evaluation (defaults to
-TRUE if interactive, FALSE otherwise).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The Task object (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-view"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-view}{}}}
-\subsection{Method \code{view()}}{
-View the task results in the Inspect log viewer
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$view()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The Task object (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Task-log"></a>}}
-\if{latex}{\out{\hypertarget{method-Task-log}{}}}
-\subsection{Method \code{log()}}{
-Log the task to a directory.
-
-Note that, if an \code{INSPECT_LOG_DIR} envvar is set, this will happen
-automatically in \verb{$eval()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = inspect_log_dir())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{dir}}{The directory to write the log to.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The path to the logged file, invisibly.
 }
 }
 \if{html}{\out{<hr>}}
