@@ -10,8 +10,9 @@ comparisons (like detect_match()), model grading (like
 model_graded_qa()), or other custom schemes.
 
 
-The usual flow of LLM evaluation with Tasks calls $new() and then
-$eval()."><meta property="og:description" content="Evaluation Tasks provide a flexible data structure for evaluating LLM-based
+The usual flow of LLM evaluation with Tasks calls $new() and then $eval().
+$eval() just calls $solve(), $score(), $log(), and $view() in order.
+The remaining methods are generally only recommended for expert use."><meta property="og:description" content="Evaluation Tasks provide a flexible data structure for evaluating LLM-based
 tools.
 Datasets contain a set of labelled samples. Datasets are just a
 tibble with columns input and target, where input is a prompt
@@ -22,8 +23,9 @@ comparisons (like detect_match()), model grading (like
 model_graded_qa()), or other custom schemes.
 
 
-The usual flow of LLM evaluation with Tasks calls $new() and then
-$eval()."><meta property="og:image" content="https://simonpcouch.github.io/rinspect/logo.png"></head><body>
+The usual flow of LLM evaluation with Tasks calls $new() and then $eval().
+$eval() just calls $solve(), $score(), $log(), and $view() in order.
+The remaining methods are generally only recommended for expert use."><meta property="og:image" content="https://simonpcouch.github.io/rinspect/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -65,8 +67,9 @@ and <code>target</code> is either literal value(s) or grading guidance.</p></li>
 <li><p><strong>Scorers</strong> evaluate the final output of solvers. They may use text
 comparisons (like <code><a href="scorer_detect.html">detect_match()</a></code>), model grading (like
 <code><a href="scorer_model.html">model_graded_qa()</a></code>), or other custom schemes.</p></li>
-</ol><p>The usual flow of LLM evaluation with Tasks calls <code>$new()</code> and then
-<code>$eval()</code>.</p>
+</ol><p><strong>The usual flow of LLM evaluation with Tasks calls <code>$new()</code> and then <code>$eval()</code>.</strong>
+<code>$eval()</code> just calls <code>$solve()</code>, <code>$score()</code>, <code>$log()</code>, and <code>$view()</code> in order.
+The remaining methods are generally only recommended for expert use.</p>
     </div>
 
 
@@ -105,88 +108,20 @@ columns to this data.</p></dd>
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-Task-set_solver"><code>Task$set_solver()</code></a></p></li>
-<li><p><a href="#method-Task-set_scorer"><code>Task$set_scorer()</code></a></p></li>
-<li><p><a href="#method-Task-new"><code>Task$new()</code></a></p></li>
+<ul><li><p><a href="#method-Task-new"><code>Task$new()</code></a></p></li>
+<li><p><a href="#method-Task-eval"><code>Task$eval()</code></a></p></li>
 <li><p><a href="#method-Task-solve"><code>Task$solve()</code></a></p></li>
 <li><p><a href="#method-Task-score"><code>Task$score()</code></a></p></li>
-<li><p><a href="#method-Task-eval"><code>Task$eval()</code></a></p></li>
-<li><p><a href="#method-Task-view"><code>Task$view()</code></a></p></li>
 <li><p><a href="#method-Task-log"><code>Task$log()</code></a></p></li>
+<li><p><a href="#method-Task-view"><code>Task$view()</code></a></p></li>
+<li><p><a href="#method-Task-set_solver"><code>Task$set_solver()</code></a></p></li>
+<li><p><a href="#method-Task-set_scorer"><code>Task$set_scorer()</code></a></p></li>
 <li><p><a href="#method-Task-clone"><code>Task$clone()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-Task-set_solver"></a><div class="section">
-<h3 id="method-set-solver-">Method <code>set_solver()</code><a class="anchor" aria-label="anchor" href="#method-set-solver-"></a></h3>
-<p>Set the solver function</p><div class="section">
-<h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_solver</span><span class="op">(</span><span class="va">solver</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>solver</code></dt>
-<dd><p>A function that takes a vector of inputs from the
-dataset's <code>input</code> column as its first argument and determines values
-approximating <code>dataset$target</code>. Its return value must be a list with
-the following elements:</p><ul><li><p><code>result</code> - A character vector of the final responses, with the same length
-as <code>dataset$input</code>.</p></li>
-<li><p><code>solver_chat</code> - A list of ellmer Chat objects that were used to solve
-each input, also with the same length as <code>dataset$input</code>.</p></li>
-</ul><p>Additional output elements can be included in a slot <code>solver_metadata</code> that
-has the same length as <code>dataset$input</code>, which will be logged in
-<code>solver_metadata</code>.</p>
-<p>Additional arguments can be passed to the solver via <code>$solve(...)</code>
-or <code>$eval(...)</code>. See the definition of <code><a href="generate.html">generate()</a></code> for a function that
-outputs a valid solver that just passes inputs to ellmer Chat objects'
-<code>$chat()</code> method in parallel.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
-<p>The Task object (invisibly)</p>
-</div>
-
-</div><p></p><hr><a id="method-Task-set_scorer"></a><div class="section">
-<h3 id="method-set-scorer-">Method <code>set_scorer()</code><a class="anchor" aria-label="anchor" href="#method-set-scorer-"></a></h3>
-<p>Set the scorer function</p><div class="section">
-<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_scorer</span><span class="op">(</span><span class="va">scorer</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>scorer</code></dt>
-<dd><p>A function that evaluates how well the solver's return value
-approximates the corresponding elements of <code>dataset$target</code>. The function
-should take in the <code>$samples</code> slot of a Task object and return a list with
-the following elements:</p><ul><li><p><code>score</code> - A vector of scores with length equal to <code>nrow(samples)</code>.
-Built-in scorers return ordered factors with
-levels <code>I</code> &lt; <code>P</code> (optionally) &lt; <code>C</code> (standing for "Incorrect", "Partially
-Correct", and "Correct"). If your scorer returns this output type, the
-package will automatically calculate metrics.</p></li>
-</ul><p>Optionally:</p><ul><li><p><code>scorer_chat</code> - If your scorer makes use of ellmer, also include a list of
-ellmer Chat objects that were used to score each result, also with
-length <code>nrow(samples)</code>.</p></li>
-<li><p><code>scorer_metadata</code> - Any intermediate results or other values that you'd
-like to be stored in the persistent log. This should also have length
-equal to <code>nrow(samples)</code>.</p></li>
-</ul><p>Scorers will probably make use of <code>samples$input</code>, <code>samples$target</code>, and
-<code>samples$result</code> specifically. See <a href="scorer_model.html">model-based scoring</a>
-for examples.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>The Task object (invisibly)</p>
-</div>
-
-</div><p></p><hr><a id="method-Task-new"></a><div class="section">
+</ul></div><p></p><hr><a id="method-Task-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
-<p>Create a new Task object</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p>The typical flow of LLM evaluation with rinspect tends to involve first
+calling this method and then <code>$eval()</code> on the resulting object.</p><div class="section">
+<h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/Task.html">Task</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  <span class="va">dataset</span>,</span>
 <span>  <span class="va">solver</span>,</span>
@@ -198,7 +133,7 @@ for examples.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dataset</code></dt>
 <dd><p>A tibble with, minimally, columns <code>input</code> and <code>target</code>.</p></dd>
 
@@ -256,62 +191,19 @@ for examples.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Task-solve"></a><div class="section">
-<h3 id="method-solve-">Method <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve()</a></code><a class="anchor" aria-label="anchor" href="#method-solve-"></a></h3>
-<p>Solve the task by running the solver</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">solve</span><span class="op">(</span><span class="va">...</span>, epochs <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>...</code></dt>
-<dd><p>Additional arguments passed to the solver function.</p></dd>
-
-
-<dt><code>epochs</code></dt>
-<dd><p>The number of times to repeat each sample. Evaluate each sample
-multiple times to measure variation. Optional, defaults to <code>1L</code>.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>The Task object (invisibly)</p>
-</div>
-
-</div><p></p><hr><a id="method-Task-score"></a><div class="section">
-<h3 id="method-score-">Method <code>score()</code><a class="anchor" aria-label="anchor" href="#method-score-"></a></h3>
-<p>Score the task by running the scorer and then applying metrics to
-its results.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">score</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>...</code></dt>
-<dd><p>Additional arguments passed to the scorer function.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
-<p>The Task object (invisibly)</p>
-</div>
-
 </div><p></p><hr><a id="method-Task-eval"></a><div class="section">
 <h3 id="method-eval-">Method <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code><a class="anchor" aria-label="anchor" href="#method-eval-"></a></h3>
-<p>Evaluate the task by running the solver, scorer, logging results, and viewing (if interactive)</p>
-<p>This method works by calling <code>$solve()</code>, <code>$score()</code>, <code>$log()</code>, and <code>$view()</code> in sequence.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p>Evaluates the task by running the solver, scorer, logging results, and
+viewing (if interactive). This method works by calling <code>$solve()</code>,
+<code>$score()</code>, <code>$log()</code>, and <code>$view()</code> in sequence.</p>
+<p>The typical flow of LLM evaluation with rinspect tends to involve first
+calling <code>$new()</code> and then this method on the resulting object.</p><div class="section">
+<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span><span class="va">...</span>, epochs <span class="op">=</span> <span class="fl">1L</span>, view <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>Additional arguments passed to the solver and scorer functions.</p></dd>
 
@@ -329,19 +221,53 @@ TRUE if interactive, FALSE otherwise).</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
-</div><p></p><hr><a id="method-Task-view"></a><div class="section">
-<h3 id="method-view-">Method <code><a href="https://tibble.tidyverse.org/reference/view.html" class="external-link">view()</a></code><a class="anchor" aria-label="anchor" href="#method-view-"></a></h3>
-<p>View the task results in the Inspect log viewer</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">view</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><hr><a id="method-Task-solve"></a><div class="section">
+<h3 id="method-solve-">Method <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve()</a></code><a class="anchor" aria-label="anchor" href="#method-solve-"></a></h3>
+<p>Solve the task by running the solver</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">solve</span><span class="op">(</span><span class="va">...</span>, epochs <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>...</code></dt>
+<dd><p>Additional arguments passed to the solver function.</p></dd>
+
+
+<dt><code>epochs</code></dt>
+<dd><p>The number of times to repeat each sample. Evaluate each sample
+multiple times to measure variation. Optional, defaults to <code>1L</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
+<p>The Task object (invisibly)</p>
+</div>
+
+</div><p></p><hr><a id="method-Task-score"></a><div class="section">
+<h3 id="method-score-">Method <code>score()</code><a class="anchor" aria-label="anchor" href="#method-score-"></a></h3>
+<p>Score the task by running the scorer and then applying metrics to
+its results.</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">score</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>...</code></dt>
+<dd><p>Additional arguments passed to the scorer function.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -350,12 +276,12 @@ TRUE if interactive, FALSE otherwise).</p></dd>
 <p>Log the task to a directory.</p>
 <p>Note that, if an <code>INSPECT_LOG_DIR</code> envvar is set, this will happen
 automatically in <code>$eval()</code>.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span>dir <span class="op">=</span> <span class="fu"><a href="../reference/inspect_log_dir.html">inspect_log_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>dir</code></dt>
 <dd><p>The directory to write the log to.</p></dd>
 
@@ -363,8 +289,89 @@ automatically in <code>$eval()</code>.</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
+<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>The path to the logged file, invisibly.</p>
+</div>
+
+</div><p></p><hr><a id="method-Task-view"></a><div class="section">
+<h3 id="method-view-">Method <code><a href="https://tibble.tidyverse.org/reference/view.html" class="external-link">view()</a></code><a class="anchor" aria-label="anchor" href="#method-view-"></a></h3>
+<p>View the task results in the Inspect log viewer</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">view</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<p>The Task object (invisibly)</p>
+</div>
+
+</div><p></p><hr><a id="method-Task-set_solver"></a><div class="section">
+<h3 id="method-set-solver-">Method <code>set_solver()</code><a class="anchor" aria-label="anchor" href="#method-set-solver-"></a></h3>
+<p>Set the solver function</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_solver</span><span class="op">(</span><span class="va">solver</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>solver</code></dt>
+<dd><p>A function that takes a vector of inputs from the
+dataset's <code>input</code> column as its first argument and determines values
+approximating <code>dataset$target</code>. Its return value must be a list with
+the following elements:</p><ul><li><p><code>result</code> - A character vector of the final responses, with the same length
+as <code>dataset$input</code>.</p></li>
+<li><p><code>solver_chat</code> - A list of ellmer Chat objects that were used to solve
+each input, also with the same length as <code>dataset$input</code>.</p></li>
+</ul><p>Additional output elements can be included in a slot <code>solver_metadata</code> that
+has the same length as <code>dataset$input</code>, which will be logged in
+<code>solver_metadata</code>.</p>
+<p>Additional arguments can be passed to the solver via <code>$solve(...)</code>
+or <code>$eval(...)</code>. See the definition of <code><a href="generate.html">generate()</a></code> for a function that
+outputs a valid solver that just passes inputs to ellmer Chat objects'
+<code>$chat()</code> method in parallel.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<p>The Task object (invisibly)</p>
+</div>
+
+</div><p></p><hr><a id="method-Task-set_scorer"></a><div class="section">
+<h3 id="method-set-scorer-">Method <code>set_scorer()</code><a class="anchor" aria-label="anchor" href="#method-set-scorer-"></a></h3>
+<p>Set the scorer function</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">set_scorer</span><span class="op">(</span><span class="va">scorer</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>scorer</code></dt>
+<dd><p>A function that evaluates how well the solver's return value
+approximates the corresponding elements of <code>dataset$target</code>. The function
+should take in the <code>$samples</code> slot of a Task object and return a list with
+the following elements:</p><ul><li><p><code>score</code> - A vector of scores with length equal to <code>nrow(samples)</code>.
+Built-in scorers return ordered factors with
+levels <code>I</code> &lt; <code>P</code> (optionally) &lt; <code>C</code> (standing for "Incorrect", "Partially
+Correct", and "Correct"). If your scorer returns this output type, the
+package will automatically calculate metrics.</p></li>
+</ul><p>Optionally:</p><ul><li><p><code>scorer_chat</code> - If your scorer makes use of ellmer, also include a list of
+ellmer Chat objects that were used to score each result, also with
+length <code>nrow(samples)</code>.</p></li>
+<li><p><code>scorer_metadata</code> - Any intermediate results or other values that you'd
+like to be stored in the persistent log. This should also have length
+equal to <code>nrow(samples)</code>.</p></li>
+</ul><p>Scorers will probably make use of <code>samples$input</code>, <code>samples$target</code>, and
+<code>samples$result</code> specifically. See <a href="scorer_model.html">model-based scoring</a>
+for examples.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
+<p>The Task object (invisibly)</p>
 </div>
 
 </div><p></p><hr><a id="method-Task-clone"></a><div class="section">
