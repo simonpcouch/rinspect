@@ -232,6 +232,7 @@ Task <- R6::R6Class("Task",
       self$samples$score <- NA
       
       private$scores <- private$scorer(self$samples, ...)
+      private$check_scorer_outputs()
       private$cbind_scores()
 
       if (is.factor(self$samples$score) && 
@@ -420,7 +421,7 @@ Task <- R6::R6Class("Task",
         cli::cli_abort(
           "{.arg solver} must return slots {.field result} and 
            {.field solver_chat}.",
-           call = call2("$solve")
+           call = call2("$solve()")
         )
       }
 
@@ -429,7 +430,29 @@ Task <- R6::R6Class("Task",
         cli::cli_abort(
           "Elements in the {.field solver_chat} output from {.arg solver} must be
            ellmer Chat objects, not {.obj_type_friendly {first_solver_chat}}.",
-           call = call2("$solve")
+           call = call2("$solve()")
+        )
+      }
+    },
+
+    check_scorer_outputs = function() {
+      if (!"score" %in% names(private$scores$value)) {
+        cli::cli_abort(
+          "{.arg scorer} must return a list with (at least) the slot {.field score}.",
+           call = call2("$score()")
+        )
+      }
+
+      if (!"scorer_chat" %in% names(private$scores$value)) {
+        return(invisible())
+      }
+
+      first_scorer_chat <- private$scores$value$scorer_chat[[1]]
+      if (!inherits(first_scorer_chat, "Chat")) {
+        cli::cli_abort(
+          "Elements in the {.field scorer_chat} output from {.arg scorer} must be
+           ellmer Chat objects, not {.obj_type_friendly {first_scorer_chat}}.",
+           call = call2("$score()")
         )
       }
     },

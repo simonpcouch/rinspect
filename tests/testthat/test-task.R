@@ -471,3 +471,48 @@ test_that("Task detects non-Chat objects in solver_chat", {
   
   expect_snapshot(tsk$solve(), error = TRUE)
 })
+
+test_that("Task errors informatively with bad scorer output", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+  
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = function(samples) {
+      list(wrong_name = c("4", "5"))
+    }
+  )
+  
+  expect_snapshot(tsk$eval(), error = TRUE)
+})
+
+test_that("Task detects non-Chat objects in scorer_chat", {
+  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = function(samples) {
+      list(
+        score = c("4", "5"),
+        scorer_chat = list("not a Chat object", "also not a Chat object")
+      )
+    }
+  )
+  
+  expect_snapshot(tsk$eval(), error = TRUE)
+})

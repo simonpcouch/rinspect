@@ -101,7 +101,7 @@
     Code
       tsk$solve()
     Condition
-      Error in `$solve`:
+      Error in `$solve()`:
       ! `solver` must return slots result and solver_chat.
 
 # Task detects non-Chat objects in solver_chat
@@ -109,6 +109,22 @@
     Code
       tsk$solve()
     Condition
-      Error in `$solve`:
+      Error in `$solve()`:
       ! Elements in the solver_chat output from `solver` must be ellmer Chat objects, not a string.
+
+# Task errors informatively with bad scorer output
+
+    Code
+      tsk$eval()
+    Condition
+      Error in `$score()`:
+      ! `scorer` must return a list with (at least) the slot score.
+
+# Task detects non-Chat objects in scorer_chat
+
+    Code
+      tsk$eval()
+    Condition
+      Error in `$score()`:
+      ! Elements in the scorer_chat output from `scorer` must be ellmer Chat objects, not a string.
 
