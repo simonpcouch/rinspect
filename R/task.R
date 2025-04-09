@@ -116,6 +116,7 @@ Task <- R6::R6Class("Task",
       solver,
       scorer,
       metric = NULL,
+      epochs = NULL,
       name = deparse(substitute(dataset)),
       dir = inspect_log_dir()
     ) {
@@ -129,12 +130,14 @@ Task <- R6::R6Class("Task",
       check_function(solver)
       # TODO: for non-built in scorers, what to do?
       check_function(metric, allow_null = TRUE)
-
+      check_number_whole(epochs, min = 1, allow_null = TRUE)
+      
       private$dataset_name <- gsub("[^[:alnum:]]", "", name)
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
       private$task_id <- substr(hash(c(name, solver_name, scorer_name)), 1, 22)
+      private$epochs <- epochs
 
       self$samples <- set_id_column(dataset)
     },
@@ -154,8 +157,8 @@ Task <- R6::R6Class("Task",
     #' TRUE if interactive, FALSE otherwise).
     #'
     #' @return The Task object (invisibly)
-    eval = function(..., epochs = 1L, view = interactive()) {
-      check_number_whole(epochs, min = 1)
+    eval = function(..., epochs = NULL, view = interactive()) {
+      check_number_whole(epochs, min = 1, allow_null = TRUE)
       
       if (private$solved || private$scored) {
         private$reset_for_new_eval()
@@ -186,16 +189,14 @@ Task <- R6::R6Class("Task",
     #' @param ... Additional arguments passed to the solver function.
     #'
     #' @return The Task object (invisibly)
-    solve = function(..., epochs = 1L) {
-      check_number_whole(epochs, min = 1)
+    solve = function(..., epochs = NULL) {
+      check_number_whole(epochs, min = 1, allow_null = TRUE)
       
       if (private$solved) {
         private$reset_for_new_eval()
       }
 
-      if (epochs > 1) {
-        self$samples <- join_epochs(self$samples, epochs)
-      }
+      self$samples <- join_epochs(self$samples, epochs %||% private$epochs)
 
       private$run_id <- generate_id()
       
@@ -488,7 +489,9 @@ Task <- R6::R6Class("Task",
     scores = NULL,
 
     task_id = NULL,
-    run_id = NULL
+    run_id = NULL,
+
+    epochs = NULL
   )
 )
 
@@ -541,6 +544,9 @@ set_id_column <- function(dataset, call = caller_env()) {
 }
 
 join_epochs <- function(samples, epochs) {
+  if (is.null(epochs)) {
+    epochs <- 1L
+  }
   if (abs(epochs - 1) < .1) {
     return(samples)
   }

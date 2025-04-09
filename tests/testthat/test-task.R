@@ -66,6 +66,58 @@ test_that("Task with epochs works", {
   )
 })
 
+test_that("Task respects `$new(epochs)`", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa(),
+    epochs = 2
+  )
+  
+  tsk$eval()
+  
+  expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
+})
+
+test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa(),
+    epochs = 2
+  )
+  
+  tsk$eval(epochs = 1)
+  
+  expect_equal(nrow(tsk$samples), nrow(simple_addition))
+})
+
 test_that("check_dataset works", {
   expect_snapshot(
     Task$new(
