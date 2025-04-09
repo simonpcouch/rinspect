@@ -58,6 +58,11 @@
 #' `samples$result` specifically. See [model-based scoring][scorer_model] 
 #' for examples.
 #' 
+#' @param epochs The number of times to repeat each sample. Evaluate each sample
+#' multiple times to better quantify variation. Optional, defaults to `1L`. 
+#' The value of `epochs` supplied to `$eval()` or `$score()` will take 
+#' precedence over the value in `$new()`.
+#' 
 #' @seealso [generate()] for the simplest possible solver, and 
 #' [scorer_model] and [scorer_detect] for two built-in approaches to 
 #' scoring.
@@ -151,8 +156,6 @@ Task <- R6::R6Class("Task",
     #' calling `$new()` and then this method on the resulting object.
     #'
     #' @param ... Additional arguments passed to the solver and scorer functions.
-    #' @param epochs The number of times to repeat each sample. Evaluate each sample
-    #' multiple times to measure variation. Optional, defaults to `1L`.
     #' @param view Automatically open the viewer after evaluation (defaults to
     #' TRUE if interactive, FALSE otherwise).
     #'
@@ -184,8 +187,6 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Solve the task by running the solver
     #'
-    #' @param epochs The number of times to repeat each sample. Evaluate each sample
-    #' multiple times to measure variation. Optional, defaults to `1L`.
     #' @param ... Additional arguments passed to the solver function.
     #'
     #' @return The Task object (invisibly)

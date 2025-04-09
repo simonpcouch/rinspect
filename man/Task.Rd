@@ -90,6 +90,7 @@ calling this method and then \verb{$eval()} on the resulting object.
   solver,
   scorer,
   metric = NULL,
+  epochs = NULL,
   name = deparse(substitute(dataset)),
   dir = inspect_log_dir()
 )}\if{html}{\out{</div>}}
@@ -148,6 +149,11 @@ for examples.}
 
 \item{\code{metric}}{A metric summarizing the results from the scorer.}
 
+\item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
+multiple times to better quantify variation. Optional, defaults to \code{1L}.
+The value of \code{epochs} supplied to \verb{$eval()} or \verb{$score()} will take
+precedence over the value in \verb{$new()}.}
+
 \item{\code{name}}{A name for the evaluation task. Defaults to
 \code{deparse(substitute(dataset))}.}
 
@@ -167,7 +173,7 @@ viewing (if interactive). This method works by calling \verb{$solve()},
 The typical flow of LLM evaluation with rinspect tends to involve first
 calling \verb{$new()} and then this method on the resulting object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = 1L, view = interactive())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = NULL, view = interactive())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -176,7 +182,9 @@ calling \verb{$new()} and then this method on the resulting object.
 \item{\code{...}}{Additional arguments passed to the solver and scorer functions.}
 
 \item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
-multiple times to measure variation. Optional, defaults to \code{1L}.}
+multiple times to better quantify variation. Optional, defaults to \code{1L}.
+The value of \code{epochs} supplied to \verb{$eval()} or \verb{$score()} will take
+precedence over the value in \verb{$new()}.}
 
 \item{\code{view}}{Automatically open the viewer after evaluation (defaults to
 TRUE if interactive, FALSE otherwise).}
@@ -193,7 +201,7 @@ The Task object (invisibly)
 \subsection{Method \code{solve()}}{
 Solve the task by running the solver
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$solve(..., epochs = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$solve(..., epochs = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -202,7 +210,9 @@ Solve the task by running the solver
 \item{\code{...}}{Additional arguments passed to the solver function.}
 
 \item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
-multiple times to measure variation. Optional, defaults to \code{1L}.}
+multiple times to better quantify variation. Optional, defaults to \code{1L}.
+The value of \code{epochs} supplied to \verb{$eval()} or \verb{$score()} will take
+precedence over the value in \verb{$new()}.}
 }
 \if{html}{\out{</div>}}
 }
