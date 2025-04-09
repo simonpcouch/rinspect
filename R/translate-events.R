@@ -646,37 +646,3 @@ turn_tokens <- function(turn) {
     output_tokens = tokens_io[2]
   )
 }
-
-
-translate_assistant_choices <- function(turn) {
-  text_contents <- first_text_contents(turn)
-  list(list(
-    message = list(
-      id = generate_id(),
-      content = list(list(
-        type = "text",
-        text = text_contents@text
-      )),
-      source = "generate", 
-      role = turn@role
-    ),
-    # turn@json$stop_reason gives the actual stop reason (often 'end_turn'), but
-    # Inspect requires "Input should be 'stop', 'max_tokens', 'model_length', 
-    # 'tool_calls', 'content_filter' or 'unknown'" . (#7)
-    stop_reason = "stop"
-  ))
-}
-
-first_text_contents <- function(turn) {
-  turn_contents <- turn@contents
-  is_text <- vapply(turn_contents, inherits, logical(1), "ellmer::ContentText")
-  turn_contents[[which(is_text)[1]]]
-}
-
-has_tool_calls <- function(turns) {
-  any(sapply(turns, function(turn) {
-    any(sapply(turn@contents, function(content) {
-      inherits(content, "ellmer::ContentToolRequest")  
-    }))
-  }))
-}

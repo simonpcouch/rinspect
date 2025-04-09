@@ -65,7 +65,7 @@ eval_log_read <- function(x) {
 }
 
 # @rdname eval_log
-eval_log_write <- function(x = eval_log_new(), dir = inspect_log_dir()) {
+eval_log_write <- function(x = eval_log(), dir = inspect_log_dir()) {
   if (!dir.exists(dir)) {
     dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   }

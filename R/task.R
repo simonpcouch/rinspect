@@ -267,8 +267,8 @@ Task <- R6::R6Class("Task",
     log = function(dir = inspect_log_dir()) {
       samples <- self$samples
 
-      eval_log <- eval_log_new(
-        eval = eval_log_eval(
+      eval_log <- eval_log(
+        eval = translate_to_eval(
           run_id = private$run_id,
           task = private$dataset_name,
           task_id = private$task_id,
@@ -278,15 +278,15 @@ Task <- R6::R6Class("Task",
             shuffled = FALSE
           ),
           model = samples$solver_chat[[1]]$get_model(),
-          scorers = eval_log_eval_scorers(
+          scorers = translate_to_eval_scorers(
             name = samples$scorer[[1]]
           )
         ),
-        plan = eval_log_plan(steps = eval_log_plan_steps(
+        plan = translate_to_plan(steps = translate_to_plan_steps(
           name = private$solutions$name,
           arguments = private$solutions$arguments
         )),
-        results = eval_log_results(
+        results = translate_to_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
           scores = results_scores(
@@ -294,12 +294,12 @@ Task <- R6::R6Class("Task",
             metrics = map(self$metrics, rename_metric_fields)
           )
         ),
-        stats = eval_log_stats(
+        stats = translate_to_stats(
           started_at = eval_log_timestamp(samples$solver_chat[[1]]$get_turns()[[1]]@completed),
-          completed_at = eval_log_completed_at(samples),
+          completed_at = translate_to_completed_at(samples),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
-        samples = eval_log_samples(samples, scores = private$scores)
+        samples = translate_to_samples(samples, scores = private$scores)
       )
 
       if (is.na(dir)) {
@@ -561,38 +561,4 @@ has_last_task <- function() {
   }
 
   exists(".last_task", as.environment("pkg:rinspect"))
-}
-
-rename_metric_fields <- function(metrics) {
-  metrics$params <- metrics$arguments
-  metrics$arguments <- NULL
-  metrics
-}
-
-rename_token_fields <- function(input_list) {
-  name_mapping <- c(
-    "input_tokens" = "input_tokens",
-    "output_tokens" = "output_tokens", 
-    "total_tokens" = "total_tokens",
-    "cache_creation_input_tokens" = "input_tokens_cache_write",
-    "cache_read_input_tokens" = "input_tokens_cache_read"
-  )
-  
-  result <- list()
-  for (name in names(input_list)) {
-    if (name %in% names(name_mapping)) {
-      result[[name_mapping[name]]] <- input_list[[name]]
-    }
-  }
-  
-  result
-}
-
-eval_log_completed_at <- function(samples) {
-  if ("scorer_chat" %in% names(samples)) {
-    last_scorer_chat <- samples[nrow(samples), ]$scorer_chat[[1]]
-    return(eval_log_timestamp(last_scorer_chat$last_turn()@completed))
-  }
-
-  eval_log_timestamp(Sys.time())
 }

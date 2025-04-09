@@ -1,8 +1,8 @@
-eval_log_new <- function(
-    eval = eval_log_eval(),
-    plan = eval_log_plan(),
-    results = eval_log_results(),
-    stats = eval_log_stats(),
+eval_log <- function(
+    eval = translate_to_eval(),
+    plan = translate_to_plan(),
+    results = translate_to_results(),
+    stats = translate_to_stats(),
     samples
 ) {
   res <-
@@ -20,7 +20,7 @@ eval_log_new <- function(
 }
 
 # top-level entries ------------------------------------------------------------
-eval_log_eval <- function(
+translate_to_eval <- function(
     run_id,
     created = eval_log_timestamp(),
     task,
@@ -61,9 +61,9 @@ eval_log_eval <- function(
   )
 }
 
-eval_log_plan <- function(
+translate_to_plan <- function(
     name = "plan",
-    steps = eval_log_plan_steps(),
+    steps = translate_to_plan_steps(),
     config = c()
 ) {
   list(
@@ -73,7 +73,7 @@ eval_log_plan <- function(
   )
 }
 
-eval_log_results <- function(
+translate_to_results <- function(
     total_samples,
     completed_samples,
     scores
@@ -85,14 +85,14 @@ eval_log_results <- function(
   )
 }
 
-eval_log_plan_steps <- function(name, arguments) {
+translate_to_plan_steps <- function(name, arguments) {
   list(list(
     solver = name,
     params = arguments
   ))
 }
 
-eval_log_stats <- function(
+translate_to_stats <- function(
     started_at,
     completed_at,
     model_usage
@@ -104,16 +104,16 @@ eval_log_stats <- function(
   )
 }
 
-eval_log_samples <- function(dataset, scores) {
+translate_to_samples <- function(dataset, scores) {
   res <- list()
   for (i in seq_len(nrow(dataset))) {
     sample <- dataset[i, , drop = FALSE]
-    res[[i]] <- eval_log_sample(sample, scores = scores)
+    res[[i]] <- translate_to_sample(sample, scores = scores)
   }
   res
 }
 
-eval_log_sample <- function(sample, scores) {
+translate_to_sample <- function(sample, scores) {
   chat <- sample$solver_chat[[1]]
   scorer_name <- scores$name
 
@@ -126,7 +126,7 @@ eval_log_sample <- function(sample, scores) {
     messages = translate_to_messages(chat),
     output = translate_to_output(chat),
     scores = dots_list(
-      !!scorer_name := eval_log_score(
+      !!scorer_name := translate_to_score(
         output = sample$result[[1]],
         score = sample$score[[1]],
         scorer = scorer_name,
@@ -147,7 +147,7 @@ eval_log_sample <- function(sample, scores) {
 } 
 
 # sub-level entries ------------------------------------------------------------
-eval_log_metrics <- function(
+translate_to_metrics <- function(
     name = character(),
     value = numeric(),
     options = list()
@@ -159,7 +159,7 @@ eval_log_metrics <- function(
   )
 }
 
-eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
+translate_to_score <- function(output, score, scorer, scorer_chat = NULL) {
   if (is.null(scorer_chat)) {
     return(list(
       value = score,
@@ -177,14 +177,14 @@ eval_log_score <- function(output, score, scorer, scorer_chat = NULL) {
     answer = output,
     explanation = explanation,
     metadata = list(
-      grading = lapply(turns, eval_log_metadata_grading)
+      grading = lapply(turns, translate_to_metadata_grading)
     )
   )
 }
 
 # Inspect formats the content a bit differently depending
 # on whether the turn role is user vs. assistant.
-eval_log_metadata_grading <- function(turn) {
+translate_to_metadata_grading <- function(turn) {
   if (turn@role == "user") {
     return(
       list(
@@ -203,7 +203,7 @@ eval_log_metadata_grading <- function(turn) {
   )
 }
 
-eval_log_eval_scorers <- function(name) {
+translate_to_eval_scorers <- function(name) {
   list(list(
     name = name,
     options = c(),
@@ -215,53 +215,33 @@ eval_log_eval_scorers <- function(name) {
   ))
 }
 
-eval_log_timestamp <- function(time = Sys.time()) {
-  timestamp <- format(time, "%Y-%m-%dT%H:%M:%S%z")
-  gsub("([+-][0-9]{2})([0-9]{2})$", "\\1:\\2", timestamp)
-}
-
-generate_id <- function(length = 22) {
-  chars <- c(letters, LETTERS, 0:9)
-  paste0(sample(chars, length, replace = TRUE), collapse = "")
-}
-
-eval_log_filename <- function(eval_log) {
-  paste0(
-    gsub(":", "-", eval_log$eval$created), "_",
-    gsub(" ", "-", gsub("_", "-", eval_log$eval$task)), "_",
-    eval_log$eval$task_id, ".json"
-  )
-}
-
-# given the list of solvers in a dataset, sum across all of their token usage
-# TODO: this doesn't work for non-Claude?
-sum_model_usage <- function(solvers) {
-  chat <- solvers[[1]]
-  
-  usage_per_solver <- lapply(
-    solvers,
-    function(chat) {translate_to_model_usage(chat)[[1]]}
-  )
-  res <- Reduce(function(x, y) Map(`+`, x, y), usage_per_solver)
-
-  # TODO: ultimately, this needs to be per-model
-  dots_list(!!chat$get_model() := res)
-}
-
-active_file <- function() {
-  if (!rstudioapi::isAvailable()) {
-    return("")
+# validating log files (for dev use only) --------------------------------------
+# invokes Inspect's pydantic models on an eval log file so that
+# we can ensure we're writing files that are compatible with the
+# viewer.
+validate_log <- function(x) {
+  if (!file.exists(x)) {
+    cli::cli_abort("Log file {x} does not exist.")
   }
   
-  active_document <- rstudioapi::getActiveDocumentContext()
-  active_document$path
-}
-
-results_scores <- function(name, metrics) {
-  list(list(
-    name = name,
-    scorer = name,
-    params = structure(list(), names = character(0)),
-    metrics = metrics
-  ))
+  py_script <- system.file("pydantic/validate_log.py", package = "rinspect")
+  
+  if (!file.exists(py_script)) {
+    cli::cli_abort("Python validation script {py_script} not found.")
+  }
+  
+  result <- system2(
+    "python",
+    args = c(py_script, x),
+    stdout = TRUE,
+    stderr = TRUE
+  )
+  status <- attr(result, "status")
+  
+  if (!is.null(status) && status > 0) {
+    cli::cli_abort("{result}")
+  }
+  
+  cli::cli_alert_success("Log file validated successfully")
+  return(invisible(NULL))
 }

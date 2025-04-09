@@ -20,7 +20,7 @@ utils::globalVariables(c(
   "path",
   "qnorm",
   "res",
-  "sd",
   "setNames",
+  "timestamp",
   "var"
 ))
