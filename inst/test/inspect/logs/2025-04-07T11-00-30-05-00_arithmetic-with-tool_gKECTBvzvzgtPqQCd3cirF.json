@@ -7,7 +7,7 @@
     "task": "arithmetic_with_tool",
     "task_id": "gKECTBvzvzgtPqQCd3cirF",
     "task_version": 0,
-    "task_file": "inst/inspect-examples/tools.py",
+    "task_file": "inst/test/inspect/tools.py",
     "task_registry_name": "arithmetic_with_tool",
     "task_attribs": {},
     "task_args": {},

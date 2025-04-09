@@ -224,7 +224,7 @@ validate_log <- function(x) {
     cli::cli_abort("Log file {x} does not exist.")
   }
   
-  py_script <- system.file("pydantic/validate_log.py", package = "rinspect")
+  py_script <- system.file("test/validate_log.py", package = "rinspect")
   
   if (!file.exists(py_script)) {
     cli::cli_abort("Python validation script {py_script} not found.")

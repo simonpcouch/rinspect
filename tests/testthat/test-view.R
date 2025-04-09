@@ -1,16 +1,16 @@
 test_that("inspect_view() works with .json from Python Inspect", {
-  log_dir <- system.file("logs", package = "rinspect")
+  log_dir <- system.file("test/inspect/logs", package = "rinspect")
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })
 
 test_that("inspect_view() restarts with existing server", {
-  log_dir <- system.file("logs", package = "rinspect")
+  log_dir <- system.file("test/inspect/logs", package = "rinspect")
   suppressMessages(inspect_view(log_dir))
   expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
 })
 
 test_that("inspect_view() errors informatively on failure to restart", {
-  log_dir <- system.file("logs", package = "rinspect")
+  log_dir <- system.file("test/inspect/logs", package = "rinspect")
   suppressMessages(inspect_view(log_dir))
 
   testthat::local_mocked_bindings(

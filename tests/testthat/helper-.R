@@ -7,7 +7,7 @@
 example_ellmer_solver <- function() {
   load(
     system.file(
-      "sandbox/solver.rda",
+      "test/solver.rda",
       package = "rinspect"
     )
   )
@@ -19,7 +19,7 @@ example_ellmer_solver <- function() {
 example_inspect_log <- function() {
   eval_log_read(
     system.file(
-      "logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
+      "test/inspect/logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
       package = "rinspect"
     )
   )
@@ -30,7 +30,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
   # regenerate with `inst/regenerate-example-objects.R`
   load(
     system.file(
-      "test-objects/example-task.rda",
+      "test/example-task.rda",
       package = "rinspect"
     )
   )

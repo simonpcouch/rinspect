@@ -8,6 +8,4 @@
 __pycache__/
 docs
 inst/log_dump
-
 /.quarto/
-inst/doc

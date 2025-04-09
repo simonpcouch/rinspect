@@ -31,7 +31,7 @@ regenerate_example_task <- function() {
   )
   
   tsk$eval()
-  save(tsk, file = "inst/test-objects/example-task.rda")
+  save(tsk, file = "inst/test/example-task.rda")
 }
 
 regenerate_example_solver <- function() {
@@ -40,7 +40,7 @@ regenerate_example_solver <- function() {
   solver <- chat_anthropic(model = "claude-3-7-sonnet-latest")
   solver$chat("What's 2+2?")
 
-  save(solver, file = "inst/sandbox/solver.rda")
+  save(solver, file = "inst/test/solver.rda")
 }
 
 # An R Eval on 1 epoch, via the intro vignette ------------------------

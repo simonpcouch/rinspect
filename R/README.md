@@ -19,3 +19,7 @@ rinspect doesn't integrate directly with the Inspect AI through any sort of reti
 
 * Package tests use Inspect's pydantic models to validate generate .json evaluation logs via `validate_log()`. Tests will be skipped if you don't have Inspect installed--see `.github/workflows/live-api.yaml` for an example minimal viable setup.
 * `inspect_view()` bundles the static Inspect log viewer via `inst/dist/`. This is a standalone .js application and doesn't require an install of Inspect.
+
+## Cached Objects
+
+rinspect uses a number of cached objects for testing. To regenerate them, use the internal function `regenerate_example_objects()`. You will need an `ANTHROPIC_API_KEY` to do so.
