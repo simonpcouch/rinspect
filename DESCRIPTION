@@ -36,7 +36,7 @@ Suggests:
     here,
     htmltools,
     knitr,
-    MASS,
+    ordinal,
     rmarkdown,
     testthat (>= 3.0.0)
 Remotes:

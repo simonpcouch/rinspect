@@ -216,26 +216,26 @@ are_task_eval %>%
 Is this difference in performance just a result of noise, though? We can supply the scores to an ordinal regression model to answer this question.
 
 ```{r}
-library(MASS)
+library(ordinal)
 
-are_mod <- polr(score ~ model, data = are_task_eval)
+are_mod <- clm(score ~ model, data = are_task_eval)
 
 are_mod
 ```
 
 ```{r}
 #| include: false
-grade_descriptor <- if (are_mod[["coefficients"]] > 0) "higher" else "lower"
+grade_descriptor <- if (are_mod[["coefficients"]][3] > 0) "higher" else "lower"
 ```
 
-The coefficient for `model == "GPT-4o"` is `r round(are_mod[["coefficients"]], 3)`, indicating that GPT-4o tends to be associated with `r grade_descriptor` grades. If a 95% confidence interval for this coefficient contains zero, we can conclude that there is not sufficient evidence to reject the null hypothesis that the difference between GPT-4o and Claude's performance on this eval is zero at the 0.05 significance level.
+The coefficient for `model == "GPT-4o"` is `r round(are_mod[["coefficients"]][3], 3)`, indicating that GPT-4o tends to be associated with `r grade_descriptor` grades. If a 95% confidence interval for this coefficient contains zero, we can conclude that there is not sufficient evidence to reject the null hypothesis that the difference between GPT-4o and Claude's performance on this eval is zero at the 0.05 significance level.
 
 ```{r}
 confint(are_mod)
 ```
 
 :::callout-note
-If we had evaluated this model across multiple epochs, `samples$epoch` could become a "nuisance parameter" in a mixed model.
+If we had evaluated this model across multiple epochs, the question ID could become a "nuisance parameter" in a mixed model, e.g. with the model structure `ordinal::clmm(score ~ model + (1|id), ...)`.
 :::
 
 This vignette demonstrated the simplest possible evaluation based on the `are` dataset. If you're interested in carrying out more advanced evals, check out the other vignettes in this package!
