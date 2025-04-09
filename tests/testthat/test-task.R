@@ -473,9 +473,11 @@ test_that("Task detects non-Chat objects in solver_chat", {
 })
 
 test_that("Task errors informatively with bad scorer output", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
   
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
@@ -494,9 +496,11 @@ test_that("Task errors informatively with bad scorer output", {
 })
 
 test_that("Task detects non-Chat objects in scorer_chat", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
   
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
