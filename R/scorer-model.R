@@ -120,9 +120,14 @@ model_graded_qa_impl <- function(
     scorer_chat <- solver_chat(samples[1, ])
   }
   
-  scorer_chat <- scorer_chat$clone()
-  responses <- scorer_chat$chat_parallel(as.list(prompts))
-  
+  # TODO: this will ultimately happen in parallel, but rolling back temporarily (#84)
+  responses <- list()
+  for (prompt in prompts) {
+    temp_chat <- scorer_chat$clone()
+    temp_chat$chat(prompt, echo = "none")
+    responses <- c(responses, temp_chat)
+  }
+
   grades <- purrr::map_chr(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
     qa_extract_grade(response_text, grade_pattern, partial_credit)

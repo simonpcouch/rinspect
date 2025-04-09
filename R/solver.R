@@ -26,9 +26,14 @@ generate <- function(solver_chat = NULL) {
   function(inputs, ..., solver_chat = chat) {
     check_inherits(solver_chat, "Chat")
 
-    ch <- solver_chat$clone()
-    res <- ch$chat_parallel(as.list(inputs), ...)
-
+    # TODO: this will ultimately happen in parallel, but rolling back temporarily (#84)
+    res <- list()
+    for (input in as.list(inputs)) {
+      temp_chat <- solver_chat$clone()
+      temp_chat$chat(input, echo = "none")
+      res <- c(res, temp_chat)
+    }
+    
     list(
       result = purrr::map_chr(res, function(c) c$last_turn()@text),
       solver_chat = res
