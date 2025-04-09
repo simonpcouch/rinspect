@@ -7,6 +7,7 @@ are <-
     as_tibble(.x)
   }) %>%
   purrr::list_rbind() %>%
-  dplyr::arrange(title)
+  dplyr::arrange(title) %>%
+  dplyr::rename(id = title)
 
 usethis::use_data(are, overwrite = TRUE)

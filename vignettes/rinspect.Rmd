@@ -65,7 +65,7 @@ glimpse(are)
 
 At a high level:
 
-- `title`:  A unique identifier for the problem.
+- `id`:  A unique identifier for the problem.
 - `input`: The question to be answered.
 - `target`: The solution, often with a description of notable features of a correct solution.
 - `domain`, `task`, and `knowledge` are pieces of metadata describing the kind of R coding challenge.
