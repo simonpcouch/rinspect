@@ -1,6 +1,6 @@
 Package: vitals
 Title: Large Language Model Evaluation for R
-Version: 0.0.0.9002
+Version: 0.0.0.9001
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5676-5107")),
@@ -32,6 +32,7 @@ Imports:
     withr,
     rstudioapi
 Suggests: 
+    btw,
     ggplot2,
     here,
     htmltools,
@@ -40,6 +41,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Remotes:
+    posit-dev/btw,
     tidyverse/ellmer
 Config/testthat/edition: 3
 Encoding: UTF-8
