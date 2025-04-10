@@ -40,5 +40,5 @@ test_that("inspect_view() works with read + written eval file", {
   eval_log <- example_inspect_log()
   eval_log_write(x = eval_log, dir = log_dir)
 
-  expect_condition(inspect_view(log_dir), class = "rinspect_viewer_start")
+  expect_condition(inspect_view(log_dir), class = "vitals_viewer_start")
 })

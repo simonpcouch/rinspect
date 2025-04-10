@@ -1,8 +1,8 @@
 ---
-title: "Getting started with rinspect"
+title: "Getting started with vitals"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started with rinspect}
+  %\VignetteIndexEntry{Getting started with vitals}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,7 +24,7 @@ withr::local_envvar(list(INSPECT_LOG_DIR = "vignettes/data/logs/"))
 
 # don't set this as the default `eval`, but use it as a
 # flag for the computationally intensive steps
-should_eval <- identical(Sys.getenv("RINSPECT_SHOULD_EVAL"), "true")
+should_eval <- identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 
 if (!should_eval) {
   load(here::here("vignettes/data/are_task.rda"))
@@ -35,7 +35,7 @@ if (!should_eval) {
 At their core, LLM evals are composed of three pieces:
 
 1) **Datasets** contain a set of labelled samples. Datasets are just a tibble with columns `input` and `target`, where `input` is a prompt and `target` is either literal value(s) or grading guidance.
-2) **Solvers** evaluate the `input` in the dataset and produce a final result (hopefully) approximating `target`. In rinspect, the simplest solver is just an ellmer chat (e.g. `ellmer::chat_anthropic()`) wrapped in `generate()`, i.e. `generate(ellmer::chat_anthropic()`), which will call the Chat object's `$chat()` method and return whatever it returns.
+2) **Solvers** evaluate the `input` in the dataset and produce a final result (hopefully) approximating `target`. In vitals, the simplest solver is just an ellmer chat (e.g. `ellmer::chat_anthropic()`) wrapped in `generate()`, i.e. `generate(ellmer::chat_anthropic()`), which will call the Chat object's `$chat()` method and return whatever it returns.
 3) **Scorers** evaluate the final output of solvers. They may use text
 comparisons, model grading, or other custom schemes to determine how well the solver approximated the `target` based on the `input`. 
 
@@ -47,7 +47,7 @@ First, load the required packages:
 #| message: false
 #| warning: false
 #| eval: true
-library(rinspect)
+library(vitals)
 library(ellmer)
 library(dplyr)
 library(ggplot2)
@@ -85,7 +85,7 @@ cat(are$target[1])
 
 ## Creating and evaluating a task
 
-LLM evaluation with rinspect happens in two main steps:
+LLM evaluation with vitals happens in two main steps:
 
 1) Use `Task$new()` to situate a dataset, solver, and scorer in a `Task`.
 
@@ -119,7 +119,7 @@ After evaluation, the task contains information from the solving and scoring ste
 cat(are_task$samples$result[1])
 ```
 
-The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column. `model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. rinspect will use the same model that generated the final response as the model to score solutions.
+The task also contains score information from the scoring step. We've used `model_graded_qa()` as our scorer, which uses another model to evaluate the quality of our solver's solutions against the reference solutions in the `target` column. `model_graded_qa()` is a model-graded scorer provided by the package. This step compares Claude's solutions against the reference solutions in the `target` column, assigning a score to each solution using another model. That score is either `1` or `0`, though since we've set `partial_credit = TRUE`, the model can also choose to allot the response `.5`. vitals will use the same model that generated the final response as the model to score solutions.
 
 Hold up, though—we're using an LLM to generate responses to questions, and then using the LLM to grade those responses?
 
@@ -137,7 +137,7 @@ cat(are_task$samples$scorer_chat[[1]]$last_turn()@text)
 
 ## Analyzing the results
 
-Especially the first few times you run an eval, you'll want to inspect (ha!) its results closely. The rinspect package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
+Especially the first few times you run an eval, you'll want to inspect (ha!) its results closely. The vitals package ships with an app, the Inspect log viewer, that allows you to drill down into the solutions and grading decisions from each model for each sample. In the first couple runs, you'll likely find revisions you can make to your grading guidance in `target` that align model responses with your intent.
 
 ```{r}
 #| label: tsk-view
@@ -145,7 +145,7 @@ Especially the first few times you run an eval, you'll want to inspect (ha!) its
 #| fig-alt: "The Inspect log viewer, an interactive app displaying information on the samples evaluated in this eval."
 if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
   htmltools::tags$iframe(
-    src = "../example-logs/rinspect/index.html",
+    src = "../example-logs/vitals/index.html",
     width = "100%", 
     height = "600px",
     style = "border-radius: 10px; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);"
@@ -244,7 +244,7 @@ This vignette demonstrated the simplest possible evaluation based on the `are` d
 #| include: false
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`
-dest_dir <- here::here("pkgdown/assets/example-logs/rinspect")
+dest_dir <- here::here("pkgdown/assets/example-logs/vitals")
 inspect_bundle(
   log_dir = here::here("vignettes/data/logs"), 
   output_dir = dest_dir, 

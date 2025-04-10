@@ -1,7 +1,7 @@
 #' The log directory
 #'
 #' @description
-#' rinspect supports the `INSPECT_LOG_DIR` environment variable,
+#' vitals supports the `INSPECT_LOG_DIR` environment variable,
 #' which sets a default directory to write logs to in [Task]'s `$eval()`
 #' and `$log()` methods.
 #'
@@ -53,7 +53,7 @@ inspect_log_dir_set <- function(dir) {
 # file <-
 #   system.file(
 #     "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
-#      package = "rinspect"
+#      package = "vitals"
 #   )
 #
 # example_eval_log <- eval_log_read(file)

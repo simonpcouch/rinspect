@@ -62,7 +62,7 @@ inspect_bundle <- function(log_dir = inspect_log_dir(),
   
   working_dir <- withr::local_tempdir()
   
-  dist_dir <- system.file("dist", package = "rinspect")
+  dist_dir <- system.file("dist", package = "vitals")
   copy_dir_contents(dist_dir, working_dir)
   
   log_dir_name <- "logs"

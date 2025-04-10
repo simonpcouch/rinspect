@@ -108,7 +108,7 @@ Task <- R6::R6Class("Task",
     metrics = NULL,
 
     #' @description
-    #' The typical flow of LLM evaluation with rinspect tends to involve first
+    #' The typical flow of LLM evaluation with vitals tends to involve first
     #' calling this method and then `$eval()` on the resulting object.
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
@@ -152,7 +152,7 @@ Task <- R6::R6Class("Task",
     #' viewing (if interactive). This method works by calling `$solve()`, 
     #' `$score()`, `$log()`, and `$view()` in sequence.
     #' 
-    #' The typical flow of LLM evaluation with rinspect tends to involve first
+    #' The typical flow of LLM evaluation with vitals tends to involve first
     #' calling `$new()` and then this method on the resulting object.
     #'
     #' @param ... Additional arguments passed to the solver and scorer functions.
@@ -379,13 +379,13 @@ Task <- R6::R6Class("Task",
     scored = FALSE,
 
     stash_last_task = function() {
-      if (!"pkg:rinspect" %in% search()) {
+      if (!"pkg:vitals" %in% search()) {
         do.call(
           "attach",
-          list(new.env(), pos = length(search()), name = "pkg:rinspect")
+          list(new.env(), pos = length(search()), name = "pkg:vitals")
         )
       }
-      env <- as.environment("pkg:rinspect")
+      env <- as.environment("pkg:vitals")
       env$.last_task <- self
       invisible(NULL)
     },
@@ -563,9 +563,9 @@ join_epochs <- function(samples, epochs) {
 }
 
 has_last_task <- function() {
-  if (!"pkg:rinspect" %in% search()) {
+  if (!"pkg:vitals" %in% search()) {
     return(FALSE)
   }
 
-  exists(".last_task", as.environment("pkg:rinspect"))
+  exists(".last_task", as.environment("pkg:vitals"))
 }

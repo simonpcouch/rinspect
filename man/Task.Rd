@@ -82,7 +82,7 @@ columns to this data.}
 \if{html}{\out{<a id="method-Task-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Task-new}{}}}
 \subsection{Method \code{new()}}{
-The typical flow of LLM evaluation with rinspect tends to involve first
+The typical flow of LLM evaluation with vitals tends to involve first
 calling this method and then \verb{$eval()} on the resulting object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$new(
@@ -170,7 +170,7 @@ Evaluates the task by running the solver, scorer, logging results, and
 viewing (if interactive). This method works by calling \verb{$solve()},
 \verb{$score()}, \verb{$log()}, and \verb{$view()} in sequence.
 
-The typical flow of LLM evaluation with rinspect tends to involve first
+The typical flow of LLM evaluation with vitals tends to involve first
 calling \verb{$new()} and then this method on the resulting object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = NULL, view = interactive())}\if{html}{\out{</div>}}

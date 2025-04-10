@@ -4,7 +4,7 @@ test_that("inspect_bundle creates a valid bundle", {
   output_dir <- file.path(withr::local_tempdir(), "test-inspect-bundle")
   if (dir.exists(output_dir)) unlink(output_dir, recursive = TRUE)
   
-  log_dir <- system.file("logs", package = "rinspect")
+  log_dir <- system.file("logs", package = "vitals")
   
   dir.create(output_dir)
   expect_snapshot(

@@ -1,18 +1,18 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rinspect <a href="https://simonpcouch.github.io/rinspect/"><img src="man/figures/logo.png" align="right" height="240" alt="rinspect website" /></a>
+# vitals <a href="https://simonpcouch.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/rinspect)](https://CRAN.R-project.org/package=rinspect)
-[![R-CMD-check](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml)
+status](https://www.r-pkg.org/badges/version/vitals)](https://CRAN.R-project.org/package=vitals)
+[![R-CMD-check](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-rinspect is a framework for large language model evaluation in R. It’s
+vitals is a framework for large language model evaluation in R. It’s
 specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who
 want to measure the effectiveness of their LLM-based apps.
 
@@ -28,23 +28,23 @@ evaluation logs to the same file format.
 >
 > 🚧 Under construction! 🚧
 >
-> rinspect is highly experimental and much of its documentation is
+> vitals is highly experimental and much of its documentation is
 > aspirational.
 
 ## Installation
 
-You can install the developmental version of rinspect using:
+You can install the developmental version of vitals using:
 
 ``` r
-pak::pak("simonpcouch/rinspect")
+pak::pak("simonpcouch/vitals")
 ```
 
 ## Example
 
-LLM evaluation with rinspect is composed of two main steps.
+LLM evaluation with vitals is composed of two main steps.
 
 ``` r
-library(rinspect)
+library(vitals)
 library(ellmer)
 library(tibble)
 ```
@@ -71,7 +71,7 @@ Tasks are composed of three main components:
   gives the target response.
 - **Solvers** are functions that take `input` and return some value
   approximating `target`, likely wrapping ellmer chats. `generate()` is
-  the simplest scorer in rinspect, and just passes the `input` to the
+  the simplest scorer in vitals, and just passes the `input` to the
   chat’s `$chat()` method, returning its result as-is.
 - **Scorers** juxtapose the solvers’ output with `target`, evaluating
   how well the solver solved the `input`.
@@ -98,5 +98,5 @@ tsk_openai <- tsk$clone()
 tsk_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
 
-For an applied example, see the “Getting started with rinspect” vignette
-at `vignette("rinspect", package = "rinspect")`.
+For an applied example, see the “Getting started with vitals” vignette
+at `vignette("vitals", package = "vitals")`.

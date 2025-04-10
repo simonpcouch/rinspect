@@ -8,7 +8,7 @@ example_ellmer_solver <- function() {
   load(
     system.file(
       "test/solver.rda",
-      package = "rinspect"
+      package = "vitals"
     )
   )
 
@@ -20,7 +20,7 @@ example_inspect_log <- function() {
   eval_log_read(
     system.file(
       "test/inspect/logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
-      package = "rinspect"
+      package = "vitals"
     )
   )
 }
@@ -31,7 +31,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
   load(
     system.file(
       "test/example-task.rda",
-      package = "rinspect"
+      package = "vitals"
     )
   )
 

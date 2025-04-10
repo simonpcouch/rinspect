@@ -1,7 +1,7 @@
 #' Interactively view local evaluation logs
 #'
 #' @description
-#' rinspect bundles the Inspect log viewer, an interactive app for exploring
+#' vitals bundles the Inspect log viewer, an interactive app for exploring
 #' evaluation logs. Supply a path to a directory of tasks written to json.
 #' For individual [Task] objects, use the `$view()` method instead.
 #' 
@@ -21,7 +21,7 @@ inspect_view_impl <- function(
     port = 7576,
     call = caller_env()
 ) {
-  dist_dir <- system.file("dist", package = "rinspect")
+  dist_dir <- system.file("dist", package = "vitals")
 
   tryCatch({
     existing_server <- httpuv::listServers()
@@ -210,7 +210,7 @@ inspect_view_impl <- function(
   url <- sprintf("http://%s:%d", host, port)
   cli::cli_inform(
     c("v" = "Inspect Viewer running at: {.url {url}}"),
-    class = "rinspect_viewer_start"
+    class = "vitals_viewer_start"
   )
 
   if (interactive() && !is_testing()) {

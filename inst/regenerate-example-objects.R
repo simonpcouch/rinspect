@@ -52,8 +52,8 @@ regenerate_are_1e <- function() {
   )
   if (length(json_files) > 0) {file.remove(json_files)}
 
-  withr::local_envvar(RINSPECT_SHOULD_EVAL = "true")
-  rmarkdown::render('vignettes/rinspect.Rmd')
+  withr::local_envvar(VITALS_SHOULD_EVAL = "true")
+  rmarkdown::render('vignettes/vitals.Rmd')
 }
 
 regenerate_example_objects()

@@ -22,7 +22,7 @@ To set this variable in every new R session, you might consider adding it
 to your \code{.Rprofile}, perhaps with \code{usethis::edit_r_profile()}.
 }
 \description{
-rinspect supports the \code{INSPECT_LOG_DIR} environment variable,
+vitals supports the \code{INSPECT_LOG_DIR} environment variable,
 which sets a default directory to write logs to in \link{Task}'s \verb{$eval()}
 and \verb{$log()} methods.
 }

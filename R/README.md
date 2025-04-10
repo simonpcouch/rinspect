@@ -1,6 +1,6 @@
-# rinspect's source
+# vitals's source
 
-The bread and butter functionality of rinspect lives in `task.R`. A substantial subset of the rest of the package implements translation to Inspect-compatible .json evaluation logs.
+The bread and butter functionality of vitals lives in `task.R`. A substantial subset of the rest of the package implements translation to Inspect-compatible .json evaluation logs.
 
 ## Translation
 
@@ -15,11 +15,11 @@ Exported functions that don't operate directly on a single Task and instead take
 
 ## Relationship to Inspect
 
-rinspect doesn't integrate directly with the Inspect AI through any sort of reticulate-ry in exported functionality. That said, it _does_ make use of Inspect or submodules from it in a couple places:
+vitals doesn't integrate directly with the Inspect AI through any sort of reticulate-ry in exported functionality. That said, it _does_ make use of Inspect or submodules from it in a couple places:
 
 * Package tests use Inspect's pydantic models to validate generate .json evaluation logs via `validate_log()`. Tests will be skipped if you don't have Inspect installed--see `.github/workflows/live-api.yaml` for an example minimal viable setup.
 * `inspect_view()` bundles the static Inspect log viewer via `inst/dist/`. This is a standalone .js application and doesn't require an install of Inspect.
 
 ## Cached Objects
 
-rinspect uses a number of cached objects for testing. To regenerate them, use the internal function `regenerate_example_objects()`. You will need an `ANTHROPIC_API_KEY` to do so.
+vitals uses a number of cached objects for testing. To regenerate them, use the internal function `regenerate_example_objects()`. You will need an `ANTHROPIC_API_KEY` to do so.
