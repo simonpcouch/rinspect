@@ -19,7 +19,7 @@ information on the return type.
 }
 \description{
 \code{generate()} is the simplest possible solver one might use with
-rinspect; it just passes its inputs to the supplied model and returns
+vitals; it just passes its inputs to the supplied model and returns
 its raw responses. The inputs are evaluated in parallel,
 not in the sense of multiple R sessions, but in the sense of multiple,
 asynchronous HTTP requests using \verb{$chat_parallel()}. \code{generate()}'s output

@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(rinspect)
+library(vitals)
 
-test_check("rinspect")
+test_check("vitals")

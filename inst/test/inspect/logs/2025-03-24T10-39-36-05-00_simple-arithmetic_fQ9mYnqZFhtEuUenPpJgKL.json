@@ -33,7 +33,7 @@
     },
     "revision": {
       "type": "git",
-      "origin": "https://github.com/simonpcouch/rinspect.git",
+      "origin": "https://github.com/simonpcouch/vitals.git",
       "commit": "62e1e30"
     },
     "packages": {

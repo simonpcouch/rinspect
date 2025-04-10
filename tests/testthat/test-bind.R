@@ -1,8 +1,8 @@
-test_that("inspect_bind works", {
+test_that("vitals_bind works", {
   load(here::here("vignettes/data/are_task.rda"))
   load(here::here("vignettes/data/are_task_openai.rda"))
   
-  res <- inspect_bind(are_task, are_task_openai)
+  res <- vitals_bind(are_task, are_task_openai)
 
   expect_s3_class(res, "tbl_df")
   expect_named(res, c("task", "id", "score", "metadata"))

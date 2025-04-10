@@ -32,7 +32,7 @@ test_that("validate_log fails when log file is nonsense", {
   )
 })
 
-test_that("rinspect writes valid eval logs (basic, claude)", {
+test_that("vitals writes valid eval logs (basic, claude)", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
@@ -57,7 +57,7 @@ test_that("rinspect writes valid eval logs (basic, claude)", {
   validate_log(log_file[1])
 })
 
-test_that("rinspect writes valid eval logs (basic, openai)", {
+test_that("vitals writes valid eval logs (basic, openai)", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
@@ -82,7 +82,7 @@ test_that("rinspect writes valid eval logs (basic, openai)", {
   validate_log(log_file[1])
 })
 
-test_that("rinspect writes valid eval logs (basic, gemini)", {
+test_that("vitals writes valid eval logs (basic, gemini)", {
   skip_if(identical(Sys.getenv("GOOGLE_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
@@ -108,7 +108,7 @@ test_that("rinspect writes valid eval logs (basic, gemini)", {
 })
 
 
-test_that("rinspect writes valid eval logs (solver tool calls, claude)", {
+test_that("vitals writes valid eval logs (solver tool calls, claude)", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))

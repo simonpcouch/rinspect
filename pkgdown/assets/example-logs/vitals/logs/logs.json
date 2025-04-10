@@ -1,0 +1,171 @@
+{
+  "2025-03-31T13-11-33-05-00_An-R-Eval_d4a5a2964e5ce37588e54a.json": {
+    "version": 2,
+    "status": "success",
+    "eval": {
+      "run_id": "rmboaWv0iCot5bida4GwjR",
+      "created": "2025-03-31T13:11:33-05:00",
+      "task": "An R Eval",
+      "task_id": "d4a5a2964e5ce37588e54a",
+      "task_version": 0,
+      "task_file": "Untitled-1",
+      "task_attribs": {},
+      "task_args": {},
+      "dataset": {
+        "samples": 28,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+        "shuffled": false
+      },
+      "model": "claude-3-7-sonnet-20250219",
+      "model_args": {},
+      "config": {},
+      "revision": {
+        "type": "git",
+        "origin": "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+        "commit": "9140d8a2"
+      },
+      "packages": {
+        "inspect_ai": "0.3.63"
+      },
+      "scorers": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE)",
+          "options": {},
+          "metrics": [
+            {
+              "name": "mean",
+              "options": {}
+            }
+          ],
+          "metadata": {}
+        }
+      ]
+    },
+    "plan": {
+      "name": "plan",
+      "steps": [
+        {
+          "solver": "generate(chat_claude())",
+          "params": {
+            "1": "as.list(self$samples$input)"
+          }
+        }
+      ],
+      "config": {}
+    },
+    "results": {
+      "total_samples": 28,
+      "completed_samples": 28,
+      "scores": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE)",
+          "scorer": "model_graded_qa(partial_credit = TRUE)",
+          "params": {},
+          "metrics": {
+            "accuracy": {
+              "name": "accuracy",
+              "value": 60.7143,
+              "params": {
+                "1": "numeric_scores"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stats": {
+      "started_at": "2025-03-31T13:09:36-05:00",
+      "completed_at": "2025-03-31T13:11:33-05:00",
+      "model_usage": {
+        "claude-3-7-sonnet-20250219": {
+          "input_tokens": 15295,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 11743,
+          "total_tokens": 27038
+        }
+      }
+    }
+  },
+  "2025-03-31T13-13-28-05-00_An-R-Eval_d4a5a2964e5ce37588e54a.json": {
+    "version": 2,
+    "status": "success",
+    "eval": {
+      "run_id": "1uplfKOVsqlTU3a7x7T26Q",
+      "created": "2025-03-31T13:13:28-05:00",
+      "task": "An R Eval",
+      "task_id": "d4a5a2964e5ce37588e54a",
+      "task_version": 0,
+      "task_file": "Untitled-1",
+      "task_attribs": {},
+      "task_args": {},
+      "dataset": {
+        "samples": 28,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+        "shuffled": false
+      },
+      "model": "gpt-4o-2024-08-06",
+      "model_args": {},
+      "config": {},
+      "revision": {
+        "type": "git",
+        "origin": "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+        "commit": "9140d8a2"
+      },
+      "packages": {
+        "inspect_ai": "0.3.63"
+      },
+      "scorers": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE)",
+          "options": {},
+          "metrics": [
+            {
+              "name": "mean",
+              "options": {}
+            }
+          ],
+          "metadata": {}
+        }
+      ]
+    },
+    "plan": {
+      "name": "plan",
+      "steps": [
+        {
+          "solver": "generate(chat_claude())",
+          "params": {
+            "1": "as.list(self$samples$input)",
+            "solver_chat": "chat_openai(model = \"gpt-4o\")"
+          }
+        }
+      ],
+      "config": {}
+    },
+    "results": {
+      "total_samples": 28,
+      "completed_samples": 28,
+      "scores": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE)",
+          "scorer": "model_graded_qa(partial_credit = TRUE)",
+          "params": {},
+          "metrics": {
+            "accuracy": {
+              "name": "accuracy",
+              "value": 53.5714,
+              "params": {
+                "1": "numeric_scores"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stats": {
+      "started_at": "2025-03-31T13:11:33-05:00",
+      "completed_at": "2025-03-31T13:13:28-05:00",
+      "model_usage": {}
+    }
+  }
+}

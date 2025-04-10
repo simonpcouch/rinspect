@@ -6,7 +6,7 @@
 #' generates the necessary configuration files.
 #'
 #' @param log_dir Path to the directory containing log files. Defaults to
-#' `inspect_log_dir()`.
+#' `vitals_log_dir()`.
 #' @param output_dir Path to the directory where the bundled output will be placed.
 #' @param overwrite Whether to overwrite an existing output directory. Defaults to FALSE.
 #'
@@ -19,7 +19,7 @@
 #' 
 #' ```r
 #' tmp_dir <- withr::local_tempdir()
-#' inspect_bundle(output_dir = tmp_dir, overwrite = TRUE)
+#' vitals_bundle(output_dir = tmp_dir, overwrite = TRUE)
 #' rsconnect::deployApp(tmp_dir)
 #' ```
 #' 
@@ -43,7 +43,7 @@
 #' directory.
 #'
 #' @export
-inspect_bundle <- function(log_dir = inspect_log_dir(),
+vitals_bundle <- function(log_dir = vitals_log_dir(),
                            output_dir = NULL,
                            overwrite = FALSE) {
   if (!dir.exists(log_dir)) {
@@ -62,7 +62,7 @@ inspect_bundle <- function(log_dir = inspect_log_dir(),
   
   working_dir <- withr::local_tempdir()
   
-  dist_dir <- system.file("dist", package = "rinspect")
+  dist_dir <- system.file("dist", package = "vitals")
   copy_dir_contents(dist_dir, working_dir)
   
   log_dir_name <- "logs"

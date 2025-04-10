@@ -1,19 +1,19 @@
-test_that("inspect_bundle creates a valid bundle", {
+test_that("vitals_bundle creates a valid bundle", {
   skip("")
   
   output_dir <- file.path(withr::local_tempdir(), "test-inspect-bundle")
   if (dir.exists(output_dir)) unlink(output_dir, recursive = TRUE)
   
-  log_dir <- system.file("logs", package = "rinspect")
+  log_dir <- system.file("logs", package = "vitals")
   
   dir.create(output_dir)
   expect_snapshot(
     error = TRUE,
-    inspect_bundle(log_dir = log_dir, output_dir = output_dir, overwrite = FALSE)
+    vitals_bundle(log_dir = log_dir, output_dir = output_dir, overwrite = FALSE)
   )
   unlink(output_dir, recursive = TRUE)
   
-  result <- inspect_bundle(
+  result <- vitals_bundle(
     log_dir = log_dir,
     output_dir = output_dir,
     overwrite = TRUE
@@ -35,7 +35,7 @@ test_that("inspect_bundle creates a valid bundle", {
   unlink(output_dir, recursive = TRUE)
 })
 
-test_that("inspect_bundle errors informatively", {
+test_that("vitals_bundle errors informatively", {
   skip("")
   
   output_dir <- file.path(withr::local_tempdir(), "test-inspect-bundle-empty")
@@ -46,7 +46,7 @@ test_that("inspect_bundle errors informatively", {
   
   expect_snapshot(
   error = TRUE,
-    inspect_bundle(log_dir = empty_log_dir, output_dir = output_dir)
+    vitals_bundle(log_dir = empty_log_dir, output_dir = output_dir)
   )
   
   non_existent_dir <- file.path(withr::local_tempdir(), "non-existent-dir")
@@ -54,7 +54,7 @@ test_that("inspect_bundle errors informatively", {
   
   expect_snapshot(
     error = TRUE,
-    inspect_bundle(log_dir = non_existent_dir, output_dir = output_dir)
+    vitals_bundle(log_dir = non_existent_dir, output_dir = output_dir)
   )
   
   unlink(output_dir, recursive = TRUE)

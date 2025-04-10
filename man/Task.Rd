@@ -52,7 +52,7 @@ scoring.
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
-to \code{inspect_log_dir()}.}
+to \code{vitals_log_dir()}.}
 
 \item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
 \code{epochs} may duplicate rows, and the solver and scorer will append
@@ -82,7 +82,7 @@ columns to this data.}
 \if{html}{\out{<a id="method-Task-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Task-new}{}}}
 \subsection{Method \code{new()}}{
-The typical flow of LLM evaluation with rinspect tends to involve first
+The typical flow of LLM evaluation with vitals tends to involve first
 calling this method and then \verb{$eval()} on the resulting object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$new(
@@ -92,7 +92,7 @@ calling this method and then \verb{$eval()} on the resulting object.
   metric = NULL,
   epochs = NULL,
   name = deparse(substitute(dataset)),
-  dir = inspect_log_dir()
+  dir = vitals_log_dir()
 )}\if{html}{\out{</div>}}
 }
 
@@ -170,7 +170,7 @@ Evaluates the task by running the solver, scorer, logging results, and
 viewing (if interactive). This method works by calling \verb{$solve()},
 \verb{$score()}, \verb{$log()}, and \verb{$view()} in sequence.
 
-The typical flow of LLM evaluation with rinspect tends to involve first
+The typical flow of LLM evaluation with vitals tends to involve first
 calling \verb{$new()} and then this method on the resulting object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Task$eval(..., epochs = NULL, view = interactive())}\if{html}{\out{</div>}}
@@ -250,7 +250,7 @@ Log the task to a directory.
 Note that, if an \code{INSPECT_LOG_DIR} envvar is set, this will happen
 automatically in \verb{$eval()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = inspect_log_dir())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = vitals_log_dir())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
