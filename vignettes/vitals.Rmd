@@ -109,7 +109,7 @@ are_task$eval()
 ```{r save-are-task-scored}
 #| include: false
 if (should_eval) {
-  save(are_task, file = "vignettes/data/are_task.rda")
+  save(are_task, file = here::here("vignettes/data/are_task.rda"))
 }
 ```
 
@@ -190,7 +190,7 @@ are_task_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```{r save-are-task-openai}
 #| include: false
 if (should_eval) {
-  save(are_task_openai, file = "vignettes/data/are_task_openai.rda")
+  save(are_task_openai, file = here::here("vignettes/data/are_task_openai.rda"))
 }
 ```
 
