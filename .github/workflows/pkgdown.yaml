@@ -21,6 +21,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      INSPECT_LOG_DIR: ${{ runner.temp }}
     permissions:
       contents: write
     steps:

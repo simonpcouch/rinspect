@@ -17,16 +17,16 @@
 #' judge model's response.
 #' @param partial_credit Whether to allow partial credit.
 #' @param scorer_chat An ellmer chat used to grade the model output, e.g.
-#' [ellmer::chat_claude()].
+#' [ellmer::chat_anthropic()].
 #'
 #' @returns
 #' A function that will grade model responses according to the given instructions.
-#' The returned function takes a solved [Task] and outputs a
-#' 2-element list, where the first element `scores` is a vector of scores with
-#' length `nrow(task)` and the second is list of ellmer chats that led to the
-#' scores, also with length `nrow(task)`.
-#' The function that `model_graded_qa()`'s outputs can be passed directly to 
-#' `$eval()`.
+#' See [Task]'s `scorer` argument for a description of the returned function.
+#' The functions that `model_graded_qa()` and `model_graded_fact()` output
+#' can be passed directly to `$eval()`.
+#' 
+#' See the documentation for the `scorer` argument in [Task] for more 
+#' information on the return type.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
 #' 
@@ -43,7 +43,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
 #'     scorer = model_graded_qa()
 #'   )
 #'   
@@ -65,7 +65,7 @@
 #'
 #'   tsk <- Task$new(
 #'     dataset = r_history, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
 #'     scorer = model_graded_fact()
 #'   )
 #'   
@@ -83,9 +83,9 @@ model_graded_qa <- function(
 ) {
   ch <- scorer_chat
 
-  function(task, ..., scorer_chat = ch) {
+  function(samples, ..., scorer_chat = ch) {
     model_graded_qa_impl(
-      task = task,
+      samples = samples,
       template = template,
       instructions = instructions,
       grade_pattern = grade_pattern,
@@ -96,7 +96,7 @@ model_graded_qa <- function(
 }
 
 model_graded_qa_impl <- function(
-  task,
+  samples,
   template = NULL,
   instructions = NULL,
   grade_pattern = "(?i)GRADE\\s*:\\s*([CPI])(.*)$",
@@ -106,27 +106,46 @@ model_graded_qa_impl <- function(
   template <- template %||% qa_default_template()
   instructions <- instructions %||% qa_default_instructions(partial_credit)
 
-  prompts <- purrr::map_chr(seq_len(nrow(task)), function(i) {
+  prompts <- purrr::map_chr(seq_len(nrow(samples)), function(i) {
     qa_format_prompt(
       template,
-      task$input[i],
-      task$result[i],
-      task$target[i],
+      samples$input[i],
+      samples$result[i],
+      samples$target[i],
       instructions
     )
   })
   
   if (is.null(scorer_chat)) {
-    scorer_chat <- solver_chat(task[1, ])
+    scorer_chat <- solver_chat(samples[1, ])
   }
   
-  scorer_chat <- scorer_chat$clone()
-  responses <- scorer_chat$chat_parallel(as.list(prompts))
-  
-  scores <- purrr::map_dbl(responses, function(response_chat) {
+  # TODO: this will ultimately happen in parallel, but rolling back temporarily (#84)
+  responses <- list()
+  for (prompt in prompts) {
+    temp_chat <- scorer_chat$clone()
+    temp_chat$chat(prompt, echo = "none")
+    responses <- c(responses, temp_chat)
+  }
+
+  grades <- purrr::map_chr(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
     qa_extract_grade(response_text, grade_pattern, partial_credit)
   })
+  
+  if (partial_credit) {
+    scores <- factor(
+      grades,
+      levels = c("I", "P", "C"),
+      ordered = TRUE
+    )
+  } else {
+    scores <- factor(
+      grades,
+      levels = c("I", "C"),
+      ordered = TRUE
+    )
+  }
   
   metadata <- purrr::map(seq_along(prompts), function(i) {
     list(
@@ -139,7 +158,7 @@ model_graded_qa_impl <- function(
   list(
     score = scores,
     scorer_chat = responses,
-    metadata = metadata
+    scorer_metadata = metadata
   )
 }
 
@@ -160,14 +179,8 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
   )[[1]][2]
 
   if (is.na(grade_letter)) return(NA)
-
-  switch(
-    toupper(grade_letter),
-    "C" = 1.0,
-    "P" = if (partial_credit) 0.5 else 0.0,
-    "I" = 0.0,
-    NA
-  )
+  
+  toupper(grade_letter)
 }
 
 qa_default_instructions <- function(partial_credit = FALSE) {
@@ -210,9 +223,9 @@ model_graded_fact <- function(
 ) {
   ch <- scorer_chat
   
-  function(task, scorer_chat = ch) {
+  function(samples, scorer_chat = ch) {
     model_graded_qa_impl(
-      task = task,
+      samples = samples,
       template = template %||% fact_default_template(),
       instructions = instructions,
       grade_pattern = grade_pattern,

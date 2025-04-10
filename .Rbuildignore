@@ -1,4 +1,4 @@
-^rinspect\.Rproj$
+^vitals\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
@@ -7,10 +7,13 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-inst/log_dump
-inst/inspect_ai
 ^codecov\.yml$
 ^data-raw$
 .mypy_cache
 CLAUDE.md
 ^vignettes/articles$
+R/README.md
+
+inst/hex
+inst/sandbox
+inst/log_dump

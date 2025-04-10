@@ -13,15 +13,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rinspect
+# vitals <a href="https://simonpcouch.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![CRAN status](https://www.r-pkg.org/badges/version/rinspect)](https://CRAN.R-project.org/package=rinspect)
-[![R-CMD-check](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/rinspect/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/vitals)](https://CRAN.R-project.org/package=vitals)
+[![R-CMD-check](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-rinspect is a framework for large language model evaluation in R. It's specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who want to measure the effectiveness of their LLM-based apps.
+vitals is a framework for large language model evaluation in R. It's specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who want to measure the effectiveness of their LLM-based apps.
 
 The package is an R port of the widely adopted Python framework [Inspect](https://inspect.ai-safety-institute.org.uk/). While the package doesn't integrate with Inspect directly, it allows users to interface with the [Inspect log viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and provides an on-ramp to transition to Inspect if need be by writing evaluation logs to the same file format.
 
@@ -29,22 +29,22 @@ The package is an R port of the widely adopted Python framework [Inspect](https:
 > 
 > 🚧 Under construction! 🚧
 >
-> rinspect is highly experimental and much of its documentation is aspirational.
+> vitals is highly experimental and much of its documentation is aspirational.
 
 ## Installation
 
-You can install the developmental version of rinspect using:
+You can install the developmental version of vitals using:
 
 ```r
-pak::pak("simonpcouch/rinspect")
+pak::pak("simonpcouch/vitals")
 ```
 
 ## Example
 
-LLM evaluation with rinspect is composed of two main steps.
+LLM evaluation with vitals is composed of two main steps.
 
 ```{r}
-library(rinspect)
+library(vitals)
 library(ellmer)
 library(tibble)
 ```
@@ -60,7 +60,7 @@ simple_addition <- tibble(
 
 tsk <- Task$new(
   dataset = simple_addition, 
-  solver = generate(chat_claude()), 
+  solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
   scorer = model_graded_qa()
 )
 ```
@@ -68,7 +68,7 @@ tsk <- Task$new(
 Tasks are composed of three main components:
 
 * **Datasets** are a data frame with, minimally, columns `input` and `target`. `input` represents some question or problem, and `target` gives the target response.
-* **Solvers** are functions that take `input` and return some value approximating `target`, likely wrapping ellmer chats. `generate()` is the simplest scorer in rinspect, and just passes the `input` to the chat's `$chat()` method, returning its result as-is.
+* **Solvers** are functions that take `input` and return some value approximating `target`, likely wrapping ellmer chats. `generate()` is the simplest scorer in vitals, and just passes the `input` to the chat's `$chat()` method, returning its result as-is.
 * **Scorers** juxtapose the solvers' output with `target`, evaluating how well the solver solved the `input`.
 
 2) Evaluate the task.
@@ -88,13 +88,13 @@ tsk$eval()
 knitr::include_graphics("man/figures/log_viewer.png")
 ```
 
-Any arguments to the solver or scorer can be passed to `$eval()`, allowing for straightforward parameterization of tasks. For example, if I wanted to evaluate `chat_openai()` on this task rather than `chat_claude()`, I could write:
+Any arguments to the solver or scorer can be passed to `$eval()`, allowing for straightforward parameterization of tasks. For example, if I wanted to evaluate `chat_openai()` on this task rather than `chat_anthropic()`, I could write:
 
 ```{r}
 #| label: tsk-openai
 #| eval: false
 tsk_openai <- tsk$clone()
-tsk_openai$eval(solver_chat = chat_openai())
+tsk_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
 
-For an applied example, see the "Getting started with rinspect" vignette at `vignette("rinspect", package = "rinspect")`.
+For an applied example, see the "Getting started with vitals" vignette at `vignette("vitals", package = "vitals")`.

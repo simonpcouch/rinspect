@@ -1,7 +1,7 @@
 #' Scoring with string detection
 #'
 #' @description
-#' Functions for string pattern detection in model outputs:
+#' The following functions use string pattern detection to score model outputs.
 #'
 #' - `detect_includes()`: Determine whether the `target` from the sample 
 #' appears anywhere inside the model output. Can be case sensitive or 
@@ -32,7 +32,8 @@
 #' 
 #' @returns
 #' A function that scores model output based on string matching. Pass the
-#' returned value to `$eval(scorer)`.
+#' returned value to `$eval(scorer)`. See the documentation for the `scorer` 
+#' argument in [Task] for more information on the return type.
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -47,7 +48,7 @@
 #'   # create a new Task
 #'   tsk <- Task$new(
 #'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_claude()), 
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
 #'     scorer = detect_includes()
 #'   )
 #'   
@@ -60,9 +61,9 @@
 detect_includes <- function(case_sensitive = FALSE) {
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_includes_impl(
         list(...),
         case_sensitive = case_sensitive
@@ -70,8 +71,12 @@ detect_includes <- function(case_sensitive = FALSE) {
     )
     
     list(
-      score = purrr::map_dbl(results, "result"),
-      metadata = purrr::map(results, "metadata")
+      score = factor(
+        ifelse(purrr::map_lgl(results, "result"), "C", "I"),
+        levels = c("I", "C"),
+        ordered = TRUE
+      ),
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -85,12 +90,12 @@ detect_includes_impl <- function(sample, case_sensitive) {
     target <- tolower(target)
   }
 
-  result <- as.numeric(grepl(target, answer, fixed = TRUE))
+  result <- grepl(target, answer, fixed = TRUE)
 
   list(
     result = result,
     metadata = list(
-      matched = result == 1,
+      matched = result,
       answer = answer
     )
   )
@@ -105,9 +110,9 @@ detect_match <- function(
   location <- arg_match(location)
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_match_impl(
         list(...),
         location = location,
@@ -116,8 +121,12 @@ detect_match <- function(
     )
     
     list(
-      score = purrr::map_dbl(results, "result"),
-      metadata = purrr::map(results, "metadata")
+      score = factor(
+        ifelse(purrr::map_lgl(results, "result"), "C", "I"),
+        levels = c("I", "C"),
+        ordered = TRUE
+      ),
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -140,7 +149,7 @@ detect_match_impl <- function(sample, location, case_sensitive) {
   )
 
   list(
-    result = as.numeric(result),
+    result = result,
     metadata = list(
       matched = result,
       answer = answer
@@ -155,9 +164,9 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
   check_bool(case_sensitive)
   check_bool(all)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_pattern_impl(
         list(...),
         pattern = pattern,
@@ -167,8 +176,12 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
     )
     
     list(
-      score = purrr::map_dbl(results, "result"),
-      metadata = purrr::map(results, "metadata")
+      score = factor(
+        ifelse(purrr::map_lgl(results, "result"), "C", "I"),
+        levels = c("I", "C"),
+        ordered = TRUE
+      ),
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -178,7 +191,7 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
   matches <- regexec(pattern, sample$result, perl = TRUE, flags)
   if (matches[[1]][1] == -1) {
     return(list(
-      result = 0,
+      result = FALSE,
       metadata = list(
         matched = FALSE,
         answer = NA
@@ -201,7 +214,7 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
   }
 
   list(
-    result = as.numeric(matched),
+    result = matched,
     metadata = list(
       matched = matched,
       answer = groups[1]
@@ -214,9 +227,9 @@ detect_pattern_impl <- function(sample, pattern, case_sensitive, all) {
 detect_exact <- function(case_sensitive = FALSE) {
   check_bool(case_sensitive)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_exact_impl(
         list(...),
         case_sensitive = case_sensitive
@@ -224,8 +237,12 @@ detect_exact <- function(case_sensitive = FALSE) {
     )
     
     list(
-      score = purrr::map_dbl(results, "result"),
-      metadata = purrr::map(results, "metadata")
+      score = factor(
+        ifelse(purrr::map_lgl(results, "result"), "C", "I"),
+        levels = c("I", "C"),
+        ordered = TRUE
+      ),
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -242,7 +259,7 @@ detect_exact_impl <- function(sample, case_sensitive) {
   matched <- answer == target
 
   list(
-    result = as.numeric(matched),
+    result = matched,
     scorer = "exact",
     metadata = list(
       matched = matched,
@@ -256,9 +273,9 @@ detect_exact_impl <- function(sample, case_sensitive) {
 detect_answer <- function(format = c("line", "word", "letter")) {
   format <- arg_match(format)
 
-  function(task) {
+  function(samples) {
     results <- purrr::pmap(
-      task,
+      samples,
       function(...) detect_answer_impl(
         list(...),
         format = format
@@ -266,8 +283,12 @@ detect_answer <- function(format = c("line", "word", "letter")) {
     )
 
     list(
-      score = purrr::map_dbl(results, "result"),
-      metadata = purrr::map(results, "metadata")
+      score = factor(
+        ifelse(purrr::map_lgl(results, "result"), "C", "I"),
+        levels = c("I", "C"),
+        ordered = TRUE
+      ),
+      scorer_metadata = purrr::map(results, "metadata")
     )
   }
 }
@@ -283,7 +304,7 @@ detect_answer_impl <- function(sample, format) {
   matches <- regexec(pattern, sample$result, perl = TRUE)
   if (matches[[1]][1] == -1) {
     return(list(
-      result = 0,
+      result = FALSE,
       metadata = list(
         matched = FALSE,
         answer = NA
@@ -295,7 +316,7 @@ detect_answer_impl <- function(sample, format) {
   matched <- tolower(trimws(answer)) == tolower(trimws(sample$target))
 
   list(
-    result = as.numeric(matched),
+    result = matched,
     metadata = list(
       matched = matched,
       answer = answer

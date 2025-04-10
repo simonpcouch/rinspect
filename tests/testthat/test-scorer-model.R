@@ -15,14 +15,16 @@ test_that("model_graded_qa works", {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat_claude()), 
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_qa()
   )
   
   tsk$eval()
 
   # returns scores and a complete scorer chat
-  expect_true(all(tsk$samples$score %in% c(0, .5, 1)))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(all(levels(tsk$samples$score) %in% c("I", "C")))
+  expect_true(is.ordered(tsk$samples$score))
   expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
   expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
   expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")
@@ -52,14 +54,16 @@ test_that("model_graded_fact works", {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(chat_claude()), 
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_fact()
   )
   
   tsk$eval()
 
   # returns scores and a complete scorer chat
-  expect_true(all(tsk$samples$score %in% c(0, .5, 1)))
+  expect_s3_class(tsk$samples$score, "factor")
+  expect_true(all(levels(tsk$samples$score) %in% c("I", "C")))
+  expect_true(is.ordered(tsk$samples$score))
   expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
   expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
   expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")

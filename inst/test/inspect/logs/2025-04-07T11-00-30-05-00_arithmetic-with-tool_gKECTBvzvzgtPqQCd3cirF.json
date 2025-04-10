@@ -1,0 +1,1691 @@
+{
+  "version": 2,
+  "status": "success",
+  "eval": {
+    "run_id": "ApGoCyXf7fWxJkFXQjTVrn",
+    "created": "2025-04-07T11:00:30-05:00",
+    "task": "arithmetic_with_tool",
+    "task_id": "gKECTBvzvzgtPqQCd3cirF",
+    "task_version": 0,
+    "task_file": "inst/test/inspect/tools.py",
+    "task_registry_name": "arithmetic_with_tool",
+    "task_attribs": {},
+    "task_args": {},
+    "dataset": {
+      "samples": 2,
+      "sample_ids": [
+        1,
+        2
+      ],
+      "shuffled": false
+    },
+    "model": "anthropic/claude-3-5-sonnet-latest",
+    "model_args": {},
+    "config": {
+      "epochs": 1,
+      "epochs_reducer": [
+        "mean"
+      ],
+      "fail_on_error": true,
+      "sandbox_cleanup": true,
+      "log_samples": true,
+      "log_images": true,
+      "log_shared": 0,
+      "score_display": true
+    },
+    "revision": {
+      "type": "git",
+      "origin": "https://github.com/simonpcouch/vitals.git",
+      "commit": "9a032ac"
+    },
+    "packages": {
+      "inspect_ai": "0.3.77.dev10+gab7487cb.d20250324"
+    },
+    "scorers": [
+      {
+        "name": "match",
+        "options": {
+          "numeric": true
+        },
+        "metrics": [
+          {
+            "name": "inspect_ai/accuracy",
+            "options": {}
+          },
+          {
+            "name": "inspect_ai/stderr",
+            "options": {}
+          }
+        ],
+        "metadata": {}
+      }
+    ]
+  },
+  "plan": {
+    "name": "plan",
+    "steps": [
+      {
+        "solver": "use_tools",
+        "params": {
+          "tools": [
+            {
+              "type": "tool",
+              "name": "take_sum",
+              "params": {}
+            }
+          ]
+        }
+      },
+      {
+        "solver": "generate",
+        "params": {}
+      }
+    ],
+    "config": {}
+  },
+  "results": {
+    "total_samples": 2,
+    "completed_samples": 2,
+    "scores": [
+      {
+        "name": "match",
+        "scorer": "match",
+        "params": {
+          "numeric": true
+        },
+        "metrics": {
+          "accuracy": {
+            "name": "accuracy",
+            "value": 1.0,
+            "params": {}
+          },
+          "stderr": {
+            "name": "stderr",
+            "value": 0.0,
+            "params": {}
+          }
+        }
+      }
+    ]
+  },
+  "stats": {
+    "started_at": "2025-04-07T11:00:30-05:00",
+    "completed_at": "2025-04-07T11:00:34-05:00",
+    "model_usage": {
+      "anthropic/claude-3-5-sonnet-latest": {
+        "input_tokens": 1874,
+        "output_tokens": 217,
+        "total_tokens": 2091,
+        "input_tokens_cache_write": 0,
+        "input_tokens_cache_read": 0
+      }
+    }
+  },
+  "samples": [
+    {
+      "id": 1,
+      "epoch": 1,
+      "input": "What's 71+31?",
+      "target": "102",
+      "messages": [
+        {
+          "id": "JBAHTV974LySp7ff38XQ3E",
+          "content": "What's 71+31?",
+          "source": "input",
+          "role": "user"
+        },
+        {
+          "id": "VzgbETcUkQXoip556ftkAW",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function."
+            }
+          ],
+          "source": "generate",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+              "function": "take_sum",
+              "arguments": {
+                "x": 71,
+                "y": 31
+              }
+            }
+          ],
+          "model": "claude-3-5-sonnet-latest"
+        },
+        {
+          "id": "ZkG47BbvTXFSUeyKJWToHu",
+          "content": "102",
+          "role": "tool",
+          "tool_call_id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+          "function": "take_sum"
+        },
+        {
+          "id": "bStSyh3KqyBckg2cwGh4Nj",
+          "content": [
+            {
+              "type": "text",
+              "text": "71 + 31 = 102"
+            }
+          ],
+          "source": "generate",
+          "role": "assistant",
+          "model": "claude-3-5-sonnet-latest"
+        }
+      ],
+      "output": {
+        "model": "claude-3-5-sonnet-20241022",
+        "choices": [
+          {
+            "message": {
+              "id": "bStSyh3KqyBckg2cwGh4Nj",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "71 + 31 = 102"
+                }
+              ],
+              "source": "generate",
+              "role": "assistant",
+              "model": "claude-3-5-sonnet-latest"
+            },
+            "stop_reason": "stop"
+          }
+        ],
+        "usage": {
+          "input_tokens": 521,
+          "output_tokens": 13,
+          "total_tokens": 534,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0
+        },
+        "time": 1.5014929579920135
+      },
+      "scores": {
+        "match": {
+          "value": "C",
+          "answer": "102",
+          "explanation": "71 + 31 = 102"
+        }
+      },
+      "metadata": {},
+      "store": {},
+      "events": [
+        {
+          "timestamp": "2025-04-07T11:00:30.692046-05:00",
+          "working_start": 249456.164566833,
+          "event": "step",
+          "action": "begin",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.693451-05:00",
+          "working_start": 249456.165970875,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 71+31?",
+            "target": "102",
+            "id": 1
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "JBAHTV974LySp7ff38XQ3E",
+                "content": "What's 71+31?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": null,
+            "store": {},
+            "output": {
+              "model": "anthropic/claude-3-5-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.694505-05:00",
+          "working_start": 249456.167024583,
+          "event": "step",
+          "action": "end",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.696121-05:00",
+          "working_start": 0.000830375007353723,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 71+31?",
+            "target": "102",
+            "id": 1
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "JBAHTV974LySp7ff38XQ3E",
+                "content": "What's 71+31?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": null,
+            "store": {},
+            "output": {
+              "model": "anthropic/claude-3-5-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.697280-05:00",
+          "working_start": 0.0019895420118700713,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "use_tools"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.700657-05:00",
+          "working_start": 0.00536666699917987,
+          "event": "state",
+          "changes": [
+            {
+              "op": "add",
+              "path": "/tools/0",
+              "value": {
+                "name": "take_sum",
+                "description": "Sum two numbers.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "integer",
+                      "description": "First number to add."
+                    },
+                    "y": {
+                      "type": "integer",
+                      "description": "Second number to add."
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            {
+              "op": "replace",
+              "path": "/tool_choice",
+              "value": "auto"
+            }
+          ]
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.701606-05:00",
+          "working_start": 0.00631529200472869,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "use_tools"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.702771-05:00",
+          "working_start": 0.007480083993868902,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.704406-05:00",
+          "working_start": 0.009115666995057836,
+          "event": "model",
+          "model": "anthropic/claude-3-5-sonnet-latest",
+          "input": [
+            {
+              "id": "JBAHTV974LySp7ff38XQ3E",
+              "content": "What's 71+31?",
+              "source": "input",
+              "role": "user"
+            }
+          ],
+          "tools": [
+            {
+              "name": "take_sum",
+              "description": "Sum two numbers.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "description": "First number to add."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "description": "Second number to add."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "tool_choice": "auto",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-5-sonnet-20241022",
+            "choices": [
+              {
+                "message": {
+                  "id": "VzgbETcUkQXoip556ftkAW",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function."
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "tool_calls": [
+                    {
+                      "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                      "function": "take_sum",
+                      "arguments": {
+                        "x": 71,
+                        "y": 31
+                      }
+                    }
+                  ],
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "tool_calls"
+              }
+            ],
+            "usage": {
+              "input_tokens": 416,
+              "output_tokens": 93,
+              "total_tokens": 509,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0
+            },
+            "time": 2.1297327920037787
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 71+31?",
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [
+                {
+                  "name": "take_sum",
+                  "description": "Sum two numbers.",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "x": {
+                        "type": "integer",
+                        "description": "First number to add."
+                      },
+                      "y": {
+                        "type": "integer",
+                        "description": "Second number to add."
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cache_control": {
+                    "type": "ephemeral"
+                  }
+                }
+              ],
+              "tool_choice": {
+                "type": "auto"
+              },
+              "model": "claude-3-5-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "YWwcapMzAQdGrsMLcHz4up"
+              }
+            },
+            "response": {
+              "id": "msg_01LiSA7UgBEhvxH8upVyaTW5",
+              "content": [
+                {
+                  "citations": null,
+                  "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function.",
+                  "type": "text"
+                },
+                {
+                  "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                  "input": {
+                    "x": 71,
+                    "y": 31
+                  },
+                  "name": "take_sum",
+                  "type": "tool_use"
+                }
+              ],
+              "model": "claude-3-5-sonnet-20241022",
+              "role": "assistant",
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "type": "message",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 416,
+                "output_tokens": 93
+              }
+            },
+            "time": 2.1297327920037787
+          },
+          "completed": "2025-04-07T11:00:32.905188-05:00",
+          "working_time": 2.1297327920037787
+        },
+        {
+          "timestamp": "2025-04-07T11:00:32.919846-05:00",
+          "working_start": 2.154051999998046,
+          "event": "tool",
+          "type": "function",
+          "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+          "function": "take_sum",
+          "arguments": {
+            "x": 71,
+            "y": 31
+          },
+          "result": "102",
+          "events": [],
+          "completed": "2025-04-07T11:00:32.922778-05:00",
+          "working_time": 0.002932
+        },
+        {
+          "timestamp": "2025-04-07T11:00:32.924490-05:00",
+          "working_start": 2.158695166988764,
+          "event": "model",
+          "model": "anthropic/claude-3-5-sonnet-latest",
+          "input": [
+            {
+              "id": "JBAHTV974LySp7ff38XQ3E",
+              "content": "What's 71+31?",
+              "source": "input",
+              "role": "user"
+            },
+            {
+              "id": "VzgbETcUkQXoip556ftkAW",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function."
+                }
+              ],
+              "source": "generate",
+              "role": "assistant",
+              "tool_calls": [
+                {
+                  "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                  "function": "take_sum",
+                  "arguments": {
+                    "x": 71,
+                    "y": 31
+                  }
+                }
+              ],
+              "model": "claude-3-5-sonnet-latest"
+            },
+            {
+              "id": "ZkG47BbvTXFSUeyKJWToHu",
+              "content": "102",
+              "role": "tool",
+              "tool_call_id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+              "function": "take_sum"
+            }
+          ],
+          "tools": [
+            {
+              "name": "take_sum",
+              "description": "Sum two numbers.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "description": "First number to add."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "description": "Second number to add."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "tool_choice": "auto",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-5-sonnet-20241022",
+            "choices": [
+              {
+                "message": {
+                  "id": "bStSyh3KqyBckg2cwGh4Nj",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "71 + 31 = 102"
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            ],
+            "usage": {
+              "input_tokens": 521,
+              "output_tokens": 13,
+              "total_tokens": 534,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0
+            },
+            "time": 1.5014929579920135
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 71+31?",
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "role": "assistant",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function."
+                    },
+                    {
+                      "type": "tool_use",
+                      "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                      "name": "take_sum",
+                      "input": {
+                        "x": 71,
+                        "y": 31
+                      }
+                    }
+                  ]
+                },
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "tool_use_id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                      "type": "tool_result",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "102"
+                        }
+                      ],
+                      "is_error": false,
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [
+                {
+                  "name": "take_sum",
+                  "description": "Sum two numbers.",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "x": {
+                        "type": "integer",
+                        "description": "First number to add."
+                      },
+                      "y": {
+                        "type": "integer",
+                        "description": "Second number to add."
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cache_control": {
+                    "type": "ephemeral"
+                  }
+                }
+              ],
+              "tool_choice": {
+                "type": "auto"
+              },
+              "model": "claude-3-5-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "PnJ2UnG6oBqNy868VnZLpd"
+              }
+            },
+            "response": {
+              "id": "msg_01ExdpAtEPK9pA4QUPF2K5VL",
+              "content": [
+                {
+                  "citations": null,
+                  "text": "71 + 31 = 102",
+                  "type": "text"
+                }
+              ],
+              "model": "claude-3-5-sonnet-20241022",
+              "role": "assistant",
+              "stop_reason": "end_turn",
+              "stop_sequence": null,
+              "type": "message",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 521,
+                "output_tokens": 13
+              }
+            },
+            "time": 1.5014929579920135
+          },
+          "completed": "2025-04-07T11:00:34.433760-05:00",
+          "working_time": 1.5014929579920135
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.434402-05:00",
+          "working_start": 3.661406500992598,
+          "event": "state",
+          "changes": [
+            {
+              "op": "add",
+              "path": "/output/time",
+              "value": 1.5014929579920135
+            },
+            {
+              "op": "add",
+              "path": "/output/usage",
+              "value": {
+                "input_tokens": 521,
+                "output_tokens": 13,
+                "total_tokens": 534,
+                "input_tokens_cache_write": 0,
+                "input_tokens_cache_read": 0
+              }
+            },
+            {
+              "op": "replace",
+              "path": "/output/model",
+              "value": "claude-3-5-sonnet-20241022",
+              "replaced": "anthropic/claude-3-5-sonnet-latest"
+            },
+            {
+              "op": "add",
+              "path": "/output/choices/0",
+              "value": {
+                "message": {
+                  "id": "bStSyh3KqyBckg2cwGh4Nj",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "71 + 31 = 102"
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/1",
+              "value": {
+                "id": "VzgbETcUkQXoip556ftkAW",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "I'll help you calculate the sum of 71 and 31 using the take_sum function."
+                  }
+                ],
+                "source": "generate",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                    "function": "take_sum",
+                    "arguments": {
+                      "x": 71,
+                      "y": 31
+                    }
+                  }
+                ],
+                "model": "claude-3-5-sonnet-latest"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/2",
+              "value": {
+                "id": "ZkG47BbvTXFSUeyKJWToHu",
+                "content": "102",
+                "role": "tool",
+                "tool_call_id": "toolu_01TvytXPBf8KYNXD9ZGLmYoR",
+                "function": "take_sum"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/3",
+              "value": {
+                "id": "bStSyh3KqyBckg2cwGh4Nj",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "71 + 31 = 102"
+                  }
+                ],
+                "source": "generate",
+                "role": "assistant",
+                "model": "claude-3-5-sonnet-latest"
+              }
+            }
+          ]
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.435847-05:00",
+          "working_start": 3.662851834000321,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.438252-05:00",
+          "working_start": 3.665256167005282,
+          "event": "step",
+          "action": "begin",
+          "type": "scorer",
+          "name": "match"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.439799-05:00",
+          "working_start": 3.6668031260196585,
+          "event": "score",
+          "score": {
+            "value": "C",
+            "answer": "102",
+            "explanation": "71 + 31 = 102"
+          },
+          "target": "102",
+          "intermediate": false
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.441345-05:00",
+          "working_start": 3.668349751009373,
+          "event": "step",
+          "action": "end",
+          "type": "scorer",
+          "name": "match"
+        }
+      ],
+      "model_usage": {
+        "anthropic/claude-3-5-sonnet-latest": {
+          "input_tokens": 937,
+          "output_tokens": 106,
+          "total_tokens": 1043,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0
+        }
+      },
+      "total_time": 3.751,
+      "working_time": 3.673,
+      "uuid": "YFzVZLxjCnTtyCUCEpdeuK",
+      "attachments": {}
+    },
+    {
+      "id": 2,
+      "epoch": 1,
+      "input": "What's 91+13?",
+      "target": "104",
+      "messages": [
+        {
+          "id": "MM4jaqxgR6xwWGvPf8gzLv",
+          "content": "What's 91+13?",
+          "source": "input",
+          "role": "user"
+        },
+        {
+          "id": "d9bw9sCcEFmwggzD5jdRrH",
+          "content": [
+            {
+              "type": "text",
+              "text": "I can help you calculate the sum of 91 and 13 using the take_sum function."
+            }
+          ],
+          "source": "generate",
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+              "function": "take_sum",
+              "arguments": {
+                "x": 91,
+                "y": 13
+              }
+            }
+          ],
+          "model": "claude-3-5-sonnet-latest"
+        },
+        {
+          "id": "fYr4XbrWjBVRbiPBxi7BUH",
+          "content": "104",
+          "role": "tool",
+          "tool_call_id": "toolu_017hineEqhRhWEDQFPvftdUU",
+          "function": "take_sum"
+        },
+        {
+          "id": "GBKEoQDzkLwQ5TRnSts5n2",
+          "content": [
+            {
+              "type": "text",
+              "text": "The sum of 91 and 13 is 104."
+            }
+          ],
+          "source": "generate",
+          "role": "assistant",
+          "model": "claude-3-5-sonnet-latest"
+        }
+      ],
+      "output": {
+        "model": "claude-3-5-sonnet-20241022",
+        "choices": [
+          {
+            "message": {
+              "id": "GBKEoQDzkLwQ5TRnSts5n2",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "The sum of 91 and 13 is 104."
+                }
+              ],
+              "source": "generate",
+              "role": "assistant",
+              "model": "claude-3-5-sonnet-latest"
+            },
+            "stop_reason": "stop"
+          }
+        ],
+        "usage": {
+          "input_tokens": 521,
+          "output_tokens": 18,
+          "total_tokens": 539,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0
+        },
+        "time": 1.1296382499858737
+      },
+      "scores": {
+        "match": {
+          "value": "C",
+          "answer": "104",
+          "explanation": "The sum of 91 and 13 is 104."
+        }
+      },
+      "metadata": {},
+      "store": {},
+      "events": [
+        {
+          "timestamp": "2025-04-07T11:00:30.704480-05:00",
+          "working_start": 249456.176999125,
+          "event": "step",
+          "action": "begin",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.705499-05:00",
+          "working_start": 249456.178018875,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 91+13?",
+            "target": "104",
+            "id": 2
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "MM4jaqxgR6xwWGvPf8gzLv",
+                "content": "What's 91+13?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": null,
+            "store": {},
+            "output": {
+              "model": "anthropic/claude-3-5-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.706728-05:00",
+          "working_start": 249456.17924825,
+          "event": "step",
+          "action": "end",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.708323-05:00",
+          "working_start": 0.0007616670045536011,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 91+13?",
+            "target": "104",
+            "id": 2
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "MM4jaqxgR6xwWGvPf8gzLv",
+                "content": "What's 91+13?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": null,
+            "store": {},
+            "output": {
+              "model": "anthropic/claude-3-5-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.709146-05:00",
+          "working_start": 0.001584291981998831,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "use_tools"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.710239-05:00",
+          "working_start": 0.002677333977771923,
+          "event": "state",
+          "changes": [
+            {
+              "op": "add",
+              "path": "/tools/0",
+              "value": {
+                "name": "take_sum",
+                "description": "Sum two numbers.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "integer",
+                      "description": "First number to add."
+                    },
+                    "y": {
+                      "type": "integer",
+                      "description": "Second number to add."
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            {
+              "op": "replace",
+              "path": "/tool_choice",
+              "value": "auto"
+            }
+          ]
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.711171-05:00",
+          "working_start": 0.003609374980442226,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "use_tools"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.711908-05:00",
+          "working_start": 0.004346667003119364,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:30.713122-05:00",
+          "working_start": 0.0055607089889235795,
+          "event": "model",
+          "model": "anthropic/claude-3-5-sonnet-latest",
+          "input": [
+            {
+              "id": "MM4jaqxgR6xwWGvPf8gzLv",
+              "content": "What's 91+13?",
+              "source": "input",
+              "role": "user"
+            }
+          ],
+          "tools": [
+            {
+              "name": "take_sum",
+              "description": "Sum two numbers.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "description": "First number to add."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "description": "Second number to add."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "tool_choice": "auto",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-5-sonnet-20241022",
+            "choices": [
+              {
+                "message": {
+                  "id": "d9bw9sCcEFmwggzD5jdRrH",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "I can help you calculate the sum of 91 and 13 using the take_sum function."
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "tool_calls": [
+                    {
+                      "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                      "function": "take_sum",
+                      "arguments": {
+                        "x": 91,
+                        "y": 13
+                      }
+                    }
+                  ],
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "tool_calls"
+              }
+            ],
+            "usage": {
+              "input_tokens": 416,
+              "output_tokens": 93,
+              "total_tokens": 509,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0
+            },
+            "time": 2.495252458000323
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 91+13?",
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [
+                {
+                  "name": "take_sum",
+                  "description": "Sum two numbers.",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "x": {
+                        "type": "integer",
+                        "description": "First number to add."
+                      },
+                      "y": {
+                        "type": "integer",
+                        "description": "Second number to add."
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cache_control": {
+                    "type": "ephemeral"
+                  }
+                }
+              ],
+              "tool_choice": {
+                "type": "auto"
+              },
+              "model": "claude-3-5-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "RVhCHLX97cQzAFzysXjEAj"
+              }
+            },
+            "response": {
+              "id": "msg_01KAwXDM33L9xNMPekJaKEhb",
+              "content": [
+                {
+                  "citations": null,
+                  "text": "I can help you calculate the sum of 91 and 13 using the take_sum function.",
+                  "type": "text"
+                },
+                {
+                  "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                  "input": {
+                    "x": 91,
+                    "y": 13
+                  },
+                  "name": "take_sum",
+                  "type": "tool_use"
+                }
+              ],
+              "model": "claude-3-5-sonnet-20241022",
+              "role": "assistant",
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "type": "message",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 416,
+                "output_tokens": 93
+              }
+            },
+            "time": 2.495252458000323
+          },
+          "completed": "2025-04-07T11:00:33.271705-05:00",
+          "working_time": 2.495252458000323
+        },
+        {
+          "timestamp": "2025-04-07T11:00:33.272579-05:00",
+          "working_start": 2.5022646249854006,
+          "event": "tool",
+          "type": "function",
+          "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+          "function": "take_sum",
+          "arguments": {
+            "x": 91,
+            "y": 13
+          },
+          "result": "104",
+          "events": [],
+          "completed": "2025-04-07T11:00:33.276503-05:00",
+          "working_time": 0.003924
+        },
+        {
+          "timestamp": "2025-04-07T11:00:33.279458-05:00",
+          "working_start": 2.50914462498622,
+          "event": "model",
+          "model": "anthropic/claude-3-5-sonnet-latest",
+          "input": [
+            {
+              "id": "MM4jaqxgR6xwWGvPf8gzLv",
+              "content": "What's 91+13?",
+              "source": "input",
+              "role": "user"
+            },
+            {
+              "id": "d9bw9sCcEFmwggzD5jdRrH",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "I can help you calculate the sum of 91 and 13 using the take_sum function."
+                }
+              ],
+              "source": "generate",
+              "role": "assistant",
+              "tool_calls": [
+                {
+                  "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                  "function": "take_sum",
+                  "arguments": {
+                    "x": 91,
+                    "y": 13
+                  }
+                }
+              ],
+              "model": "claude-3-5-sonnet-latest"
+            },
+            {
+              "id": "fYr4XbrWjBVRbiPBxi7BUH",
+              "content": "104",
+              "role": "tool",
+              "tool_call_id": "toolu_017hineEqhRhWEDQFPvftdUU",
+              "function": "take_sum"
+            }
+          ],
+          "tools": [
+            {
+              "name": "take_sum",
+              "description": "Sum two numbers.",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "description": "First number to add."
+                  },
+                  "y": {
+                    "type": "integer",
+                    "description": "Second number to add."
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ],
+          "tool_choice": "auto",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-5-sonnet-20241022",
+            "choices": [
+              {
+                "message": {
+                  "id": "GBKEoQDzkLwQ5TRnSts5n2",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "The sum of 91 and 13 is 104."
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            ],
+            "usage": {
+              "input_tokens": 521,
+              "output_tokens": 18,
+              "total_tokens": 539,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0
+            },
+            "time": 1.1296382499858737
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 91+13?",
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "role": "assistant",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "I can help you calculate the sum of 91 and 13 using the take_sum function."
+                    },
+                    {
+                      "type": "tool_use",
+                      "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                      "name": "take_sum",
+                      "input": {
+                        "x": 91,
+                        "y": 13
+                      }
+                    }
+                  ]
+                },
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "tool_use_id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                      "type": "tool_result",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "104"
+                        }
+                      ],
+                      "is_error": false,
+                      "cache_control": {
+                        "type": "ephemeral"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tools": [
+                {
+                  "name": "take_sum",
+                  "description": "Sum two numbers.",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "x": {
+                        "type": "integer",
+                        "description": "First number to add."
+                      },
+                      "y": {
+                        "type": "integer",
+                        "description": "Second number to add."
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cache_control": {
+                    "type": "ephemeral"
+                  }
+                }
+              ],
+              "tool_choice": {
+                "type": "auto"
+              },
+              "model": "claude-3-5-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "GrPC7yo7UnPrDzZvxQCAfp"
+              }
+            },
+            "response": {
+              "id": "msg_014vRS8RVjwE4rJtJ9j4zh3C",
+              "content": [
+                {
+                  "citations": null,
+                  "text": "The sum of 91 and 13 is 104.",
+                  "type": "text"
+                }
+              ],
+              "model": "claude-3-5-sonnet-20241022",
+              "role": "assistant",
+              "stop_reason": "end_turn",
+              "stop_sequence": null,
+              "type": "message",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 521,
+                "output_tokens": 18
+              }
+            },
+            "time": 1.1296382499858737
+          },
+          "completed": "2025-04-07T11:00:34.421102-05:00",
+          "working_time": 1.1296382499858737
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.421970-05:00",
+          "working_start": 3.6405560419952963,
+          "event": "state",
+          "changes": [
+            {
+              "op": "add",
+              "path": "/output/time",
+              "value": 1.1296382499858737
+            },
+            {
+              "op": "add",
+              "path": "/output/usage",
+              "value": {
+                "input_tokens": 521,
+                "output_tokens": 18,
+                "total_tokens": 539,
+                "input_tokens_cache_write": 0,
+                "input_tokens_cache_read": 0
+              }
+            },
+            {
+              "op": "replace",
+              "path": "/output/model",
+              "value": "claude-3-5-sonnet-20241022",
+              "replaced": "anthropic/claude-3-5-sonnet-latest"
+            },
+            {
+              "op": "add",
+              "path": "/output/choices/0",
+              "value": {
+                "message": {
+                  "id": "GBKEoQDzkLwQ5TRnSts5n2",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "The sum of 91 and 13 is 104."
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-5-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/1",
+              "value": {
+                "id": "d9bw9sCcEFmwggzD5jdRrH",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "I can help you calculate the sum of 91 and 13 using the take_sum function."
+                  }
+                ],
+                "source": "generate",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                    "function": "take_sum",
+                    "arguments": {
+                      "x": 91,
+                      "y": 13
+                    }
+                  }
+                ],
+                "model": "claude-3-5-sonnet-latest"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/2",
+              "value": {
+                "id": "fYr4XbrWjBVRbiPBxi7BUH",
+                "content": "104",
+                "role": "tool",
+                "tool_call_id": "toolu_017hineEqhRhWEDQFPvftdUU",
+                "function": "take_sum"
+              }
+            },
+            {
+              "op": "add",
+              "path": "/messages/3",
+              "value": {
+                "id": "GBKEoQDzkLwQ5TRnSts5n2",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "The sum of 91 and 13 is 104."
+                  }
+                ],
+                "source": "generate",
+                "role": "assistant",
+                "model": "claude-3-5-sonnet-latest"
+              }
+            }
+          ]
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.423415-05:00",
+          "working_start": 3.6420027920103166,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.425039-05:00",
+          "working_start": 3.643625750002684,
+          "event": "step",
+          "action": "begin",
+          "type": "scorer",
+          "name": "match"
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.427227-05:00",
+          "working_start": 3.645813332987018,
+          "event": "score",
+          "score": {
+            "value": "C",
+            "answer": "104",
+            "explanation": "The sum of 91 and 13 is 104."
+          },
+          "target": "104",
+          "intermediate": false
+        },
+        {
+          "timestamp": "2025-04-07T11:00:34.430173-05:00",
+          "working_start": 3.6487600420077797,
+          "event": "step",
+          "action": "end",
+          "type": "scorer",
+          "name": "match"
+        }
+      ],
+      "model_usage": {
+        "anthropic/claude-3-5-sonnet-latest": {
+          "input_tokens": 937,
+          "output_tokens": 111,
+          "total_tokens": 1048,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0
+        }
+      },
+      "total_time": 3.735,
+      "working_time": 3.661,
+      "uuid": "f73fLKshGTNHBtCiGKgXdq",
+      "attachments": {}
+    }
+  ],
+  "reductions": [
+    {
+      "scorer": "match",
+      "samples": [
+        {
+          "value": 1.0,
+          "answer": "102",
+          "explanation": "71 + 31 = 102",
+          "sample_id": 1
+        },
+        {
+          "value": 1.0,
+          "answer": "104",
+          "explanation": "The sum of 91 and 13 is 104.",
+          "sample_id": 2
+        }
+      ]
+    }
+  ]
+}

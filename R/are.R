@@ -13,7 +13,7 @@
 #' 
 #' @format A tibble with `r nrow(are)` rows and `r ncol(are)` columns:
 #' \describe{
-#'   \item{title}{Character. Unique identifier/title for the code problem.}
+#'   \item{id}{Character. Unique identifier/title for the code problem.}
 #'   \item{input}{Character. The question to be answered.}
 #'   \item{target}{Character. The solution, often with a description of notable
 #'   features of a correct solution.}

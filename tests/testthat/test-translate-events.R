@@ -1,7 +1,6 @@
 test_that("translate_turns works", {
-  chat <- example_ellmer_solver()
   example_sample <- example_task()$samples[1, , drop = FALSE]
-  chat_translated <- translate_to_events(chat, example_sample)
+  chat_translated <- translate_to_events(example_sample)
 
   inspect_log <- example_inspect_log()
   inspect_log_first_events <- inspect_log$samples[[1]]$events
@@ -11,10 +10,8 @@ test_that("translate_turns works", {
     names(chat_translated[[1]])
   )
 
-  # currently the translated log doesn't contain some elements of the real
-  # log--subset the correct one out for now
   expect_contains(
-    names(inspect_log_first_events[[3]]),
+    names(inspect_log_first_events[[2]]),
     names(chat_translated[[2]])
   )
 })

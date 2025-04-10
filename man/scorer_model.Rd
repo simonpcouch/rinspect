@@ -34,16 +34,16 @@ judge model's response.}
 \item{partial_credit}{Whether to allow partial credit.}
 
 \item{scorer_chat}{An ellmer chat used to grade the model output, e.g.
-\code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.}
+\code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}.}
 }
 \value{
 A function that will grade model responses according to the given instructions.
-The returned function takes a solved \link{Task} and outputs a
-2-element list, where the first element \code{scores} is a vector of scores with
-length \code{nrow(task)} and the second is list of ellmer chats that led to the
-scores, also with length \code{nrow(task)}.
-The function that \code{model_graded_qa()}'s outputs can be passed directly to
-\verb{$eval()}.
+See \link{Task}'s \code{scorer} argument for a description of the returned function.
+The functions that \code{model_graded_qa()} and \code{model_graded_fact()} output
+can be passed directly to \verb{$eval()}.
+
+See the documentation for the \code{scorer} argument in \link{Task} for more
+information on the return type.
 }
 \description{
 Model-based scoring makes use of a model to score output from a solver.
@@ -69,7 +69,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(solver_chat = chat_claude()), 
+    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_qa()
   )
   
@@ -91,7 +91,7 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(solver_chat = chat_claude()), 
+    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
     scorer = model_graded_fact()
   )
   

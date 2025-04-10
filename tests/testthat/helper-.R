@@ -7,8 +7,8 @@
 example_ellmer_solver <- function() {
   load(
     system.file(
-      "sandbox/solver.rda",
-      package = "rinspect"
+      "test/solver.rda",
+      package = "vitals"
     )
   )
 
@@ -19,18 +19,19 @@ example_ellmer_solver <- function() {
 example_inspect_log <- function() {
   eval_log_read(
     system.file(
-      "logs/2025-02-08T15-51-00-06-00_simple-arithmetic_o3cKtmsvqQtmXGZhvfDrKB.json",
-      package = "rinspect"
+      "test/inspect/logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
+      package = "vitals"
     )
   )
 }
 
 example_task <- function(solved = TRUE, scored = TRUE) {
-  # loads a cached `tsk` with example output
+  # loads a cached `tsk` with example output.
+  # regenerate with `inst/regenerate-example-objects.R`
   load(
     system.file(
-      "sandbox/example-task.rda",
-      package = "rinspect"
+      "test/example-task.rda",
+      package = "vitals"
     )
   )
 
@@ -51,6 +52,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res$samples$result <- tsk$samples$result
   res$samples$solver_chat <- tsk$samples$solver_chat
+  res$.__enclos_env__$private$solved <- TRUE
 
   if (!scored) {
     return(res)
@@ -58,6 +60,7 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res$samples$score <- tsk$samples$score
   res$samples$scorer_chat <- tsk$samples$scorer_chat
+  res$.__enclos_env__$private$scored <- TRUE
 
   res
 }
