@@ -2,8 +2,8 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  rinspect: rinspect.html
-last_built: 2025-04-08T20:11Z
+  vitals: vitals.html
+last_built: 2025-04-10T20:59Z
 urls:
-  reference: https://simonpcouch.github.io/rinspect/reference
-  article: https://simonpcouch.github.io/rinspect/articles
+  reference: https://simonpcouch.github.io/vitals/reference
+  article: https://simonpcouch.github.io/vitals/articles
