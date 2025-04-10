@@ -93,8 +93,8 @@ Task <- R6::R6Class("Task",
   lock_objects = FALSE,
   public = list(
     #' @field dir The directory where evaluation logs will be written to. Defaults
-    #' to `inspect_log_dir()`. 
-    dir = inspect_log_dir(),
+    #' to `vitals_log_dir()`. 
+    dir = vitals_log_dir(),
 
     #' @field samples A tibble representing the evaluation. Based on the `dataset`,
     #' `epochs` may duplicate rows, and the solver and scorer will append 
@@ -123,7 +123,7 @@ Task <- R6::R6Class("Task",
       metric = NULL,
       epochs = NULL,
       name = deparse(substitute(dataset)),
-      dir = inspect_log_dir()
+      dir = vitals_log_dir()
     ) {
       force(name)
 
@@ -266,7 +266,7 @@ Task <- R6::R6Class("Task",
     #' @param dir The directory to write the log to.
     #'
     #' @return The path to the logged file, invisibly.
-    log = function(dir = inspect_log_dir()) {
+    log = function(dir = vitals_log_dir()) {
       samples <- self$samples
 
       eval_log <- eval_log(
@@ -330,7 +330,7 @@ Task <- R6::R6Class("Task",
         return(invisible(self))
       }
 
-      inspect_view(self$dir)
+      vitals_view(self$dir)
       invisible(self)
     },
     

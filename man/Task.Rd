@@ -52,7 +52,7 @@ scoring.
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
-to \code{inspect_log_dir()}.}
+to \code{vitals_log_dir()}.}
 
 \item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
 \code{epochs} may duplicate rows, and the solver and scorer will append
@@ -92,7 +92,7 @@ calling this method and then \verb{$eval()} on the resulting object.
   metric = NULL,
   epochs = NULL,
   name = deparse(substitute(dataset)),
-  dir = inspect_log_dir()
+  dir = vitals_log_dir()
 )}\if{html}{\out{</div>}}
 }
 
@@ -250,7 +250,7 @@ Log the task to a directory.
 Note that, if an \code{INSPECT_LOG_DIR} envvar is set, this will happen
 automatically in \verb{$eval()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = inspect_log_dir())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Task$log(dir = vitals_log_dir())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

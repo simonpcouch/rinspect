@@ -15,7 +15,7 @@
 #' additional fields.
 #' 
 #' @export
-inspect_bind <- function(...) {
+vitals_bind <- function(...) {
   x <- dots_list(..., .named = TRUE)
   lapply(x, check_inherits, cls = "Task", call = caller_env(0))
   

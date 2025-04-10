@@ -163,7 +163,7 @@ For a cursory analysis, we can start off by visualizing correct vs. partially co
 
 ```{r plot-1}
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
-are_task_data <- inspect_bind(are_task)
+are_task_data <- vitals_bind(are_task)
 
 are_task_data
 
@@ -200,7 +200,7 @@ Using this data, we can quickly juxtapose those evaluation results:
 
 ```{r}
 are_task_eval <-
-  inspect_bind(are_task, are_task_openai) %>%
+  vitals_bind(are_task, are_task_openai) %>%
   mutate(
     task = if_else(task == "are_task", "Claude", "GPT-4o")
   ) %>%
@@ -245,7 +245,7 @@ This vignette demonstrated the simplest possible evaluation based on the `are` d
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`
 dest_dir <- here::here("pkgdown/assets/example-logs/vitals")
-inspect_bundle(
+vitals_bundle(
   log_dir = here::here("vignettes/data/logs"), 
   output_dir = dest_dir, 
   overwrite = TRUE

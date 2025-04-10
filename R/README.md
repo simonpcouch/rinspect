@@ -11,14 +11,14 @@ Functionality to translate from `Task` objects to Inspect-compatible .json logs 
 
 ## Utilities
 
-Exported functions that don't operate directly on a single Task and instead take in e.g. a directory path or a list of Tasks are prefixed with `inspect_*()` and are defined in `*.R`, e.g. the definition for `inspect_bundle()` lives in `bundle.R`.
+Exported functions that don't operate directly on a single Task and instead take in e.g. a directory path or a list of Tasks are prefixed with `inspect_*()` and are defined in `*.R`, e.g. the definition for `vitals_bundle()` lives in `bundle.R`.
 
 ## Relationship to Inspect
 
 vitals doesn't integrate directly with the Inspect AI through any sort of reticulate-ry in exported functionality. That said, it _does_ make use of Inspect or submodules from it in a couple places:
 
 * Package tests use Inspect's pydantic models to validate generate .json evaluation logs via `validate_log()`. Tests will be skipped if you don't have Inspect installed--see `.github/workflows/live-api.yaml` for an example minimal viable setup.
-* `inspect_view()` bundles the static Inspect log viewer via `inst/dist/`. This is a standalone .js application and doesn't require an install of Inspect.
+* `vitals_view()` bundles the static Inspect log viewer via `inst/dist/`. This is a standalone .js application and doesn't require an install of Inspect.
 
 ## Cached Objects
 

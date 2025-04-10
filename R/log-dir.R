@@ -9,29 +9,29 @@
 #' `INSPECT_LOG_DIR` to.
 #'
 #' @returns
-#' Both `inspect_log_dir()` and `inspect_log_dir_set()` return the current
-#' value of the environment variable `INSPECT_LOG_DIR`. `inspect_log_dir_set()`
+#' Both `vitals_log_dir()` and `vitals_log_dir_set()` return the current
+#' value of the environment variable `INSPECT_LOG_DIR`. `vitals_log_dir_set()`
 #' additionally sets it to a new value.
 #' 
 #' To set this variable in every new R session, you might consider adding it
 #' to your `.Rprofile`, perhaps with `usethis::edit_r_profile()`.
 #'
 #' @examples
-#' inspect_log_dir()
+#' vitals_log_dir()
 #'
 #' dir <- tempdir()
 #'
-#' inspect_log_dir_set(dir)
+#' vitals_log_dir_set(dir)
 #'
-#' inspect_log_dir()
+#' vitals_log_dir()
 #' @export
-inspect_log_dir <- function() {
+vitals_log_dir <- function() {
   Sys.getenv("INSPECT_LOG_DIR", unset = NA)
 }
 
-#' @rdname inspect_log_dir
+#' @rdname vitals_log_dir
 #' @export
-inspect_log_dir_set <- function(dir) {
+vitals_log_dir_set <- function(dir) {
   old <- Sys.getenv("INSPECT_LOG_DIR", unset = NA)
   Sys.setenv(INSPECT_LOG_DIR = dir)
   invisible(old)
@@ -65,7 +65,7 @@ eval_log_read <- function(x) {
 }
 
 # @rdname eval_log
-eval_log_write <- function(x = eval_log(), dir = inspect_log_dir()) {
+eval_log_write <- function(x = eval_log(), dir = vitals_log_dir()) {
   if (!dir.exists(dir)) {
     dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   }

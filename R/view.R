@@ -11,12 +11,12 @@
 #' implementation.
 #'
 #' @export
-inspect_view <- function(dir, host = "127.0.0.1", port = 7576) {
-  inspect_view_impl(dir = dir, host = host, port = port)
+vitals_view <- function(dir, host = "127.0.0.1", port = 7576) {
+  vitals_view_impl(dir = dir, host = host, port = port)
 }
 
-inspect_view_impl <- function(
-    dir = inspect_log_dir(),
+vitals_view_impl <- function(
+    dir = vitals_log_dir(),
     host = "127.0.0.1",
     port = 7576,
     call = caller_env()

@@ -18,11 +18,11 @@ reference:
 
 - title: "Store, view, deploy, and compare evaluation logs"
   contents:
-  - inspect_log_dir
-  - inspect_log_dir_set
-  - inspect_view
-  - inspect_bundle
-  - inspect_bind
+  - vitals_log_dir
+  - vitals_log_dir_set
+  - vitals_view
+  - vitals_bundle
+  - vitals_bind
   
 - title: "Example Evals"
   contents:
