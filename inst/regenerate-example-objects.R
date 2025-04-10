@@ -11,6 +11,9 @@ regenerate_example_objects <- function() {
   cli::cli_progress_step("Regenerating `are` on 1 epoch")
   regenerate_are_1e()
 
+  cli::cli_progress_step("Regenerating `are` with custom solvers")
+  regenerate_are_custom_solvers()
+
   cli::cli_progress_done()
 }
 
@@ -54,6 +57,21 @@ regenerate_are_1e <- function() {
 
   withr::local_envvar(VITALS_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/vitals.Rmd')
+}
+
+regenerate_example_objects()
+
+# An R Eval on 1 epoch, via the intro vignette ------------------------
+regenerate_are_custom_solvers <- function() {
+  json_files <- list.files(
+    "vignettes/articles/data/solvers",
+    pattern = "\\.json$",
+    full.names = TRUE
+  )
+  if (length(json_files) > 0) {file.remove(json_files)}
+
+  withr::local_envvar(VITALS_SHOULD_EVAL = "true")
+  rmarkdown::render('vignettes/articles/solvers.Rmd')
 }
 
 regenerate_example_objects()

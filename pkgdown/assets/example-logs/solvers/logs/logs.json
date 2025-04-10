@@ -1,0 +1,179 @@
+{
+  "2025-04-10T16-15-36-05-00_AnREval_1da30c33406baede90d819.json": {
+    "version": 2,
+    "status": "success",
+    "eval": {
+      "run_id": "5J8Mi92R0ACnSIniKcmKqM",
+      "created": "2025-04-10T16:15:36-05:00",
+      "task": "AnREval",
+      "task_id": "1da30c33406baede90d819",
+      "task_version": 0,
+      "task_file": "/Users/simoncouch/Documents/rrr/vitals/vignettes/articles/solvers.Rmd",
+      "task_attribs": {},
+      "task_args": {},
+      "dataset": {
+        "samples": 26,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+        "shuffled": false
+      },
+      "model": "claude-3-7-sonnet-latest",
+      "model_args": {},
+      "config": {},
+      "revision": {
+        "type": "git",
+        "origin": "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+        "commit": "9140d8a2"
+      },
+      "packages": {
+        "inspect_ai": "0.3.63"
+      },
+      "scorers": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "options": {},
+          "metrics": [
+            {
+              "name": "mean",
+              "options": {}
+            }
+          ],
+          "metadata": {}
+        }
+      ]
+    },
+    "plan": {
+      "name": "plan",
+      "steps": [
+        {
+          "solver": "btw_solver",
+          "params": {
+            "1": "self$samples$input",
+            "solver_chat": "sonnet_3_7$clone()"
+          }
+        }
+      ],
+      "config": {}
+    },
+    "results": {
+      "total_samples": 26,
+      "completed_samples": 26,
+      "scores": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "scorer": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "params": {},
+          "metrics": {
+            "accuracy": {
+              "name": "accuracy",
+              "value": 63.4615,
+              "params": {
+                "1": "numeric_scores"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stats": {
+      "started_at": "2025-04-10T10:57:34-05:00",
+      "completed_at": "2025-04-10T11:06:47-05:00",
+      "model_usage": {
+        "claude-3-7-sonnet-latest": {
+          "input_tokens": 100470,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 17323,
+          "total_tokens": 117793
+        }
+      }
+    }
+  },
+  "2025-04-10T16-15-47-05-00_AnREval_db267f5e7251238aac6d76.json": {
+    "version": 2,
+    "status": "success",
+    "eval": {
+      "run_id": "6NkXkubIKst5e2R7Q5pGwx",
+      "created": "2025-04-10T16:15:47-05:00",
+      "task": "AnREval",
+      "task_id": "db267f5e7251238aac6d76",
+      "task_version": 0,
+      "task_file": "/Users/simoncouch/Documents/rrr/vitals/vignettes/articles/solvers.Rmd",
+      "task_attribs": {},
+      "task_args": {},
+      "dataset": {
+        "samples": 26,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+        "shuffled": false
+      },
+      "model": "claude-3-7-sonnet-latest",
+      "model_args": {},
+      "config": {},
+      "revision": {
+        "type": "git",
+        "origin": "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+        "commit": "9140d8a2"
+      },
+      "packages": {
+        "inspect_ai": "0.3.63"
+      },
+      "scorers": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "options": {},
+          "metrics": [
+            {
+              "name": "mean",
+              "options": {}
+            }
+          ],
+          "metadata": {}
+        }
+      ]
+    },
+    "plan": {
+      "name": "plan",
+      "steps": [
+        {
+          "solver": "generate(solver_chat = sonnet_3_7$clone())",
+          "params": {
+            "1": "self$samples$input"
+          }
+        }
+      ],
+      "config": {}
+    },
+    "results": {
+      "total_samples": 26,
+      "completed_samples": 26,
+      "scores": [
+        {
+          "name": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "scorer": "model_graded_qa(partial_credit = TRUE, scorer_chat = sonnet_3_7$clone())",
+          "params": {},
+          "metrics": {
+            "accuracy": {
+              "name": "accuracy",
+              "value": 59.6154,
+              "params": {
+                "1": "numeric_scores"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "stats": {
+      "started_at": "2025-04-10T14:26:15-05:00",
+      "completed_at": "2025-04-10T14:31:27-05:00",
+      "model_usage": {
+        "claude-3-7-sonnet-latest": {
+          "input_tokens": 11493,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 10967,
+          "total_tokens": 22460
+        }
+      }
+    }
+  }
+}
