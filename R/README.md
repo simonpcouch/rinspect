@@ -11,7 +11,7 @@ Functionality to translate from `Task` objects to Inspect-compatible .json logs 
 
 ## Utilities
 
-Exported functions that don't operate directly on a single Task and instead take in e.g. a directory path or a list of Tasks are prefixed with `inspect_*()` and are defined in `*.R`, e.g. the definition for `vitals_bundle()` lives in `bundle.R`.
+Exported functions that don't operate directly on a single Task and instead take in e.g. a directory path or a list of Tasks are prefixed with `vitals_*()` and are defined in `*.R`, e.g. the definition for `vitals_bundle()` lives in `bundle.R`.
 
 ## Relationship to Inspect
 

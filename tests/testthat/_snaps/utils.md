@@ -22,3 +22,4 @@
       Warning:
       ! vitals could not find a log directory; evaluation log files will be written to a temporary directory.
       i Set a log directory with e.g. `vitals::vitals_log_dir_set("./logs")`, perhaps in '~/.Rprofile', to quiet this warning.
+

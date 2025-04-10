@@ -15,3 +15,4 @@
     Condition
       Error in `vitals_view()`:
       ! Log directory '/path/that/does/not/exist' not found.
+
