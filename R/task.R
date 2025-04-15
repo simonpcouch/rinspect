@@ -555,7 +555,7 @@ join_epochs <- function(samples, epochs) {
   dplyr::inner_join(
     samples,
     data.frame(
-      id = rep(seq_len(nrow(samples)), each = epochs),
+      id = rep(samples$id, each = epochs),
       epoch = rep(seq_len(epochs), times = nrow(samples))
     ),
     by = "id"
