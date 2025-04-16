@@ -13,9 +13,9 @@ A port of 'Inspect', a widely adopted 'Python' framework for large language mode
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/simonpcouch/vitals}
-  \item \url{https://simonpcouch.github.io/vitals/}
-  \item Report bugs at \url{https://github.com/simonpcouch/vitals/issues}
+  \item \url{https://github.com/tidyverse/vitals}
+  \item \url{https://tidyverse.github.io/vitals/}
+  \item Report bugs at \url{https://github.com/tidyverse/vitals/issues}
 }
 
 }

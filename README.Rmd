@@ -13,12 +13,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# vitals <a href="https://simonpcouch.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
+# vitals <a href="https://tidyverse.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/vitals)](https://CRAN.R-project.org/package=vitals)
-[![R-CMD-check](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 vitals is a framework for large language model evaluation in R. It's specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who want to measure the effectiveness of their LLM-based apps.
@@ -36,7 +36,7 @@ The package is an R port of the widely adopted Python framework [Inspect](https:
 You can install the developmental version of vitals using:
 
 ```r
-pak::pak("simonpcouch/vitals")
+pak::pak("tidyverse/vitals")
 ```
 
 ## Example

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# vitals <a href="https://simonpcouch.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
+# vitals <a href="https://tidyverse.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 
@@ -9,7 +9,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/vitals)](https://CRAN.R-project.org/package=vitals)
-[![R-CMD-check](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/vitals/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 vitals is a framework for large language model evaluation in R. It’s
@@ -36,7 +36,7 @@ evaluation logs to the same file format.
 You can install the developmental version of vitals using:
 
 ``` r
-pak::pak("simonpcouch/vitals")
+pak::pak("tidyverse/vitals")
 ```
 
 ## Example
