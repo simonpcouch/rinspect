@@ -32,7 +32,6 @@ Imports:
     withr,
     rstudioapi
 Suggests: 
-    btw,
     ggplot2,
     here,
     htmltools,
@@ -49,4 +48,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 LazyData: true
 VignetteBuilder: knitr
-Config/Needs/website: rmarkdown
+Config/Needs/website: rmarkdown, btw
