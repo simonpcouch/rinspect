@@ -20,6 +20,7 @@ test_that("model_graded_qa works", {
   )
   
   tsk$eval()
+  expect_valid_log(tsk$log())
 
   # returns scores and a complete scorer chat
   expect_s3_class(tsk$samples$score, "factor")
@@ -59,6 +60,7 @@ test_that("model_graded_fact works", {
   )
   
   tsk$eval()
+  expect_valid_log(tsk$log())
 
   # returns scores and a complete scorer chat
   expect_s3_class(tsk$samples$score, "factor")

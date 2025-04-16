@@ -33,11 +33,7 @@ test_that("vitals writes valid eval logs (basic, claude)", {
     scorer = model_graded_qa()
   )
   tsk$eval()
-
-  log_file <- list.files(tmp_dir, full.names = TRUE)
-  expect_gte(length(log_file), 1)
-
-  expect_valid_log(log_file[1])
+  expect_valid_log(tsk$log())
 })
 
 test_that("vitals writes valid eval logs (basic, openai)", {
@@ -58,11 +54,7 @@ test_that("vitals writes valid eval logs (basic, openai)", {
     scorer = model_graded_qa()
   )
   tsk$eval()
-
-  log_file <- list.files(tmp_dir, full.names = TRUE)
-  expect_gte(length(log_file), 1)
-
-  expect_valid_log(log_file[1])
+  expect_valid_log(tsk$log())
 })
 
 test_that("vitals writes valid eval logs (basic, gemini)", {
@@ -83,11 +75,7 @@ test_that("vitals writes valid eval logs (basic, gemini)", {
     scorer = model_graded_qa()
   )
   tsk$eval()
-
-  log_file <- list.files(tmp_dir, full.names = TRUE)
-  expect_gte(length(log_file), 1)
-
-  expect_valid_log(log_file[1])
+  expect_valid_log(tsk$log())
 })
 
 
@@ -113,11 +101,7 @@ test_that("vitals writes valid eval logs (solver tool calls, claude)", {
     scorer = function(samples) {list(score = factor("C", levels = c("I", "C"), ordered = TRUE))}
   )
   tsk$eval()
-
-  log_file <- list.files(tmp_dir, full.names = TRUE)
-  expect_gte(length(log_file), 1)
-
-  expect_valid_log(log_file[1])
+  expect_valid_log(tsk$log())
 })
 
 test_that("vitals writes valid eval logs (solver errors on tool call, claude)", {

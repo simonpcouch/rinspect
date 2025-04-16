@@ -25,6 +25,7 @@ test_that("Task R6 class works", {
   expect_named(tsk$samples, c("input", "target", "id"))
   
   tsk$eval()
+  expect_valid_log(tsk$log())
   expect_snapshot(tsk)
   
   expect_named(
@@ -57,6 +58,7 @@ test_that("Task with epochs works", {
   )
   
   tsk$eval(epochs = 2)
+  expect_valid_log(tsk$log())
   
   expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
   expect_named(
@@ -88,6 +90,7 @@ test_that("Task respects `$new(epochs)`", {
   )
   
   tsk$eval()
+  expect_valid_log(tsk$log())
   
   expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
 })
@@ -114,6 +117,7 @@ test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
   )
   
   tsk$eval(epochs = 1)
+  expect_valid_log(tsk$log())
   
   expect_equal(nrow(tsk$samples), nrow(simple_addition))
 })
@@ -438,7 +442,6 @@ test_that("task applies non-default metrics", {
   expect_null(tsk$metrics)
   tsk$measure()
   expect_equal(tsk$metrics, c("prop_correct" = 1))
-  expect_valid_log(tsk$log())
 })
 
 test_that("task errors informatively with bad metrics", {
@@ -569,6 +572,7 @@ test_that("Task completeness is tracked and preserved", {
   original_scores <- tsk$samples$score
   
   tsk_clone$eval()
+  # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_clone$samples), nrow(simple_addition))
   
   expect_equal(tsk$samples$result, original_results)
@@ -582,10 +586,12 @@ test_that("Task completeness is tracked and preserved", {
   )
   
   tsk_epochs$eval(epochs = 2)
+  # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 2)
   expect_true("epoch" %in% names(tsk_epochs$samples))
   
   tsk_epochs$eval(epochs = 3)
+  # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 3)
   expect_true("epoch" %in% names(tsk_epochs$samples))
 })
