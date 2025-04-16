@@ -254,7 +254,7 @@ test_that("set_solver works", {
       solver_metadata = c("boop!", "bop!")
     )
   }
-  expect_snapshot(.res <- tsk$set_solver(new_solver))
+  tsk$set_solver(new_solver)
   expect_false(
     any(c("solver_chat", "solver_metadata") %in% names(tsk$samples))
   )
@@ -302,7 +302,7 @@ test_that("set_solver works", {
       solver_metadata = c("boop!", "bop!")
     )
   }
-  expect_snapshot(.res <- tsk$set_solver(new_solver))
+  tsk$set_solver(new_solver)
   expect_false(
     any(c("solver_chat", "solver_metadata") %in% names(tsk$samples))
   )
@@ -357,7 +357,7 @@ test_that("set_scorer works", {
       scorer_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
     )
   }
-  expect_snapshot(.res <- tsk$set_scorer(scorer_chat))
+  tsk$set_scorer(scorer_chat)
   expect_true(all(is.na(tsk$samples$score)))
   tsk$score()
   expect_true("scorer_chat" %in% names(tsk$samples))
@@ -370,7 +370,7 @@ test_that("set_scorer works", {
       scorer_metadata = c("beep", "bop")
     )
   }
-  expect_snapshot(.res <- tsk$set_scorer(scorer_metadata))
+  tsk$set_scorer(scorer_metadata)
   expect_true(all(is.na(tsk$samples$score)))
   expect_false(any(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
   tsk$score()
@@ -552,13 +552,13 @@ test_that("Task completeness is tracked and preserved", {
   tsk$score()
   expect_true(tsk$.__enclos_env__$private$scored)
   
-  expect_snapshot(.res <- tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest"))))
+  tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest")))
   expect_false(tsk$.__enclos_env__$private$solved)
   
   tsk$solve()
   expect_true(tsk$.__enclos_env__$private$solved)
   
-  expect_snapshot(.res <- tsk$set_scorer(mock_scorer))
+  tsk$set_scorer(mock_scorer)
   expect_false(tsk$.__enclos_env__$private$scored)
   
   tsk$solve()

@@ -360,10 +360,7 @@ Task <- R6::R6Class("Task",
       solver_name <- deparse(substitute(solver))
       private$solver <- logged(solver, fn_name = solver_name)
       
-      if (private$solved) {
-        cli::cli_warn("Clearing results from previous solver.")
-        private$reset_solutions()
-      }
+      private$reset_solutions()
       
       invisible(self)
     },
@@ -375,11 +372,7 @@ Task <- R6::R6Class("Task",
     set_scorer = function(scorer) {
       scorer_name <- deparse(substitute(scorer))
       private$scorer <- logged(scorer, fn_name = scorer_name)
-      
-      if (private$scored) {
-        cli::cli_warn("Clearing scores from previous scorer.")
-        private$reset_scores()
-      }
+      private$reset_scores()
       
       invisible(self)
     },
@@ -397,7 +390,7 @@ Task <- R6::R6Class("Task",
     
       check_metrics(metrics)
       private$metric_fns <- metrics
-      self$metrics <- NULL
+      private$reset_metrics()
     
       invisible(self)
     }
@@ -437,6 +430,10 @@ Task <- R6::R6Class("Task",
         self$samples$epoch <- NULL
       }
 
+      if (private$scored) {
+        private$reset_scores()
+      }
+
       invisible(NULL)
     },
     
@@ -445,7 +442,16 @@ Task <- R6::R6Class("Task",
       self$samples$scorer_chat <- NULL
       self$samples$scorer_metadata <- NULL
       private$scored <- FALSE
+
+      if (!is.null(self$metrics)) {
+        private$reset_metrics()
+      }
+
       invisible(NULL)
+    },
+
+    reset_metrics = function() {
+      self$metrics <- NULL
     },
     
     reset_for_new_eval = function() {

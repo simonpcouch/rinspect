@@ -48,38 +48,6 @@
       Error in `initialize()`:
       ! Duplicated values found in the id column. Each ID must be unique.
 
-# set_solver works
-
-    Code
-      .res <- tsk$set_solver(new_solver)
-    Condition
-      Warning:
-      Clearing results from previous solver.
-
----
-
-    Code
-      .res <- tsk$set_solver(new_solver)
-    Condition
-      Warning:
-      Clearing results from previous solver.
-
-# set_scorer works
-
-    Code
-      .res <- tsk$set_scorer(scorer_chat)
-    Condition
-      Warning:
-      Clearing scores from previous scorer.
-
----
-
-    Code
-      .res <- tsk$set_scorer(scorer_metadata)
-    Condition
-      Warning:
-      Clearing scores from previous scorer.
-
 # task errors informatively with bad metrics
 
     Code
@@ -110,22 +78,6 @@
       Error in `measure()`:
       ! Each metric function must return a single numeric value
       `bad_metric()` returned a string
-
-# Task completeness is tracked and preserved
-
-    Code
-      .res <- tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest")))
-    Condition
-      Warning:
-      Clearing results from previous solver.
-
----
-
-    Code
-      .res <- tsk$set_scorer(mock_scorer)
-    Condition
-      Warning:
-      Clearing scores from previous scorer.
 
 # Task errors informatively with bad solver output
 
