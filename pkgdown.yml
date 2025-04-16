@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/solvers: solvers.html
   vitals: vitals.html
-last_built: 2025-04-16T15:40Z
+last_built: 2025-04-16T18:54Z
 urls:
   reference: https://simonpcouch.github.io/vitals/reference
   article: https://simonpcouch.github.io/vitals/articles
