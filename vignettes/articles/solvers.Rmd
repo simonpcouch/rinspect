@@ -147,15 +147,9 @@ The implementation of our custom solver looks almost exactly like `generate()`s 
 
 ```{r btw-solver}
 btw_solver <- function(inputs, ..., solver_chat) {
-  btw_register_tools(solver_chat, tools = "docs")
-  # TODO: revert this to use parallel solving (#84)
-  res <- list()
-  for (input in inputs) {
-    temp_chat <- solver_chat$clone()
-    temp_chat$chat(input, echo = "none")
-    res <- c(res, temp_chat)
-  }
-  
+  ch <- solver_chat$clone()
+  btw_register_tools(ch, tools = "docs")
+  res <- ch$chat_parallel(inputs)
   list(
     result = purrr::map_chr(res, function(c) c$last_turn()@text), 
     solver_chat = res
