@@ -1,20 +1,3 @@
-skip_on_cran()
-
-skip_if_not(
-  system2("python", "--version", stdout = FALSE, stderr = FALSE) == 0,
-  message = "Python is not available"
-)
-  
-skip_if_not(
-  system2("python", "-c 'import inspect_ai'", stdout = FALSE, stderr = FALSE) == 0,
-  message = "inspect_ai Python module is not available"
-)
-  
-skip_if_not(
-  system2("python", "-c 'import pydantic'", stdout = FALSE, stderr = FALSE) == 0,
-  message = "pydantic Python module is not available"
-)
-
 test_that("validate_log fails when log file is nonsense", {
   # use a file name that "looks like" it could be a real Inspect log so that
   # Inspect tries to read it
@@ -160,7 +143,10 @@ test_that("vitals writes valid eval logs (solver errors on tool call, claude)", 
     solver = generate(ch),
     scorer = function(samples) {list(score = factor("C", levels = c("I", "C"), ordered = TRUE))}
   )
-  tsk$eval()
+
+  # a tool call will fail here and raise a warning; this is intentional.
+  # since raised from ellmer, we don't expect anything specific about it.
+  suppressWarnings(tsk$eval())
 
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)

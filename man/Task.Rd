@@ -17,8 +17,9 @@ comparisons (like \code{\link[=detect_match]{detect_match()}}), model grading (l
 }
 
 \strong{The usual flow of LLM evaluation with Tasks calls \verb{$new()} and then \verb{$eval()}.}
-\verb{$eval()} just calls \verb{$solve()}, \verb{$score()}, \verb{$log()}, and \verb{$view()} in order.
-The remaining methods are generally only recommended for expert use.
+\verb{$eval()} just calls \verb{$solve()}, \verb{$score()}, \verb{$measure()}, \verb{$log()},
+and \verb{$view()} in order. The remaining methods are generally only
+recommended for expert use.
 }
 \examples{
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -58,9 +59,9 @@ to \code{vitals_log_dir()}.}
 \code{epochs} may duplicate rows, and the solver and scorer will append
 columns to this data.}
 
-\item{\code{metric}}{A named list of metric functions to apply to scoring results.}
-
-\item{\code{metrics}}{The metrics calculated in \code{metric()}.}
+\item{\code{metrics}}{A named vector of metric values resulting from \verb{$measure()}
+(called inside of \verb{$eval()}). Will be \code{NULL} if metrics have yet to
+be applied.}
 }
 \if{html}{\out{</div>}}
 }
@@ -71,10 +72,12 @@ columns to this data.}
 \item \href{#method-Task-eval}{\code{Task$eval()}}
 \item \href{#method-Task-solve}{\code{Task$solve()}}
 \item \href{#method-Task-score}{\code{Task$score()}}
+\item \href{#method-Task-measure}{\code{Task$measure()}}
 \item \href{#method-Task-log}{\code{Task$log()}}
 \item \href{#method-Task-view}{\code{Task$view()}}
 \item \href{#method-Task-set_solver}{\code{Task$set_solver()}}
 \item \href{#method-Task-set_scorer}{\code{Task$set_scorer()}}
+\item \href{#method-Task-set_metrics}{\code{Task$set_metrics()}}
 \item \href{#method-Task-clone}{\code{Task$clone()}}
 }
 }
@@ -89,7 +92,7 @@ calling this method and then \verb{$eval()} on the resulting object.
   dataset,
   solver,
   scorer,
-  metric = NULL,
+  metrics = NULL,
   epochs = NULL,
   name = deparse(substitute(dataset)),
   dir = vitals_log_dir()
@@ -147,7 +150,7 @@ Scorers will probably make use of \code{samples$input}, \code{samples$target}, a
 \code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
 for examples.}
 
-\item{\code{metric}}{A metric summarizing the results from the scorer.}
+\item{\code{metrics}}{A metric summarizing the results from the scorer.}
 
 \item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
 multiple times to better quantify variation. Optional, defaults to \code{1L}.
@@ -240,6 +243,16 @@ its results.
 \subsection{Returns}{
 The Task object (invisibly)
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-measure"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-measure}{}}}
+\subsection{Method \code{measure()}}{
+Applies metrics to a scored Task.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$measure()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-log"></a>}}
@@ -357,6 +370,27 @@ for examples.}
 }
 \subsection{Returns}{
 The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-set_metrics"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-set_metrics}{}}}
+\subsection{Method \code{set_metrics()}}{
+Set the metrics that will be applied in \verb{$measure()} (and thus \verb{$eval()}).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$set_metrics(metrics)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{metrics}}{A named list of functions that take in a vector of scores
+(as in \code{task$samples$score}) and output a single numeric value.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The Task (invisibly)
 }
 }
 \if{html}{\out{<hr>}}

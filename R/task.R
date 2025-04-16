@@ -13,8 +13,9 @@
 #' [model_graded_qa()]), or other custom schemes.
 #'
 #' **The usual flow of LLM evaluation with Tasks calls `$new()` and then `$eval()`.**
-#' `$eval()` just calls `$solve()`, `$score()`, `$log()`, and `$view()` in order.
-#' The remaining methods are generally only recommended for expert use.
+#' `$eval()` just calls `$solve()`, `$score()`, `$measure()`, `$log()`, 
+#' and `$view()` in order. The remaining methods are generally only 
+#' recommended for expert use.
 #' 
 #' @param solver A function that takes a vector of inputs from the
 #' dataset's `input` column as its first argument and determines values 
@@ -57,6 +58,9 @@
 #' Scorers will probably make use of `samples$input`, `samples$target`, and 
 #' `samples$result` specifically. See [model-based scoring][scorer_model] 
 #' for examples.
+#' 
+#' @param metrics A named list of functions that take in a vector of scores
+#' (as in `task$samples$score`) and output a single numeric value.
 #' 
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to better quantify variation. Optional, defaults to `1L`. 
@@ -101,10 +105,9 @@ Task <- R6::R6Class("Task",
     #' columns to this data.
     samples = NULL,
 
-    #' @field metric A named list of metric functions to apply to scoring results.
-    metric = NULL,
-
-    #' @field metrics The metrics calculated in `metric()`. 
+    #' @field metrics A named vector of metric values resulting from `$measure()`
+    #' (called inside of `$eval()`). Will be `NULL` if metrics have yet to
+    #' be applied.
     metrics = NULL,
 
     #' @description
@@ -112,7 +115,7 @@ Task <- R6::R6Class("Task",
     #' calling this method and then `$eval()` on the resulting object.
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
-    #' @param metric A metric summarizing the results from the scorer.
+    #' @param metrics A metric summarizing the results from the scorer.
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
@@ -120,7 +123,7 @@ Task <- R6::R6Class("Task",
       dataset,
       solver,
       scorer,
-      metric = NULL,
+      metrics = NULL,
       epochs = NULL,
       name = deparse(substitute(dataset)),
       dir = vitals_log_dir()
@@ -129,18 +132,24 @@ Task <- R6::R6Class("Task",
 
       solver_name <- deparse(substitute(solver))
       scorer_name <- deparse(substitute(scorer))
+      metrics_name <- deparse(substitute(metrics))
 
       check_dataset(dataset)
       check_log_dir(dir)
       check_function(solver)
       # TODO: for non-built in scorers, what to do?
-      check_function(metric, allow_null = TRUE)
+      check_metrics(metrics)
       check_number_whole(epochs, min = 1, allow_null = TRUE)
       
       private$dataset_name <- gsub("[^[:alnum:]]", "", name)
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
+
+      if (!is.null(metrics)) {
+        private$metric_fns <- metrics
+      }
+
       private$task_id <- substr(hash(c(name, solver_name, scorer_name)), 1, 22)
       private$epochs <- epochs
 
@@ -173,6 +182,9 @@ Task <- R6::R6Class("Task",
       cli::cli_progress_step("Scoring")
       self$score(...)
       
+      cli::cli_progress_step("Calculating metrics")
+      self$measure()
+
       self$log(self$dir)
       private$stash_last_task()
 
@@ -236,24 +248,30 @@ Task <- R6::R6Class("Task",
       private$scores <- private$scorer(self$samples, ...)
       private$check_scorer_outputs()
       private$cbind_scores()
-
-      if (is.factor(self$samples$score) && 
-         (any(c("C", "I") %in% levels(self$samples$score)))) {
-        # map factor to numeric for a simple accuracy (#51, #53)
-        numeric_scores <- as.numeric(self$samples$score) - 1
-        numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
-        self$metrics <- 
-          list2(
-            accuracy = logged(accuracy)(numeric_scores)
-          )
-      } else {
-        self$metrics <- 
-          list2(
-            accuracy = logged(accuracy)(self$samples$score)
-          )
-      }
       
       private$scored <- TRUE
+      invisible(self)
+    },
+
+    #' @description
+    #' Applies metrics to a scored Task.
+    #' 
+    measure = function() {
+      if (!private$scored) {
+         cli::cli_abort(
+          "Task has not been scored yet. Run task$score() first."
+         )
+      }
+
+      if (!is.null(private$metric_fns)) {
+        private$apply_metrics()
+      } else {
+        private$apply_naive_accuracy()
+      }
+
+      private$check_metric_output()
+      self$metrics <- purrr::map_dbl(private$metric_results, purrr::pluck, "value")
+
       invisible(self)
     },
 
@@ -293,7 +311,7 @@ Task <- R6::R6Class("Task",
           completed_samples = nrow(samples),
           scores = results_scores(
             name = private$scores$name,
-            metrics = map(self$metrics, rename_metric_fields)
+            metrics = map(private$metric_results, rename_metric_fields)
           )
         ),
         stats = translate_to_stats(
@@ -313,9 +331,9 @@ Task <- R6::R6Class("Task",
       }
 
       self$dir <- dir
-      eval_log_write(eval_log, dir = dir)
+      log_path <- eval_log_write(eval_log, dir = dir)
 
-      invisible(self$dir)
+      invisible(log_path)
     },
 
     #' @description
@@ -363,6 +381,24 @@ Task <- R6::R6Class("Task",
         private$reset_scores()
       }
       
+      invisible(self)
+    },
+    
+    #' @description
+    #' Set the metrics that will be applied in `$measure()` (and thus `$eval()`).
+    #' 
+    #' @return The Task (invisibly)
+    set_metrics = function(metrics) {
+      metrics_name <- deparse(substitute(metrics))
+    
+      if (is.null(metrics)) {
+        private$metric_fns <- NULL
+      }
+    
+      check_metrics(metrics)
+      private$metric_fns <- metrics
+      self$metrics <- NULL
+    
       invisible(self)
     }
   ),
@@ -459,6 +495,19 @@ Task <- R6::R6Class("Task",
       }
     },
 
+    check_metric_output = function() {
+      for (metric_result in private$metric_results) {
+        if (!is.numeric(metric_result$value)) {
+          cli::cli_abort(
+            c("Each metric function must return a single numeric value",
+              "{.fun {metric_result$name}} returned 
+               {.obj_type_friendly {metric_result$value}}"),
+            call = call2("measure")
+          )
+        }
+      }
+    },
+
     cbind_solutions = function() {
       self$samples$result <- private$solutions$value$result
       self$samples$solver_chat <- private$solutions$value$solver_chat
@@ -483,11 +532,50 @@ Task <- R6::R6Class("Task",
       self$samples$scorer <- private$scores$name
     },
 
+    # For a named list of metric functions, apply each as `logged(fn_i)(scores)`
+    apply_metrics = function() {
+      private$metric_results <- 
+        purrr::map2(
+          private$metric_fns,
+          names(private$metric_fns),
+          function(metric, metric_name) {
+            # TODO: handle errors here? or should `logged()` do that?
+            logged(metric, metric_name)(self$samples$score)
+          }
+        )
+    },
+
+    # A default metric, mirroring the default accuracy in Inspect
+    apply_naive_accuracy = function() {
+      if (is.factor(self$samples$score) && 
+        (any(c("C", "I") %in% levels(self$samples$score)))) {
+       # map factor to numeric for a simple accuracy (#51, #53)
+       numeric_scores <- as.numeric(self$samples$score) - 1
+       numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
+       private$metric_results <- 
+         list2(
+           accuracy = logged(accuracy)(numeric_scores)
+         )
+     } else if (is.numeric(self$samples$score)) {
+       private$metric_results <- 
+         list2(
+           accuracy = logged(accuracy)(self$samples$score)
+         )
+     }
+    },
+
     # The output of `logged(solver)(...)`
     solutions = NULL,
 
     # The output of `logged(scorer)(...)`.
     scores = NULL,
+
+    # Argument supplied to `metrics` in `Task$new()` or `$set_metrics`.
+    # Notably, not `logged()` directly--that function is applied in `apply_metrics()`
+    metric_fns = NULL,
+
+    # The output of `metrics(...)` (from directly above).
+    metric_results = NULL,
 
     task_id = NULL,
     run_id = NULL,
@@ -527,6 +615,26 @@ check_dataset <- function(dataset, call = caller_env()) {
   }
 
   invisible(dataset)
+}
+
+# Must be a named list of functions.
+check_metrics <- function(metrics, call = caller_env()) {
+  if (is.null(metrics)) return()
+  
+  if (!is.list(metrics) ||
+      (is.list(metrics) && !is_named(metrics))) {
+    cli::cli_abort(
+      "{.arg metrics} must be a named list of functions or NULL, 
+       not {.obj_type_friendly {metrics}}",
+       call = call
+    )
+  }
+
+  for (metric in metrics) {
+    check_function(metric, call = call)
+  }
+
+  invisible(metrics)
 }
 
 set_id_column <- function(dataset, call = caller_env()) {
