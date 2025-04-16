@@ -70,12 +70,14 @@ eval_log_write <- function(x = eval_log(), dir = vitals_log_dir()) {
     dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   }
 
+  path <- file.path(dir, eval_log_filename(x))
   jsonlite::write_json(
     x = structure(x, class = "list"),
-    path = file.path(dir, eval_log_filename(x)),
+    path = path,
     auto_unbox = TRUE,
     pretty = TRUE
   )
+  path
 }
 
 # eval log files are quite relational, where the `samples` and `logging` fields

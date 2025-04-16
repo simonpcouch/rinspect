@@ -214,6 +214,7 @@ test_that("Task errors informatively with duplicate ids", {
   )
 })
 
+# solver ------------------------------------------------------------------
 test_that("set_solver works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
@@ -310,6 +311,7 @@ test_that("set_solver works", {
   expect_true("solver_metadata" %in% names(tsk$samples))
 })
 
+# scorer ------------------------------------------------------------------
 test_that("set_scorer works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
@@ -375,6 +377,122 @@ test_that("set_scorer works", {
   expect_true(all(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
 })
 
+# metrics ------------------------------------------------------------------
+test_that("default metrics are applied effectively", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = function(...) {list(
+      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    }
+  )
+
+  tsk$eval()
+
+  expect_equal(tsk$metrics, c("accuracy" = 100))
+  validate_log(tsk$log())
+})
+
+test_that("task applies non-default metrics", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # via Task$new()...
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = function(...) {list(
+      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    },
+    metrics = list(pct_correct = function(scores) {mean(scores == "C") * 100})
+  )
+
+  tsk$eval()
+
+  expect_equal(tsk$metrics, c("pct_correct" = 100))
+  validate_log(tsk$log())
+
+  # via set_metrics...
+  tsk$set_metrics(list(prop_correct = function(scores) {mean(scores == "C")}))
+  expect_null(tsk$metrics)
+  tsk$measure()
+  expect_equal(tsk$metrics, c("prop_correct" = 1))
+  validate_log(tsk$log())
+})
+
+test_that("task errors informatively with bad metrics", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # wrong type supplied to `$new()`
+  expect_snapshot(
+    tsk <- Task$new(
+      dataset = simple_addition,
+      solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+      scorer = function(...) {list(
+        score = factor(c("C", "C"), levels = c("I", "P", "C")))
+      },
+      metrics = function(scores) {mean(scores == "C") * 100}
+    ),
+    error = TRUE
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = function(...) {list(
+      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    },
+    metrics = list(pct_correct = function(scores) {mean(scores == "C") * 100})
+  )
+
+  # wrong type supplied to `$set_metrics()`
+  expect_snapshot(
+    tsk$set_metrics(function(...) "boop bop"),
+    error = TRUE
+  )
+
+  # valid type but bad return type 
+  expect_snapshot(
+    {
+      tsk$set_metrics(list(bad_metric = function(scores) "this is not a numeric"))
+      tsk$eval()
+    },
+    error = TRUE
+  )
+})
+
+# misc ------------------------------------------------------------------
 test_that("task ids are deterministic", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
 

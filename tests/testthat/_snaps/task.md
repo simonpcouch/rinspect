@@ -80,6 +80,37 @@
       Warning:
       Clearing scores from previous scorer.
 
+# task errors informatively with bad metrics
+
+    Code
+      tsk <- Task$new(dataset = simple_addition, solver = generate(ellmer::chat_anthropic(
+        model = "claude-3-7-sonnet-latest")), scorer = function(...) {
+        list(score = factor(c("C", "C"), levels = c("I", "P", "C")))
+      }, metrics = function(scores) {
+        mean(scores == "C") * 100
+      })
+    Condition
+      Error in `initialize()`:
+      ! `metrics` must be a named list of functions or NULL, not a function
+
+---
+
+    Code
+      tsk$set_metrics(function(...) "boop bop")
+    Condition
+      Error:
+      ! `metrics` must be a named list of functions or NULL, not a function
+
+---
+
+    Code
+      tsk$set_metrics(list(bad_metric = function(scores) "this is not a numeric"))
+      tsk$eval()
+    Condition
+      Error in `measure()`:
+      ! Each metric function must return a single numeric value
+      `bad_metric()` returned a string
+
 # Task completeness is tracked and preserved
 
     Code
