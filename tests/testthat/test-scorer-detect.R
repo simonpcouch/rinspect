@@ -305,3 +305,29 @@ test_that("detect_answer works", {
   expect_true(is.ordered(tsk_letter$samples$score))
   expect_equal(as.character(tsk_letter$samples$score), c("I", "C"))
 })
+
+# In general, we test these scorers completely offline and thus don't `log()`
+# as that would require solver chats. Do a "live" test once to ensure that we
+# don't assume scorer chats are available while logging. (#77)
+test_that("vitals writes valid eval logs (basic, claude)", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = detect_includes()
+  )
+  tsk$eval()
+
+  validate_log(tsk$log())
+  expect_true(TRUE)
+})
