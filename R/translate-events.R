@@ -230,7 +230,7 @@ create_tool_event <- function(turn, tool_result) {
     id = tool_result@request@id,
     `function` = tool_result@request@name,
     arguments = tool_result@request@arguments,
-    result = tool_result@value,
+    result = tool_result@value %||% as.character(tool_result@error),
     events = list(),
     completed = events_timestamp(timestamp),
     working_time = 100000
@@ -269,7 +269,7 @@ create_model_event <- function(turn, sample) {
         tool_result <- prev_turn@contents[[1]]
         return(list(
           id = generate_id(),
-          content = tool_result@value,
+          content = tool_result@value  %||% as.character(tool_result@error),
           role = "tool",
           tool_call_id = tool_result@request@id,
           `function` = tool_result@request@name
@@ -372,7 +372,9 @@ create_model_event <- function(turn, sample) {
           tool_use_id = msg$tool_call_id,
           type = "tool_result",
           content = list(list(type = "text", text = msg$content)),
-          is_error = FALSE
+          # This depends specifically on previous helpers using 
+          # `as_character()` on conditions to extract error messages
+          is_error = grepl("Error in", msg$content)
         ))
       ))
     } else if (msg$role == "user") {

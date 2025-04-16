@@ -13,7 +13,7 @@ translate_to_message <- function(turn, model) {
   if (role == "user") {
     if (length(turn@contents) == 1 && inherits(turn@contents[[1]], "ellmer::ContentToolResult")) {
       tool_result <- turn@contents[[1]]
-      message$content <- tool_result@value
+      message$content <- tool_result@value %||% as.character(tool_result@error)
       message$tool_call_id <- tool_result@request@id
       message$`function` <- tool_result@request@name
       return(message)

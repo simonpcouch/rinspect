@@ -136,3 +136,34 @@ test_that("vitals writes valid eval logs (solver tool calls, claude)", {
 
   validate_log(log_file[1])
 })
+
+test_that("vitals writes valid eval logs (solver errors on tool call, claude)", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  tmp_dir <- withr::local_tempdir()
+  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  current_date <- tibble::tibble(
+    input = c("What's the current date?"),
+    target = c("2024-01-01")
+  )
+
+  ch <- chat_anthropic(model = "claude-3-7-sonnet-latest")
+  ch$register_tool(
+    tool(function() stop("Couldn't find the date"), "Return the current date")
+  )
+
+  tsk <- Task$new(
+    dataset = current_date,
+    solver = generate(ch),
+    scorer = function(samples) {list(score = factor("C", levels = c("I", "C"), ordered = TRUE))}
+  )
+  tsk$eval()
+
+  log_file <- list.files(tmp_dir, full.names = TRUE)
+  expect_gte(length(log_file), 1)
+
+  validate_log(log_file[1])
+})
