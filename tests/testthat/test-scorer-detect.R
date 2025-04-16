@@ -328,6 +328,5 @@ test_that("vitals writes valid eval logs (basic, claude)", {
   )
   tsk$eval()
 
-  validate_log(tsk$log())
-  expect_true(TRUE)
+  expect_valid_log(tsk$log())
 })

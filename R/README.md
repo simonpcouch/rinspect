@@ -7,7 +7,7 @@ The bread and butter functionality of vitals lives in `task.R`. A substantial su
 Functionality to translate from `Task` objects to Inspect-compatible .json logs lives in `translate*.R`.
 
 * Functions named `translate_to_*()` translate from Task objects (or subsets of them) to specific fields in the resulting .json. For example, `translate_to_plan()` translates to the `$plan` slot of the resulting json, and `translate_to_plan_steps()` translates to the `$plan$steps` slot.
-* The Inspect viewer validates .json log files using pydantic models. The helper `validate_log()` runs generated .json through those models and forms the ground truth for unit testing translation functions.
+* The Inspect viewer validates .json log files using pydantic models. The helper `expect_valid_log()` runs generated .json through those models and forms the ground truth for unit testing translation functions.
 
 ## Utilities
 
@@ -17,7 +17,7 @@ Exported functions that don't operate directly on a single Task and instead take
 
 vitals doesn't integrate directly with the Inspect AI through any sort of reticulate-ry in exported functionality. That said, it _does_ make use of Inspect or submodules from it in a couple places:
 
-* Package tests use Inspect's pydantic models to validate generate .json evaluation logs via `validate_log()`. Tests will be skipped if you don't have Inspect installed--see `.github/workflows/live-api.yaml` for an example minimal viable setup.
+* Package tests use Inspect's pydantic models to validate generate .json evaluation logs via `expect_valid_log()`. Tests will be skipped if you don't have Inspect installed--see `.github/workflows/live-api.yaml` for an example minimal viable setup.
 * `vitals_view()` bundles the static Inspect log viewer via `inst/dist/`. This is a standalone .js application and doesn't require an install of Inspect.
 
 ## Cached Objects

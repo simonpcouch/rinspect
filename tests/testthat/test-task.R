@@ -402,7 +402,7 @@ test_that("default metrics are applied effectively", {
   tsk$eval()
 
   expect_equal(tsk$metrics, c("accuracy" = 100))
-  validate_log(tsk$log())
+  expect_valid_log(tsk$log())
 })
 
 test_that("task applies non-default metrics", {
@@ -431,14 +431,14 @@ test_that("task applies non-default metrics", {
   tsk$eval()
 
   expect_equal(tsk$metrics, c("pct_correct" = 100))
-  validate_log(tsk$log())
+  expect_valid_log(tsk$log())
 
   # via set_metrics...
   tsk$set_metrics(list(prop_correct = function(scores) {mean(scores == "C")}))
   expect_null(tsk$metrics)
   tsk$measure()
   expect_equal(tsk$metrics, c("prop_correct" = 1))
-  validate_log(tsk$log())
+  expect_valid_log(tsk$log())
 })
 
 test_that("task errors informatively with bad metrics", {

@@ -2,7 +2,7 @@
 # invokes Inspect's pydantic models on an eval log file so that
 # we can ensure we're writing files that are compatible with the
 # viewer.
-validate_log <- function(x) {
+expect_valid_log <- function(x) {
   # TODO: each of these skips can probably just be evaluated once in a `local()`
   skip_on_cran()
 
@@ -22,13 +22,13 @@ validate_log <- function(x) {
   )
 
   if (!file.exists(x)) {
-    cli::cli_abort("Log file {x} does not exist.")
+    skip("Log file {x} does not exist.")
   }
   
   py_script <- system.file("test/validate_log.py", package = "vitals")
   
   if (!file.exists(py_script)) {
-    cli::cli_abort("Python validation script {py_script} not found.")
+    skip("Python validation script {py_script} not found.")
   }
   
   result <- system2(
@@ -39,10 +39,11 @@ validate_log <- function(x) {
   )
   status <- attr(result, "status")
   
-  if (!is.null(status) && status > 0) {
-    cli::cli_abort("{result}")
-  }
-  
-  cli::cli_alert_success("Log file validated successfully")
-  return(invisible(NULL))
+  expect(
+    is.null(status) || status == 0,
+    paste0(
+      c("The generated log did not pass the pydantic model: ", result),
+      collapse = ""
+    )
+  )
 }

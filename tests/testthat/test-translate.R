@@ -1,4 +1,4 @@
-test_that("validate_log fails when log file is nonsense", {
+test_that("expect_valid_log fails when log file is nonsense", {
   # use a file name that "looks like" it could be a real Inspect log so that
   # Inspect tries to read it
   tmp_dir <- withr::local_tempdir()
@@ -10,7 +10,7 @@ test_that("validate_log fails when log file is nonsense", {
   writeLines(c("beep", "bop", "boop"), tmp_file)
 
   expect_error(
-    suppressWarnings(validate_log(tmp_file)), 
+    suppressWarnings(expect_valid_log(tmp_file)), 
     regexp = "Expecting value: line 1 column 1"
   )
 })
@@ -37,7 +37,7 @@ test_that("vitals writes valid eval logs (basic, claude)", {
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)
 
-  validate_log(log_file[1])
+  expect_valid_log(log_file[1])
 })
 
 test_that("vitals writes valid eval logs (basic, openai)", {
@@ -62,7 +62,7 @@ test_that("vitals writes valid eval logs (basic, openai)", {
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)
 
-  validate_log(log_file[1])
+  expect_valid_log(log_file[1])
 })
 
 test_that("vitals writes valid eval logs (basic, gemini)", {
@@ -87,7 +87,7 @@ test_that("vitals writes valid eval logs (basic, gemini)", {
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)
 
-  validate_log(log_file[1])
+  expect_valid_log(log_file[1])
 })
 
 
@@ -117,7 +117,7 @@ test_that("vitals writes valid eval logs (solver tool calls, claude)", {
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)
 
-  validate_log(log_file[1])
+  expect_valid_log(log_file[1])
 })
 
 test_that("vitals writes valid eval logs (solver errors on tool call, claude)", {
@@ -151,5 +151,5 @@ test_that("vitals writes valid eval logs (solver errors on tool call, claude)", 
   log_file <- list.files(tmp_dir, full.names = TRUE)
   expect_gte(length(log_file), 1)
 
-  validate_log(log_file[1])
+  expect_valid_log(log_file[1])
 })
