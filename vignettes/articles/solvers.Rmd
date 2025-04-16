@@ -6,7 +6,7 @@ title: "Custom solvers and tool calling"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = rlang::is_installed("ggplot2")
+  eval = rlang::is_installed("here")
 )
 
 cat <- function(x, width = 0.9 * getOption("width")) {
@@ -46,7 +46,6 @@ library(ellmer)
 library(btw)
 
 library(dplyr)
-library(ggplot2)
 ```
 
 ## An R eval dataset

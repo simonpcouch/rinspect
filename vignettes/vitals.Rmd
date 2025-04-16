@@ -207,10 +207,20 @@ are_task_eval <-
   rename(model = task)
 
 are_task_eval %>%
-  ggplot(aes(x = score, fill = model, group = model)) +
-  geom_bar(position = "dodge") +
-  scale_fill_brewer(type = "qual") +
-  theme(legend.position="bottom")
+  mutate(
+    score = factor(
+      case_when(
+        score == "I" ~ "Incorrect",
+        score == "P" ~ "Partially correct",
+        score == "C" ~ "Correct"
+      ),
+      levels = c("Incorrect", "Partially correct", "Correct"),
+      ordered = TRUE
+    )
+  ) %>%
+  ggplot(aes(y = model, fill = score)) +
+  geom_bar() +
+  scale_fill_brewer(breaks = rev, palette = "RdYlGn")
 ```
 
 Is this difference in performance just a result of noise, though? We can supply the scores to an ordinal regression model to answer this question.
