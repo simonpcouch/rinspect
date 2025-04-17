@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# vitals <a href="https://tidyverse.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
+# vitals <a href="https://vitals.tidyverse.org"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 

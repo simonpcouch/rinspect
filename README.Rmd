@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# vitals <a href="https://tidyverse.github.io/vitals/"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
+# vitals <a href="https://vitals.tidyverse.org"><img src="man/figures/logo.png" align="right" height="240" alt="vitals website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)

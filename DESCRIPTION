@@ -13,7 +13,7 @@ Description: A port of 'Inspect', a widely adopted 'Python' framework for
     multi-turn dialog, and model graded evaluations.
 License: MIT + file LICENSE
 URL: https://github.com/tidyverse/vitals,
-    https://tidyverse.github.io/vitals/
+    https://vitals.tidyverse.org
 BugReports: https://github.com/tidyverse/vitals/issues
 Depends:
     R (>= 4.0)
@@ -47,4 +47,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 LazyData: true
 VignetteBuilder: knitr
-Config/Needs/website: rmarkdown, posit-dev/btw
+Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw
