@@ -4,7 +4,7 @@
 \alias{vitals_view}
 \title{Interactively view local evaluation logs}
 \usage{
-vitals_view(dir, host = "127.0.0.1", port = 7576)
+vitals_view(dir = vitals_log_dir(), host = "127.0.0.1", port = 7576)
 }
 \arguments{
 \item{dir}{Path to a directory containing task eval logs.}
