@@ -43,7 +43,7 @@ test_that("solver_chat works", {
 })
 
 test_that("check_log_dir warns informatively", {
-  withr::local_envvar(INSPECT_LOG_DIR = NA)
+  withr::local_envvar(VITALS_LOG_DIR = NA)
   expect_snapshot(
     res <- Task$new(tibble(input = 1, target = 1), function() {}, function() {})
   )

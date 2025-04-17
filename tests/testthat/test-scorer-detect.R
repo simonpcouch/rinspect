@@ -312,7 +312,7 @@ test_that("detect_answer works", {
 test_that("vitals writes valid eval logs (basic, claude)", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
 

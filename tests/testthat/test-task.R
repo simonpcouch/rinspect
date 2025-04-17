@@ -1,7 +1,7 @@
 test_that("Task R6 class works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -40,7 +40,7 @@ test_that("Task R6 class works", {
 test_that("Task with epochs works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -71,7 +71,7 @@ test_that("Task with epochs works", {
 test_that("Task respects `$new(epochs)`", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -98,7 +98,7 @@ test_that("Task respects `$new(epochs)`", {
 test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -181,7 +181,7 @@ test_that("set_id_column works", {
 })
 
 test_that("Task preserves existing id column", {
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   local_mocked_bindings(interactive = function(...) FALSE)
   
   d <- tibble::tibble(
@@ -200,7 +200,7 @@ test_that("Task preserves existing id column", {
 })
 
 test_that("Task errors informatively with duplicate ids", {
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   
   d <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
@@ -222,7 +222,7 @@ test_that("Task errors informatively with duplicate ids", {
 test_that("set_solver works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -270,7 +270,7 @@ test_that("set_solver works", {
 test_that("set_solver works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -319,7 +319,7 @@ test_that("set_solver works", {
 test_that("set_scorer works", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -385,7 +385,7 @@ test_that("set_scorer works", {
 test_that("default metrics are applied effectively", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -412,7 +412,7 @@ test_that("default metrics are applied effectively", {
 test_that("task applies non-default metrics", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -447,7 +447,7 @@ test_that("task applies non-default metrics", {
 test_that("task errors informatively with bad metrics", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -523,7 +523,7 @@ test_that("task ids are deterministic", {
 test_that("Task completeness is tracked and preserved", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(INSPECT_LOG_DIR = tmp_dir))
+  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -597,7 +597,7 @@ test_that("Task completeness is tracked and preserved", {
 })
 
 test_that("Task errors informatively with bad solver output", {
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -623,7 +623,7 @@ test_that("Task errors informatively with bad solver output", {
 })
 
 test_that("Task detects non-Chat objects in solver_chat", {
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   
@@ -650,7 +650,7 @@ test_that("Task detects non-Chat objects in solver_chat", {
 
 test_that("Task errors informatively with bad scorer output", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
@@ -673,7 +673,7 @@ test_that("Task errors informatively with bad scorer output", {
 
 test_that("Task detects non-Chat objects in scorer_chat", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
-  withr::local_envvar(list(INSPECT_LOG_DIR = withr::local_tempdir()))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)

@@ -3,11 +3,11 @@ test_that("vitals_log_dir works", {
   withr::defer(vitals_log_dir_set(current_dir))
 
   # returns NA if not set
-  withr::local_envvar(INSPECT_LOG_DIR = NULL)
+  withr::local_envvar(VITALS_LOG_DIR = NULL)
   expect_identical(vitals_log_dir(), NA_character_)
 
   # returns value if set
-  withr::local_envvar(INSPECT_LOG_DIR = "path/to/logs")
+  withr::local_envvar(VITALS_LOG_DIR = "path/to/logs")
   expect_equal(vitals_log_dir(), "path/to/logs")
 })
 
@@ -16,14 +16,14 @@ test_that("vitals_log_dir_set works", {
   withr::defer(vitals_log_dir_set(current_dir))
 
   # returns previous value invisibly
-  withr::local_envvar(INSPECT_LOG_DIR = NULL)
+  withr::local_envvar(VITALS_LOG_DIR = NULL)
   expect_equal(vitals_log_dir_set("abc123"), NA_character_)
 
-  withr::local_envvar(INSPECT_LOG_DIR = "abc123")
+  withr::local_envvar(VITALS_LOG_DIR = "abc123")
   expect_equal(vitals_log_dir_set("def456"), "abc123")
 
   # sets new value for future calls
-  withr::local_envvar(INSPECT_LOG_DIR = NULL)
+  withr::local_envvar(VITALS_LOG_DIR = NULL)
   vitals_log_dir_set("abc123")
   expect_equal(vitals_log_dir(), "abc123")
 

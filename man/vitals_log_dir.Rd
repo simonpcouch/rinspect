@@ -11,18 +11,18 @@ vitals_log_dir_set(dir)
 }
 \arguments{
 \item{dir}{A directory to configure the environment variable
-\code{INSPECT_LOG_DIR} to.}
+\code{VITALS_LOG_DIR} to.}
 }
 \value{
 Both \code{vitals_log_dir()} and \code{vitals_log_dir_set()} return the current
-value of the environment variable \code{INSPECT_LOG_DIR}. \code{vitals_log_dir_set()}
+value of the environment variable \code{VITALS_LOG_DIR}. \code{vitals_log_dir_set()}
 additionally sets it to a new value.
 
 To set this variable in every new R session, you might consider adding it
 to your \code{.Rprofile}, perhaps with \code{usethis::edit_r_profile()}.
 }
 \description{
-vitals supports the \code{INSPECT_LOG_DIR} environment variable,
+vitals supports the \code{VITALS_LOG_DIR} environment variable,
 which sets a default directory to write logs to in \link{Task}'s \verb{$eval()}
 and \verb{$log()} methods.
 }

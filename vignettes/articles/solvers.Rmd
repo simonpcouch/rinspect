@@ -16,7 +16,7 @@ cat <- function(x, width = 0.9 * getOption("width")) {
 }
 
 withr::local_envvar(
-  list(INSPECT_LOG_DIR = here::here("vignettes/articles/data/solvers/logs"))
+  list(VITALS_LOG_DIR = here::here("vignettes/articles/data/solvers/logs"))
 )
 
 # don't set this as the default `eval`, but use it as a

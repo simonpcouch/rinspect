@@ -1,16 +1,16 @@
 #' The log directory
 #'
 #' @description
-#' vitals supports the `INSPECT_LOG_DIR` environment variable,
+#' vitals supports the `VITALS_LOG_DIR` environment variable,
 #' which sets a default directory to write logs to in [Task]'s `$eval()`
 #' and `$log()` methods.
 #'
 #' @param dir A directory to configure the environment variable
-#' `INSPECT_LOG_DIR` to.
+#' `VITALS_LOG_DIR` to.
 #'
 #' @returns
 #' Both `vitals_log_dir()` and `vitals_log_dir_set()` return the current
-#' value of the environment variable `INSPECT_LOG_DIR`. `vitals_log_dir_set()`
+#' value of the environment variable `VITALS_LOG_DIR`. `vitals_log_dir_set()`
 #' additionally sets it to a new value.
 #' 
 #' To set this variable in every new R session, you might consider adding it
@@ -26,14 +26,14 @@
 #' vitals_log_dir()
 #' @export
 vitals_log_dir <- function() {
-  Sys.getenv("INSPECT_LOG_DIR", unset = NA)
+  Sys.getenv("VITALS_LOG_DIR", unset = NA)
 }
 
 #' @rdname vitals_log_dir
 #' @export
 vitals_log_dir_set <- function(dir) {
-  old <- Sys.getenv("INSPECT_LOG_DIR", unset = NA)
-  Sys.setenv(INSPECT_LOG_DIR = dir)
+  old <- Sys.getenv("VITALS_LOG_DIR", unset = NA)
+  Sys.setenv(VITALS_LOG_DIR = dir)
   invisible(old)
 }
 
@@ -42,7 +42,7 @@ vitals_log_dir_set <- function(dir) {
 # @description
 # Utilities for reading and writing evaluation logs.
 #
-# These utilities support the `INSPECT_LOG_DIR` environment variable,
+# These utilities support the `VITALS_LOG_DIR` environment variable,
 # which sets a default directory to write logs to.
 #
 # @param x For `eval_log_read()`, a path to the log file to read. For

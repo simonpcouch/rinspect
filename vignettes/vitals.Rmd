@@ -20,7 +20,7 @@ cat <- function(x, width = 0.9 * getOption("width")) {
   base::cat(wrapped, sep = "\n")
 }
 
-withr::local_envvar(list(INSPECT_LOG_DIR = "vignettes/data/logs/"))
+withr::local_envvar(list(VITALS_LOG_DIR = "vignettes/data/logs/"))
 
 # don't set this as the default `eval`, but use it as a
 # flag for the computationally intensive steps

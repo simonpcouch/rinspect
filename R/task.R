@@ -278,7 +278,7 @@ Task <- R6::R6Class("Task",
     #' @description
     #' Log the task to a directory.
     #'
-    #' Note that, if an `INSPECT_LOG_DIR` envvar is set, this will happen
+    #' Note that, if an `VITALS_LOG_DIR` envvar is set, this will happen
     #' automatically in `$eval()`.
     #'
     #' @param dir The directory to write the log to.
