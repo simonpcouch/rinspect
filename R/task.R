@@ -183,8 +183,6 @@ Task <- R6::R6Class("Task",
 
       cli::cli_progress_step("Scoring")
       self$score(...)
-      
-      cli::cli_progress_step("Calculating metrics")
       self$measure()
 
       self$log(self$dir)
