@@ -8,19 +8,22 @@
 <title>Getting started with vitals • vitals</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Source_Sans_Pro-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started with vitals">
+<script defer data-domain="vitals.tidyverse.org,all.tidyverse.org" src="https://plausible.io/js/plausible.js"></script>
 </head>
 <body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    <a href="#container" class="visually-hidden-focusable">Skip to content</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-none" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">vitals</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +51,7 @@
 
 
   </div>
-</nav><div class="container template-article">
+</nav><div class="container template-article" id="container">
 
 
 
@@ -110,13 +113,13 @@ evaluate whether the solution deserves full, partial, or no credit.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">are</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Rows: 26</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
-<span><span class="co">#&gt; $ id        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "after-stat-bar-heights"<span style="color: #949494;">, </span>"conditional-grouped-summary"<span style="color: #949494;">, </span>"co…</span></span>
-<span><span class="co">#&gt; $ input     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "This bar chart shows the count of different cuts of diamond…</span></span>
-<span><span class="co">#&gt; $ target    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Preferably: \n\n```\nggplot(data = diamonds) + \n  geom_bar…</span></span>
-<span><span class="co">#&gt; $ domain    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>"Programm…</span></span>
-<span><span class="co">#&gt; $ task      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"Debugging"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">,</span>…</span></span>
-<span><span class="co">#&gt; $ source    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://jrnold.github.io/r4ds-exercise-solutions/data-visua…</span></span>
-<span><span class="co">#&gt; $ knowledge <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> "tidyverse"<span style="color: #949494;">, </span>"tidyverse"<span style="color: #949494;">, </span>"tidyverse"<span style="color: #949494;">, </span>"r-lib"<span style="color: #949494;">, </span>"tidyverse"…</span></span></code></pre>
+<span><span class="co">#&gt; $ id        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "after-stat-bar-heights"<span style="color: #949494;">, </span>"conditional-grouped-summ…</span></span>
+<span><span class="co">#&gt; $ input     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "This bar chart shows the count of different cuts o…</span></span>
+<span><span class="co">#&gt; $ target    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Preferably: \n\n```\nggplot(data = diamonds) + \n …</span></span>
+<span><span class="co">#&gt; $ domain    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>…</span></span>
+<span><span class="co">#&gt; $ task      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"Debugging"<span style="color: #949494;">, </span>"N…</span></span>
+<span><span class="co">#&gt; $ source    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://jrnold.github.io/r4ds-exercise-solutions/d…</span></span>
+<span><span class="co">#&gt; $ knowledge <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> "tidyverse"<span style="color: #949494;">, </span>"tidyverse"<span style="color: #949494;">, </span>"tidyverse"<span style="color: #949494;">, </span>"r-lib"<span style="color: #949494;">, </span>"t…</span></span></code></pre>
 <p>At a high level:</p>
 <ul>
 <li>
@@ -140,17 +143,17 @@ we’re specifically interested in the <code>input</code> and
 you can get a taste of a typical problem in this dataset:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are</span><span class="op">$</span><span class="va">input</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; This bar chart shows the count of different cuts of diamonds, and each</span></span>
-<span><span class="co">#&gt; bar is stacked and filled according to clarity:</span></span>
+<pre><code><span><span class="co">#&gt; This bar chart shows the count of different cuts of diamonds,</span></span>
+<span><span class="co">#&gt; and each bar is stacked and filled according to clarity:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
 <span><span class="co">#&gt; geom_bar(mapping = aes(x = cut, fill = clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Could you change this code so that the proportion of diamonds with a</span></span>
-<span><span class="co">#&gt; given cut corresponds to the bar height and not the count? Each bar</span></span>
-<span><span class="co">#&gt; should still be filled according to clarity.</span></span></code></pre>
+<span><span class="co">#&gt; Could you change this code so that the proportion of diamonds</span></span>
+<span><span class="co">#&gt; with a given cut corresponds to the bar height and not the</span></span>
+<span><span class="co">#&gt; count? Each bar should still be filled according to clarity.</span></span></code></pre>
 <p>Here’s the suggested solution:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are</span><span class="op">$</span><span class="va">target</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -158,20 +161,21 @@ you can get a taste of a typical problem in this dataset:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
-<span><span class="co">#&gt; geom_bar(aes(x = cut, y = after_stat(count) / sum(after_stat(count)),</span></span>
-<span><span class="co">#&gt; fill = clarity))</span></span>
+<span><span class="co">#&gt; geom_bar(aes(x = cut, y = after_stat(count) /</span></span>
+<span><span class="co">#&gt; sum(after_stat(count)), fill = clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0, but</span></span>
-<span><span class="co">#&gt; it still works:</span></span>
+<span><span class="co">#&gt; The dot-dot notation (`..count..`) was deprecated in ggplot2</span></span>
+<span><span class="co">#&gt; 3.4.0, but it still works:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
-<span><span class="co">#&gt; geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill = clarity))</span></span>
+<span><span class="co">#&gt; geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill =</span></span>
+<span><span class="co">#&gt; clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Simply setting `position = "fill" will result in each bar having a</span></span>
-<span><span class="co">#&gt; height of 1 and is not correct.</span></span></code></pre>
+<span><span class="co">#&gt; Simply setting `position = "fill" will result in each bar</span></span>
+<span><span class="co">#&gt; having a height of 1 and is not correct.</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="creating-and-evaluating-a-task">Creating and evaluating a task<a class="anchor" aria-label="anchor" href="#creating-and-evaluating-a-task"></a>
@@ -204,17 +208,20 @@ with:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">result</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; # Converting a stacked bar chart from counts to proportions</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; To change the bar heights from counts to proportions, you need to use</span></span>
-<span><span class="co">#&gt; the `position = "fill"` argument in `geom_bar()`. This will normalize</span></span>
-<span><span class="co">#&gt; each bar to represent proportions (with each bar having a total height</span></span>
-<span><span class="co">#&gt; of 1), while maintaining the stacked clarity segments.</span></span>
+<span><span class="co">#&gt; To change the bar heights from counts to proportions, you need</span></span>
+<span><span class="co">#&gt; to use the `position = "fill"` argument in `geom_bar()`. This</span></span>
+<span><span class="co">#&gt; will normalize each bar to represent proportions (with each</span></span>
+<span><span class="co">#&gt; bar having a total height of 1), while maintaining the stacked</span></span>
+<span><span class="co">#&gt; clarity segments.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Here's the modified code:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```r</span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
-<span><span class="co">#&gt; geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill") +</span></span>
-<span><span class="co">#&gt; labs(y = "Proportion") # Updating y-axis label to reflect the change</span></span>
+<span><span class="co">#&gt; geom_bar(mapping = aes(x = cut, fill = clarity), position =</span></span>
+<span><span class="co">#&gt; "fill") +</span></span>
+<span><span class="co">#&gt; labs(y = "Proportion") # Updating y-axis label to reflect the</span></span>
+<span><span class="co">#&gt; change</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; This transformation:</span></span>
@@ -224,8 +231,8 @@ with:</p>
 <span><span class="co">#&gt; - Allows for easier comparison of clarity distributions across</span></span>
 <span><span class="co">#&gt; different cuts</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The y-axis will now range from 0 to 1, representing the proportion</span></span>
-<span><span class="co">#&gt; instead of raw counts.</span></span></code></pre>
+<span><span class="co">#&gt; The y-axis will now range from 0 to 1, representing the</span></span>
+<span><span class="co">#&gt; proportion instead of raw counts.</span></span></code></pre>
 <p>The task also contains score information from the scoring step. We’ve
 used <code><a href="../reference/scorer_model.html">model_graded_qa()</a></code> as our scorer, which uses another
 model to evaluate the quality of our solver’s solutions against the
@@ -247,32 +254,35 @@ scoring. That said, it’s not without its faults. Here’s what the grading
 model thought of the response:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are_task</span><span class="op">$</span><span class="va">samples</span><span class="op">$</span><span class="va">scorer_chat</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">last_turn</span><span class="op">(</span><span class="op">)</span><span class="op">@</span><span class="va">text</span><span class="op">)</span></span>
-<span><span class="co">#&gt; I need to assess whether the submission meets the criterion for</span></span>
-<span><span class="co">#&gt; changing the bar chart to show proportions instead of counts.</span></span>
+<span><span class="co">#&gt; I need to assess whether the submission meets the criterion</span></span>
+<span><span class="co">#&gt; for changing the bar chart to show proportions instead of</span></span>
+<span><span class="co">#&gt; counts.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The submission suggests using `position = "fill"` in the `geom_bar()`</span></span>
-<span><span class="co">#&gt; function. This approach would normalize each bar to have a total height</span></span>
-<span><span class="co">#&gt; of 1, showing the proportion of different clarity levels within each</span></span>
-<span><span class="co">#&gt; cut category.</span></span>
+<span><span class="co">#&gt; The submission suggests using `position = "fill"` in the</span></span>
+<span><span class="co">#&gt; `geom_bar()` function. This approach would normalize each bar</span></span>
+<span><span class="co">#&gt; to have a total height of 1, showing the proportion of</span></span>
+<span><span class="co">#&gt; different clarity levels within each cut category.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; However, the criterion specifies a different approach. According to the</span></span>
-<span><span class="co">#&gt; criterion, each bar should represent the proportion of diamonds with a</span></span>
-<span><span class="co">#&gt; given cut relative to the total number of diamonds. This means using</span></span>
-<span><span class="co">#&gt; either:</span></span>
-<span><span class="co">#&gt; 1. `aes(x = cut, y = after_stat(count) / sum(after_stat(count)), fill =</span></span>
-<span><span class="co">#&gt; clarity)` (preferred modern syntax)</span></span>
-<span><span class="co">#&gt; 2. `aes(x = cut, y = ..count.. / sum(..count..), fill = clarity)`</span></span>
-<span><span class="co">#&gt; (deprecated but functional syntax)</span></span>
+<span><span class="co">#&gt; However, the criterion specifies a different approach.</span></span>
+<span><span class="co">#&gt; According to the criterion, each bar should represent the</span></span>
+<span><span class="co">#&gt; proportion of diamonds with a given cut relative to the total</span></span>
+<span><span class="co">#&gt; number of diamonds. This means using either:</span></span>
+<span><span class="co">#&gt; 1. `aes(x = cut, y = after_stat(count) /</span></span>
+<span><span class="co">#&gt; sum(after_stat(count)), fill = clarity)` (preferred modern</span></span>
+<span><span class="co">#&gt; syntax)</span></span>
+<span><span class="co">#&gt; 2. `aes(x = cut, y = ..count.. / sum(..count..), fill =</span></span>
+<span><span class="co">#&gt; clarity)` (deprecated but functional syntax)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The criterion explicitly states that using `position = "fill"` is not</span></span>
-<span><span class="co">#&gt; correct because it would make each bar have a height of 1, rather than</span></span>
-<span><span class="co">#&gt; showing the true proportion of each cut in the overall dataset.</span></span>
+<span><span class="co">#&gt; The criterion explicitly states that using `position = "fill"`</span></span>
+<span><span class="co">#&gt; is not correct because it would make each bar have a height of</span></span>
+<span><span class="co">#&gt; 1, rather than showing the true proportion of each cut in the</span></span>
+<span><span class="co">#&gt; overall dataset.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The submission is suggesting a different type of proportional</span></span>
-<span><span class="co">#&gt; representation than what is being asked for in the criterion. The</span></span>
-<span><span class="co">#&gt; submission shows the distribution of clarity within each cut, while the</span></span>
-<span><span class="co">#&gt; criterion is asking for the proportion of each cut in the total</span></span>
-<span><span class="co">#&gt; dataset.</span></span>
+<span><span class="co">#&gt; representation than what is being asked for in the criterion.</span></span>
+<span><span class="co">#&gt; The submission shows the distribution of clarity within each</span></span>
+<span><span class="co">#&gt; cut, while the criterion is asking for the proportion of each</span></span>
+<span><span class="co">#&gt; cut in the total dataset.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; GRADE: I</span></span></code></pre></div>
 </div>
@@ -423,20 +433,16 @@ advanced evals, check out the other vignettes in this package!</p>
 
 
 
-    <footer><div class="pkgdown-footer-left">
-  <p>Developed by Simon Couch, Posit Software, PBC.</p>
+   </div>
+  <footer><div class="container">
+  <div class="pkgdown-footer-left">
+  <p>Developed by Simon Couch, <a href="https://www.posit.co" class="external-link"><img src="https://www.tidyverse.org/posit-logo.svg" alt="Posit" height="16" width="62" style="margin-bottom: 3px;"></a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
   <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
-    </footer>
-</div>
-
-
-
-
-
-  </body>
+  </div></footer>
+</body>
 </html>
