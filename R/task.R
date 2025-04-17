@@ -141,7 +141,9 @@ Task <- R6::R6Class("Task",
       check_metrics(metrics)
       check_number_whole(epochs, min = 1, allow_null = TRUE)
       
-      private$dataset_name <- gsub("[^[:alnum:]]", "", name)
+      # dataset names can contain dashes or alphanumerics--transition
+      # underscores and spaces to dashes (#92)
+      private$dataset_name <- gsub("[^[:alnum:]\\-]", "", gsub("_| ", "-", name))
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
