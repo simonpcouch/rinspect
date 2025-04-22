@@ -2,14 +2,26 @@
 # invokes Inspect's pydantic models on an eval log file so that
 # we can ensure we're writing files that are compatible with the
 # viewer.
+python_cmd <- function() {
+  if (!is_installed("reticulate")) {
+    return("python")
+  }
+  tryCatch({
+    eval_bare(call2("use_virtualenv", "vitals-venv", .ns = "reticulate"))
+    eval_bare(call2("py_config", .ns = "reticulate"))$python
+  },
+    error = function(e) "python"
+  )
+}
+
 expect_valid_log <- local({
   .pydantic_skip_status <- if (!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))) {
     "On CRAN."
-  } else if (system2("python", "--version", stdout = FALSE, stderr = FALSE) != 0) {
+  } else if (system2(python_cmd(), "--version", stdout = FALSE, stderr = FALSE) != 0) {
     "Python is not available"
-  } else if (system2("python", "-c 'import inspect_ai'", stdout = FALSE, stderr = FALSE) != 0) {
+  } else if (system2(python_cmd(), "-c 'import inspect_ai'", stdout = FALSE, stderr = FALSE) != 0) {
     "inspect_ai Python module is not available"
-  } else if (system2("python", "-c 'import pydantic'", stdout = FALSE, stderr = FALSE) != 0) {
+  } else if (system2(python_cmd(), "-c 'import pydantic'", stdout = FALSE, stderr = FALSE) != 0) {
     "pydantic Python module is not available"
   } else if (!file.exists(system.file("test/validate_log.py", package = "vitals"))) {
     "Python validation script not found."
@@ -27,7 +39,7 @@ expect_valid_log <- local({
     }
     
     result <- system2(
-      "python",
+      python_cmd(),
       args = c(system.file("test/validate_log.py", package = "vitals"), x),
       stdout = TRUE,
       stderr = TRUE
