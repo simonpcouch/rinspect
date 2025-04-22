@@ -119,7 +119,7 @@ create_sample_init_event <- function(turn, sample, timestamp) {
     working_start = 100000,
     event = "sample_init",
     sample = list(
-      input = sample$input,
+      input = input_string(sample$input[[1]]),
       target = sample$target,
       id = sample$id
     ),
@@ -127,7 +127,7 @@ create_sample_init_event <- function(turn, sample, timestamp) {
       messages = list(
         list(
           id = user_message_id,
-          content = sample$input,
+          content = input_string(sample$input[[1]]),
           source = "input",
           role = "user"
         )

@@ -121,7 +121,7 @@ translate_to_sample <- function(sample, scores) {
   list(
     id = sample$id,
     epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {1},
-    input = sample$input,
+    input = input_string(sample$input[[1]]),
     target = sample$target,
     messages = translate_to_messages(chat),
     output = translate_to_output(chat),
@@ -213,4 +213,18 @@ translate_to_eval_scorers <- function(name) {
     ),
     metadata = c()
   ))
+}
+
+# format single-row tibble as a string with column names as prefixes 
+# followed by a colon, with entries separated by newlines.
+input_string <- function(x) {
+  if (is.character(x)) {return(x)}
+  paste0(
+    mapply(
+      function(name, value) paste0(name, ": ", value),
+      names(x),
+      as.list(x[1,])
+    ),
+    collapse = "\n\n"
+  )
 }
