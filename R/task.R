@@ -216,6 +216,7 @@ Task <- R6::R6Class("Task",
       self$samples$result <- NA
       self$samples$solver_chat <- NA
 
+      private$track_token_usage("solver_token_usage")
       private$solutions <- private$solver(self$samples$input, ...)
 
       # TODO: it might be nice to just run one of the inputs async and check for
@@ -245,6 +246,7 @@ Task <- R6::R6Class("Task",
       
       self$samples$score <- NA
       
+      private$track_token_usage("scorer_token_usage")
       private$scores <- private$scorer(self$samples, ...)
       private$check_scorer_outputs()
       private$cbind_scores()
@@ -393,6 +395,25 @@ Task <- R6::R6Class("Task",
       private$reset_metrics()
     
       invisible(self)
+    },
+
+    #' @description The cost of this eval
+    #' This is a wrapper around ellmer's `$token_usage()` function. 
+    #' That function is called at the beginning and end of each call to
+    #' `$solve()` and `$score()`; this function returns the cost inferred
+    #' by taking the differences in values of `$token_usage()` over time.
+    #' 
+    #' @return The sum of the cost of solving and scoring the evaluation.
+    #' The sum only includes the cost from the most recent runs of the
+    #' solver and scorer.
+    get_cost = function() {
+      if (is.null(private$scorer_token_usage)) {
+        return(private$solver_token_usage)
+      }
+      sum_token_usage(
+        private$solver_token_usage,
+        private$scorer_token_usage
+      )
     }
   ),
 
@@ -400,11 +421,11 @@ Task <- R6::R6Class("Task",
     dataset_name = NULL,
     
     solver = NULL,
-    
-    scorer = NULL,
-    
+    solver_token_usage = NULL,
     solved = FALSE,
     
+    scorer = NULL,
+    scorer_token_usage = NULL,
     scored = FALSE,
 
     stash_last_task = function() {
@@ -570,6 +591,21 @@ Task <- R6::R6Class("Task",
      }
     },
 
+    # `slot` is one of "solver_token_usage" or "scorer_token_usage"
+    # `env` is a function's execution environment
+    track_token_usage = function(slot, env = caller_env()) {
+      suppressMessages({
+        initial_usage <- ellmer::token_usage()
+      })
+      
+      withr::defer({
+        suppressMessages({
+          final_usage <- ellmer::token_usage()
+        })
+        private[[slot]] <- diff_token_usage(initial_usage, final_usage)
+      }, envir = env)
+    },
+
     # The output of `logged(solver)(...)`
     solutions = NULL,
 
@@ -682,4 +718,64 @@ has_last_task <- function() {
   }
 
   exists(".last_task", as.environment("pkg:vitals"))
+}
+
+diff_token_usage <- function(before, after) {
+  if (is.null(before)) {
+    return(after)
+  }
+
+  res <- dplyr::left_join(
+    after,
+    before,
+    by = c("provider", "model"),
+    suffix = c("", "_before")
+  )
+  res <- dplyr::mutate(
+    res,
+    input = input - ifelse(is.na(input_before), 0, input_before)
+  )
+  res <- dplyr::mutate(
+    res,
+    output = output - ifelse(is.na(output_before), 0, output_before)
+  )
+  res <- dplyr::mutate(
+    res,
+    price = as.numeric(
+      gsub("\\$", "", price)) - ifelse(is.na(price_before), 0, 
+      as.numeric(gsub("\\$", "", price_before))
+    )
+  )
+  res <- dplyr::select(res, provider, model, input, output, price)
+  res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
+  
+  dplyr::filter(res, input != 0 | output != 0)
+}
+
+sum_token_usage <- function(solver, scorer) {
+  res <- dplyr::full_join(
+    solver,
+    scorer,
+    by = c("provider", "model"),
+    suffix = c("", "_scorer")
+  )
+  res <- dplyr::mutate(
+    res,
+    input = input + ifelse(is.na(input_scorer), 0, input_scorer)
+  )
+  res <- dplyr::mutate(
+    res,
+    output = output + ifelse(is.na(output_scorer), 0, output_scorer)
+  )
+  res <- dplyr::mutate(
+    res,
+    price = as.numeric(
+      gsub("\\$", "", price)) + ifelse(is.na(price_scorer), 0, 
+      as.numeric(gsub("\\$", "", price_scorer))
+    )
+  )
+  res <- dplyr::select(res, provider, model, input, output, price)
+  res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
+  
+  res
 }

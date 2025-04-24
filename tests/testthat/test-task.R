@@ -696,3 +696,94 @@ test_that("Task detects non-Chat objects in scorer_chat", {
   
   expect_snapshot(tsk$eval(), error = TRUE)
 })
+
+test_that("token usage is logged correctly", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # use a couple tokens to ensure non-NULL
+  chat_anthropic(model = "claude-3-7-sonnet-latest")$chat("hey!")
+  usage_before <- ellmer::token_usage()
+  usage_before <- dplyr::filter(usage_before, model == "claude-3-7-sonnet")
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+
+  tsk$solve()
+  usage_after_solve <- ellmer::token_usage()
+  usage_after_solve <- dplyr::filter(usage_after_solve, model == "claude-3-7-sonnet")
+  cost_after_solve <- tsk$get_cost()
+  expect_equal(
+    cost_after_solve$input,
+    usage_after_solve$input - usage_before$input
+  )
+  expect_equal(
+    cost_after_solve$output,
+    usage_after_solve$output - usage_before$output
+  )
+
+  tsk$score()
+  usage_after_score <- ellmer::token_usage()
+  usage_after_score <- dplyr::filter(usage_after_score, model == "claude-3-7-sonnet")
+  cost_after_score <- tsk$get_cost()
+  expect_equal(
+    cost_after_score$input,
+    usage_after_score$input - usage_before$input
+  )
+  expect_equal(
+    cost_after_score$output,
+    usage_after_score$output - usage_before$output
+  )
+})
+
+
+test_that("token usage is logged correctly (with unrelated token usage)", {
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
+  withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
+  withr::local_options(cli.default_handler = function(...) { })
+  local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
+
+  simple_addition <- tibble::tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # use a couple tokens to ensure non-NULL
+  chat_anthropic(model = "claude-3-7-sonnet-latest")$chat("hey!")
+  chat_openai(model = "gpt-4.1-nano")$chat("hey!")
+  usage_before <- ellmer::token_usage()
+  usage_before <- dplyr::filter(usage_before, model == "claude-3-7-sonnet")
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+
+  tsk$solve()
+  usage_after_solve <- ellmer::token_usage()
+  usage_after_solve <- dplyr::filter(usage_after_solve, model == "claude-3-7-sonnet")
+  cost_after_solve <- tsk$get_cost()
+  expect_equal(nrow(cost_after_solve), 1)
+  expect_equal(
+    cost_after_solve$input,
+    usage_after_solve$input - usage_before$input
+  )
+  expect_equal(
+    cost_after_solve$output,
+    usage_after_solve$output - usage_before$output
+  )
+})

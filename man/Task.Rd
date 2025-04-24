@@ -78,6 +78,7 @@ be applied.}
 \item \href{#method-Task-set_solver}{\code{Task$set_solver()}}
 \item \href{#method-Task-set_scorer}{\code{Task$set_scorer()}}
 \item \href{#method-Task-set_metrics}{\code{Task$set_metrics()}}
+\item \href{#method-Task-get_cost}{\code{Task$get_cost()}}
 \item \href{#method-Task-clone}{\code{Task$clone()}}
 }
 }
@@ -391,6 +392,25 @@ Set the metrics that will be applied in \verb{$measure()} (and thus \verb{$eval(
 }
 \subsection{Returns}{
 The Task (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-get_cost"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-get_cost}{}}}
+\subsection{Method \code{get_cost()}}{
+The cost of this eval
+This is a wrapper around ellmer's \verb{$token_usage()} function.
+That function is called at the beginning and end of each call to
+\verb{$solve()} and \verb{$score()}; this function returns the cost inferred
+by taking the differences in values of \verb{$token_usage()} over time.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$get_cost()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The sum of the cost of solving and scoring the evaluation.
+The sum only includes the cost from the most recent runs of the
+solver and scorer.
 }
 }
 \if{html}{\out{<hr>}}
