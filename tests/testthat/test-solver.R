@@ -1,8 +1,8 @@
 test_that("generate works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   library(ellmer)
 
-  res <- generate(chat_anthropic(model = "claude-3-7-sonnet-latest"))
+  res <- generate(chat_openai(model = "gpt-4.1-nano"))
   expect_contains(class(res), "function")
 
   chat_res <- res(list("hey", "hi", "hello"))

@@ -1,5 +1,5 @@
 test_that("model_graded_qa works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   skip_on_cran()
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
@@ -15,7 +15,7 @@ test_that("model_graded_qa works", {
 
   tsk <- Task$new(
     dataset = simple_addition, 
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+    solver = generate(chat_openai(model = "gpt-4.1-nano")), 
     scorer = model_graded_qa()
   )
   
@@ -39,7 +39,7 @@ test_that("model_graded_qa works", {
 })
 
 test_that("model_graded_fact works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   skip_on_cran()
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
@@ -55,7 +55,7 @@ test_that("model_graded_fact works", {
 
   tsk <- Task$new(
     dataset = r_history, 
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+    solver = generate(chat_openai(model = "gpt-4.1-nano")), 
     scorer = model_graded_fact()
   )
   

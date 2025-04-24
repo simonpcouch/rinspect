@@ -1,5 +1,5 @@
 test_that("Task R6 class works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -13,7 +13,7 @@ test_that("Task R6 class works", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
   
@@ -38,7 +38,7 @@ test_that("Task R6 class works", {
 })
 
 test_that("Task with epochs works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -53,7 +53,7 @@ test_that("Task with epochs works", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
   
@@ -69,7 +69,7 @@ test_that("Task with epochs works", {
 })
 
 test_that("Task respects `$new(epochs)`", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -84,7 +84,7 @@ test_that("Task respects `$new(epochs)`", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa(),
     epochs = 2
   )
@@ -96,7 +96,7 @@ test_that("Task respects `$new(epochs)`", {
 })
 
 test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -111,7 +111,7 @@ test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa(),
     epochs = 2
   )
@@ -220,7 +220,7 @@ test_that("Task errors informatively with duplicate ids", {
 
 # solver ------------------------------------------------------------------
 test_that("set_solver works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -241,7 +241,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
+      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
     )
   }
   tsk$set_solver(new_solver)
@@ -254,7 +254,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -268,7 +268,7 @@ test_that("set_solver works", {
 })
 
 test_that("set_solver works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -289,7 +289,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
+      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
     )
   }
   tsk$set_solver(new_solver)
@@ -302,7 +302,7 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -317,7 +317,7 @@ test_that("set_solver works", {
 
 # scorer ------------------------------------------------------------------
 test_that("set_scorer works", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -332,7 +332,7 @@ test_that("set_scorer works", {
   solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
+      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
     )
   }
 
@@ -358,7 +358,7 @@ test_that("set_scorer works", {
   scorer_chat <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"))
+      scorer_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
     )
   }
   tsk$set_scorer(scorer_chat)
@@ -370,7 +370,7 @@ test_that("set_scorer works", {
   scorer_metadata <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest"), ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+      scorer_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
       scorer_metadata = c("beep", "bop")
     )
   }
@@ -383,7 +383,7 @@ test_that("set_scorer works", {
 
 # metrics ------------------------------------------------------------------
 test_that("default metrics are applied effectively", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -397,7 +397,7 @@ test_that("default metrics are applied effectively", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
     scorer = function(...) {list(
       score = factor(c("C", "C"), levels = c("I", "P", "C")))
     }
@@ -410,7 +410,7 @@ test_that("default metrics are applied effectively", {
 })
 
 test_that("task applies non-default metrics", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -425,7 +425,7 @@ test_that("task applies non-default metrics", {
   # via Task$new()...
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
     scorer = function(...) {list(
       score = factor(c("C", "C"), levels = c("I", "P", "C")))
     },
@@ -445,7 +445,7 @@ test_that("task applies non-default metrics", {
 })
 
 test_that("task errors informatively with bad metrics", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -461,7 +461,7 @@ test_that("task errors informatively with bad metrics", {
   expect_snapshot(
     tsk <- Task$new(
       dataset = simple_addition,
-      solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+      solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
       scorer = function(...) {list(
         score = factor(c("C", "C"), levels = c("I", "P", "C")))
       },
@@ -472,7 +472,7 @@ test_that("task errors informatively with bad metrics", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
     scorer = function(...) {list(
       score = factor(c("C", "C"), levels = c("I", "P", "C")))
     },
@@ -497,7 +497,7 @@ test_that("task errors informatively with bad metrics", {
 
 # misc ------------------------------------------------------------------
 test_that("task ids are deterministic", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
 
   tsk_1 <- 
     Task$new(
@@ -521,7 +521,7 @@ test_that("task ids are deterministic", {
 })
 
 test_that("Task completeness is tracked and preserved", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
   withr::local_options(cli.default_handler = function(...) { })
@@ -542,7 +542,7 @@ test_that("Task completeness is tracked and preserved", {
   
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = mock_scorer
   )
   
@@ -555,7 +555,7 @@ test_that("Task completeness is tracked and preserved", {
   tsk$score()
   expect_true(tsk$.__enclos_env__$private$scored)
   
-  tsk$set_solver(generate(chat_anthropic(model = "claude-3-7-sonnet-latest")))
+  tsk$set_solver(generate(chat_openai(model = "gpt-4.1-nano")))
   expect_false(tsk$.__enclos_env__$private$solved)
   
   tsk$solve()
@@ -581,7 +581,7 @@ test_that("Task completeness is tracked and preserved", {
   # test re-evaluation with epochs
   tsk_epochs <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = mock_scorer
   )
   
@@ -649,7 +649,7 @@ test_that("Task detects non-Chat objects in solver_chat", {
 })
 
 test_that("Task errors informatively with bad scorer output", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
@@ -662,7 +662,7 @@ test_that("Task errors informatively with bad scorer output", {
   
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = function(samples) {
       list(wrong_name = c("4", "5"))
     }
@@ -672,7 +672,7 @@ test_that("Task errors informatively with bad scorer output", {
 })
 
 test_that("Task detects non-Chat objects in scorer_chat", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
@@ -685,7 +685,7 @@ test_that("Task detects non-Chat objects in scorer_chat", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = function(samples) {
       list(
         score = c("4", "5"),
@@ -698,7 +698,7 @@ test_that("Task detects non-Chat objects in scorer_chat", {
 })
 
 test_that("token usage is logged correctly", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
@@ -710,19 +710,19 @@ test_that("token usage is logged correctly", {
   )
 
   # use a couple tokens to ensure non-NULL
-  chat_anthropic(model = "claude-3-7-sonnet-latest")$chat("hey!")
+  chat_openai(model = "gpt-4.1-nano")$chat("hey!")
   usage_before <- ellmer::token_usage()
-  usage_before <- dplyr::filter(usage_before, model == "claude-3-7-sonnet")
+  usage_before <- dplyr::filter(usage_before, model == "gpt-4.1-nano")
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
 
   tsk$solve()
   usage_after_solve <- ellmer::token_usage()
-  usage_after_solve <- dplyr::filter(usage_after_solve, model == "claude-3-7-sonnet")
+  usage_after_solve <- dplyr::filter(usage_after_solve, model == "gpt-4.1-nano")
   cost_after_solve <- tsk$get_cost()
   expect_equal(
     cost_after_solve$input,
@@ -735,7 +735,7 @@ test_that("token usage is logged correctly", {
 
   tsk$score()
   usage_after_score <- ellmer::token_usage()
-  usage_after_score <- dplyr::filter(usage_after_score, model == "claude-3-7-sonnet")
+  usage_after_score <- dplyr::filter(usage_after_score, model == "gpt-4.1-nano")
   cost_after_score <- tsk$get_cost()
   expect_equal(
     cost_after_score$input,
@@ -749,8 +749,8 @@ test_that("token usage is logged correctly", {
 
 
 test_that("token usage is logged correctly (with unrelated token usage)", {
-  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
+  skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   withr::local_options(cli.default_handler = function(...) { })
   local_mocked_bindings(interactive = function(...) FALSE)
@@ -762,20 +762,20 @@ test_that("token usage is logged correctly (with unrelated token usage)", {
   )
 
   # use a couple tokens to ensure non-NULL
-  chat_anthropic(model = "claude-3-7-sonnet-latest")$chat("hey!")
   chat_openai(model = "gpt-4.1-nano")$chat("hey!")
+  chat_anthropic(model = "claude-3-7-sonnet-latest")$chat("hey!")
   usage_before <- ellmer::token_usage()
-  usage_before <- dplyr::filter(usage_before, model == "claude-3-7-sonnet")
+  usage_before <- dplyr::filter(usage_before, model == "gpt-4.1-nano")
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
 
   tsk$solve()
   usage_after_solve <- ellmer::token_usage()
-  usage_after_solve <- dplyr::filter(usage_after_solve, model == "claude-3-7-sonnet")
+  usage_after_solve <- dplyr::filter(usage_after_solve, model == "gpt-4.1-nano")
   cost_after_solve <- tsk$get_cost()
   expect_equal(nrow(cost_after_solve), 1)
   expect_equal(
