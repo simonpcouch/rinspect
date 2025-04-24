@@ -20,11 +20,12 @@ translate_events_initialize <- function(sample) {
   solver_turns <- solver_chat$get_turns()
   
   time_user <- solver_turns[[1]]@completed
+  last_working_start <- attr(solver_turns[[length(solver_turns)]], "working_start")
   
   events <- list()
   events <- c(events, create_init_begin_event(time_user))
   events <- c(events, create_sample_init_event(solver_turns[[1]], sample, time_user))
-  events <- c(events, create_init_end_event(time_user))
+  events <- c(events, create_init_end_event(time_user, working_start = last_working_start))
   
   events
 }
@@ -36,9 +37,15 @@ translate_events_tool_use <- function(events, sample) {
   time_user <- solver_turns[[1]]@completed
 
   if (has_tool_calls(solver_turns)) {
-    events <- c(events, create_use_tools_begin_event(time_user))
+    events <- c(events, create_use_tools_begin_event(
+      time_user,
+      working_start = attr(solver_turns[[1]], "working_start")
+    ))
     events <- c(events, create_tool_state_event(time_user, solver_chat))
-    events <- c(events, create_use_tools_end_event(time_user))
+    events <- c(events, create_use_tools_end_event(
+      time_user,
+      working_start = attr(solver_turns[[length(solver_turns)]], "working_start")
+    ))
   }
   
   events
@@ -80,7 +87,7 @@ translate_events_solver <- function(events, sample) {
     }
   }
   
-  events <- c(events, create_solver_end_event(time_solver))
+  events <- c(events, create_solver_end_event(time_solver, attr(solver_turn, "working_start")))
   
   events
 }
@@ -91,10 +98,20 @@ translate_events_scorer <- function(events, sample) {
     scorer_turn <- scorer_chat$last_turn()
     time_scorer <- scorer_turn@completed
     
-    events <- c(events, create_scorer_begin_event(time_scorer))
-    events <- c(events, create_scoring_model_event(scorer_turn, sample, time_scorer))
+    events <- c(events, create_scorer_begin_event(
+      time_scorer,
+      attr(scorer_turn, "working_start")
+    ))
+    events <- c(events, create_scoring_model_event(
+      scorer_turn,
+      sample,
+      time_scorer
+    ))
     events <- c(events, create_score_event(scorer_turn, sample, time_scorer))
-    events <- c(events, create_scorer_end_event(time_scorer))
+    events <- c(events, create_scorer_end_event(
+      time_scorer,
+      attr(scorer_turn, "working_start")
+    ))
   }
   
   events
@@ -104,7 +121,7 @@ translate_events_scorer <- function(events, sample) {
 create_init_begin_event <- function(timestamp) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = 0,
     event = "step",
     action = "begin",
     name = "init"
@@ -116,7 +133,7 @@ create_sample_init_event <- function(turn, sample, timestamp) {
   
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(turn, "working_start"),
     event = "sample_init",
     sample = list(
       input = input_string(sample$input[[1]]),
@@ -145,20 +162,20 @@ create_sample_init_event <- function(turn, sample, timestamp) {
   ))
 }
 
-create_init_end_event <- function(timestamp) {
+create_init_end_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "end",
     name = "init"
   ))
 }
 
-create_use_tools_begin_event <- function(timestamp) {
+create_use_tools_begin_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "begin",
     type = "solver",
@@ -203,16 +220,16 @@ create_tool_state_event <- function(timestamp, chat) {
   
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(chat$get_turns()[[1]], "working_start"),
     event = "state",
     changes = tools_list
   ))
 }
 
-create_use_tools_end_event <- function(timestamp) {
+create_use_tools_end_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "end",
     type = "solver",
@@ -224,7 +241,7 @@ create_tool_event <- function(turn, tool_result) {
   timestamp <- turn@completed
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(turn, "working_start"),
     event = "tool",
     type = "function",
     id = tool_result@request@id,
@@ -233,14 +250,14 @@ create_tool_event <- function(turn, tool_result) {
     result = tool_result@value %||% as.character(tool_result@error),
     events = list(),
     completed = events_timestamp(timestamp),
-    working_time = 100000
+    working_time = attr(turn, "working_time")
   ))
 }
 
 create_solver_begin_event <- function(timestamp) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = 0,
     event = "step",
     action = "begin",
     type = "solver",
@@ -413,7 +430,7 @@ create_model_event <- function(turn, sample) {
   
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(turn, "working_start"),
     event = "model",
     model = solver_chat$get_model(),
     input = input_messages,
@@ -479,14 +496,14 @@ create_model_event <- function(turn, sample) {
       time = 100000
     ),
     completed = events_timestamp(timestamp),
-    working_time = 100000
+    working_time = attr(turn, "working_time")
   ))
 }
 
-create_solver_end_event <- function(timestamp) {
+create_solver_end_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "end",
     type = "solver",
@@ -494,10 +511,10 @@ create_solver_end_event <- function(timestamp) {
   ))
 }
 
-create_scorer_begin_event <- function(timestamp) {
+create_scorer_begin_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "begin",
     type = "scorer",
@@ -511,7 +528,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
   
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(turn, "working_start"),
     event = "model",
     model = scorer_chat$get_model(),
     input = list(
@@ -580,14 +597,14 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         time = 100000
       )),
     completed = events_timestamp(timestamp),
-    working_time = 100000
+    working_time = attr(turn, "working_time")
   ))
 }
 
 create_score_event <- function(turn, sample, timestamp) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = attr(turn, "working_start"),
     event = "score",
     score = list(
       value = "C",
@@ -619,10 +636,10 @@ create_score_event <- function(turn, sample, timestamp) {
   ))
 }
 
-create_scorer_end_event <- function(timestamp) {
+create_scorer_end_event <- function(timestamp, working_start) {
   list(list(
     timestamp = events_timestamp(timestamp),
-    working_start = 100000,
+    working_start = working_start,
     event = "step",
     action = "end",
     type = "scorer",
@@ -647,4 +664,53 @@ turn_tokens <- function(turn) {
     input_tokens_cache_read = 0,
     output_tokens = tokens_io[2]
   )
+}
+
+# log working_time and working_starts values by pre-computing them from the Chat
+# objects before mapping over turns (#97).
+# `working_start` is the clock time when a turn started minus the clock time 
+# when the first chat in the solver or scorer started, in seconds. 
+# `working_time` is the duration of the turn (completed time of the turn 
+# minus the completed time of the turn preceding it).
+add_working_times_to_turns <- function(chat) {
+  turns <- chat$get_turns()
+  
+  if (length(turns) < 2) {
+    return(chat)
+  }
+  
+  attr(turns[[1]], "working_time") <- NA_real_
+  for (i in 2:length(turns)) {
+    attr(turns[[i]], "working_time") <- 
+      as.numeric(difftime(
+        turns[[i - 1]]@completed,
+        turns[[i]]@completed,
+        units = "secs"
+      ))
+  }
+  
+  chat$set_turns(turns)
+  
+  chat
+}
+
+add_working_start_to_turns <- function(chat, first_turn_time) {
+  turns <- chat$get_turns()
+  
+  if (length(turns) < 2) {
+    return(chat)
+  }
+  
+  for (i in 1:length(turns)) {
+    attr(turns[[i]], "working_start") <- 
+      as.numeric(difftime(
+        first_turn_time,
+        turns[[i]]@completed,
+        units = "secs"
+      ))
+  }
+  
+  chat$set_turns(turns)
+  
+  chat
 }

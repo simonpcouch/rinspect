@@ -288,6 +288,8 @@ Task <- R6::R6Class("Task",
     #' @return The path to the logged file, invisibly.
     log = function(dir = vitals_log_dir()) {
       samples <- self$samples
+      samples <- private$add_working_times(samples)
+      samples <- private$add_working_starts(samples)
 
       eval_log <- eval_log(
         eval = translate_to_eval(
@@ -604,6 +606,44 @@ Task <- R6::R6Class("Task",
         })
         private[[slot]] <- diff_token_usage(initial_usage, final_usage)
       }, envir = env)
+    },
+
+    # log working_time values by pre-computing durations from the Chat
+    # objects before mapping over turns (#97)
+    add_working_times = function(samples) {
+      samples$solver_chat <- purrr::map(
+        samples$solver_chat,
+        add_working_times_to_turns
+      )
+
+      if ("scorer_chat" %in% names(samples)) {
+        samples$scorer_chat <- purrr::map(
+          samples$scorer_chat,
+          add_working_times_to_turns
+        )
+      }
+
+      samples
+    },
+
+    # log working_start values by pre-computing timings from the Chat
+    # objects before mapping over turns (#97)
+    add_working_starts = function(samples) {
+      samples$solver_chat <- purrr::map(
+        samples$solver_chat,
+        add_working_start_to_turns,
+        first_turn_time = samples$solver_chat[[1]]$get_turns()[[1]]@completed
+      )
+
+      if ("scorer_chat" %in% names(samples)) {
+        samples$scorer_chat <- purrr::map(
+          samples$scorer_chat,
+          add_working_start_to_turns,
+          first_turn_time = samples$scorer_chat[[1]]$get_turns()[[1]]@completed
+        )
+      }
+
+      samples
     },
 
     # The output of `logged(solver)(...)`
