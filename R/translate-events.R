@@ -18,36 +18,54 @@ translate_to_events <- function(sample) {
 translate_events_initialize <- function(sample) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
-  
+
   time_user <- solver_turns[[1]]@completed
-  last_working_start <- attr(solver_turns[[length(solver_turns)]], "working_start")
-  
+  last_working_start <- attr(
+    solver_turns[[length(solver_turns)]],
+    "working_start"
+  )
+
   events <- list()
   events <- c(events, create_init_begin_event(time_user))
-  events <- c(events, create_sample_init_event(solver_turns[[1]], sample, time_user))
-  events <- c(events, create_init_end_event(time_user, working_start = last_working_start))
-  
+  events <- c(
+    events,
+    create_sample_init_event(solver_turns[[1]], sample, time_user)
+  )
+  events <- c(
+    events,
+    create_init_end_event(time_user, working_start = last_working_start)
+  )
+
   events
 }
 
 translate_events_tool_use <- function(events, sample) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
-  
+
   time_user <- solver_turns[[1]]@completed
 
   if (has_tool_calls(solver_turns)) {
-    events <- c(events, create_use_tools_begin_event(
-      time_user,
-      working_start = attr(solver_turns[[1]], "working_start")
-    ))
+    events <- c(
+      events,
+      create_use_tools_begin_event(
+        time_user,
+        working_start = attr(solver_turns[[1]], "working_start")
+      )
+    )
     events <- c(events, create_tool_state_event(time_user, solver_chat))
-    events <- c(events, create_use_tools_end_event(
-      time_user,
-      working_start = attr(solver_turns[[length(solver_turns)]], "working_start")
-    ))
+    events <- c(
+      events,
+      create_use_tools_end_event(
+        time_user,
+        working_start = attr(
+          solver_turns[[length(solver_turns)]],
+          "working_start"
+        )
+      )
+    )
   }
-  
+
   events
 }
 
@@ -55,40 +73,51 @@ translate_events_solver <- function(events, sample) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
   solver_turn <- solver_chat$last_turn()
-  
+
   time_user <- solver_turns[[1]]@completed
   time_solver <- solver_turn@completed
-  
+
   # From here, the solver logging goes turn-by-turn. For each turn, log
   # the content from that turn as well as the "state" (e.g. previous response
   # history) at that time. Tool calls are logged with a single event, where the
   # "model" event preceding it functions doubly as a user event calling the tool.
   events <- c(events, create_solver_begin_event(time_user))
-  
+
   for (i in seq_along(solver_turns)) {
     if (i == 1) {
       # First turn is the user query, skip it
       next
     }
-    
+
     turn <- solver_turns[[i]]
-    
+
     # For a tool response turn
-    if (length(turn@contents) == 1 && inherits(turn@contents[[1]], "ellmer::ContentToolResult")) {
+    if (
+      length(turn@contents) == 1 &&
+        inherits(turn@contents[[1]], "ellmer::ContentToolResult")
+    ) {
       tool_result <- turn@contents[[1]]
       events <- c(events, create_tool_event(turn, tool_result))
       next
     }
-    
+
     # If we're at the last turn or this is a turn with tool requests
-    if (i == length(solver_turns) || 
-        any(sapply(turn@contents, function(ct) inherits(ct, "ellmer::ContentToolRequest")))) {
+    if (
+      i == length(solver_turns) ||
+        any(sapply(
+          turn@contents,
+          function(ct) inherits(ct, "ellmer::ContentToolRequest")
+        ))
+    ) {
       events <- c(events, create_model_event(turn, sample))
     }
   }
-  
-  events <- c(events, create_solver_end_event(time_solver, attr(solver_turn, "working_start")))
-  
+
+  events <- c(
+    events,
+    create_solver_end_event(time_solver, attr(solver_turn, "working_start"))
+  )
+
   events
 }
 
@@ -97,23 +126,32 @@ translate_events_scorer <- function(events, sample) {
     scorer_chat <- sample$scorer_chat[[1]]
     scorer_turn <- scorer_chat$last_turn()
     time_scorer <- scorer_turn@completed
-    
-    events <- c(events, create_scorer_begin_event(
-      time_scorer,
-      attr(scorer_turn, "working_start")
-    ))
-    events <- c(events, create_scoring_model_event(
-      scorer_turn,
-      sample,
-      time_scorer
-    ))
+
+    events <- c(
+      events,
+      create_scorer_begin_event(
+        time_scorer,
+        attr(scorer_turn, "working_start")
+      )
+    )
+    events <- c(
+      events,
+      create_scoring_model_event(
+        scorer_turn,
+        sample,
+        time_scorer
+      )
+    )
     events <- c(events, create_score_event(scorer_turn, sample, time_scorer))
-    events <- c(events, create_scorer_end_event(
-      time_scorer,
-      attr(scorer_turn, "working_start")
-    ))
+    events <- c(
+      events,
+      create_scorer_end_event(
+        time_scorer,
+        attr(scorer_turn, "working_start")
+      )
+    )
   }
-  
+
   events
 }
 
@@ -130,7 +168,7 @@ create_init_begin_event <- function(timestamp) {
 
 create_sample_init_event <- function(turn, sample, timestamp) {
   user_message_id <- generate_id()
-  
+
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(turn, "working_start"),
@@ -185,17 +223,17 @@ create_use_tools_begin_event <- function(timestamp, working_start) {
 
 create_tool_state_event <- function(timestamp, chat) {
   tools_list <- list()
-  
+
   if (length(chat$get_tools()) > 0) {
     tool_defs <- chat$get_tools()
-    
+
     for (i in seq_along(tool_defs)) {
       tool_def <- tool_defs[[i]]
       tool_name <- names(tool_defs)[i]
-      
+
       tool_info <- list(
         op = "add",
-        path = paste0("/tools/", i-1),
+        path = paste0("/tools/", i - 1),
         value = list(
           name = tool_name,
           description = tool_def@description,
@@ -207,17 +245,20 @@ create_tool_state_event <- function(timestamp, chat) {
           )
         )
       )
-      
+
       tools_list <- append(tools_list, list(tool_info))
     }
   }
-  
-  tools_list <- append(tools_list, list(list(
-    op = "replace",
-    path = "/tool_choice",
-    value = "auto"
-  )))
-  
+
+  tools_list <- append(
+    tools_list,
+    list(list(
+      op = "replace",
+      path = "/tool_choice",
+      value = "auto"
+    ))
+  )
+
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(chat$get_turns()[[1]], "working_start"),
@@ -268,25 +309,27 @@ create_solver_begin_event <- function(timestamp) {
 create_model_event <- function(turn, sample) {
   user_message_id <- generate_id()
   solver_chat <- sample$solver_chat[[1]]
-  
+
   turns <- solver_chat$get_turns()
   previous_turns <- list()
-  
+
   for (j in seq_along(turns)) {
     if (identical(turns[[j]], turn)) {
       break
     }
     previous_turns[[length(previous_turns) + 1]] <- turns[[j]]
   }
-  
+
   input_messages <- lapply(previous_turns, function(prev_turn) {
     if (prev_turn@role == "user") {
-      if (length(prev_turn@contents) == 1 && 
-          inherits(prev_turn@contents[[1]], "ellmer::ContentToolResult")) {
+      if (
+        length(prev_turn@contents) == 1 &&
+          inherits(prev_turn@contents[[1]], "ellmer::ContentToolResult")
+      ) {
         tool_result <- prev_turn@contents[[1]]
         return(list(
           id = generate_id(),
-          content = tool_result@value  %||% as.character(tool_result@error),
+          content = tool_result@value %||% as.character(tool_result@error),
           role = "tool",
           tool_call_id = tool_result@request@id,
           `function` = tool_result@request@name
@@ -306,11 +349,11 @@ create_model_event <- function(turn, sample) {
         source = "generate",
         role = "assistant"
       )
-      
+
       tool_requests <- purrr::keep(prev_turn@contents, function(content) {
         inherits(content, "ellmer::ContentToolRequest")
       })
-      
+
       if (length(tool_requests) > 0) {
         tool_calls <- lapply(tool_requests, function(req) {
           list(
@@ -319,24 +362,24 @@ create_model_event <- function(turn, sample) {
             arguments = req@arguments
           )
         })
-        
+
         message$tool_calls <- tool_calls
       }
-      
+
       return(message)
     }
   })
-  
+
   has_tool_calls_in_turn <- any(sapply(turn@contents, function(content) {
     inherits(content, "ellmer::ContentToolRequest")
   }))
-  
+
   tool_calls_list <- list()
   if (has_tool_calls_in_turn) {
     tool_requests <- purrr::keep(turn@contents, function(content) {
       inherits(content, "ellmer::ContentToolRequest")
     })
-    
+
     tool_calls_list <- lapply(tool_requests, function(req) {
       list(
         id = req@id,
@@ -345,16 +388,16 @@ create_model_event <- function(turn, sample) {
       )
     })
   }
-  
+
   stop_reason <- ifelse(has_tool_calls_in_turn, "tool_calls", "stop")
-  
+
   tools_list <- list()
   if (length(solver_chat$get_tools()) > 0) {
     tools <- solver_chat$get_tools()
     tools_list <- lapply(seq_along(tools), function(i) {
       tool <- tools[[i]]
       tool_name <- names(tools)[i]
-      
+
       list(
         name = tool_name,
         description = tool@description,
@@ -367,20 +410,20 @@ create_model_event <- function(turn, sample) {
       )
     })
   }
-  
+
   output_message <- list(
     id = generate_id(),
     content = list(list(type = "text", text = turn@text)),
     source = "generate",
     role = "assistant"
   )
-  
+
   if (has_tool_calls_in_turn) {
     output_message$tool_calls <- tool_calls_list
   }
-  
+
   output_message$model <- solver_chat$get_model()
-  
+
   request_messages <- lapply(input_messages, function(msg) {
     if (msg$role == "tool") {
       return(list(
@@ -389,7 +432,7 @@ create_model_event <- function(turn, sample) {
           tool_use_id = msg$tool_call_id,
           type = "tool_result",
           content = list(list(type = "text", text = msg$content)),
-          # This depends specifically on previous helpers using 
+          # This depends specifically on previous helpers using
           # `as_character()` on conditions to extract error messages
           is_error = grepl("Error in", msg$content)
         ))
@@ -409,12 +452,12 @@ create_model_event <- function(turn, sample) {
             input = tc$arguments
           )
         })
-        
+
         combined_content <- c(
           list(list(type = "text", text = msg$content[[1]]$text)),
           tool_use_elements
         )
-        
+
         return(list(
           role = "assistant",
           content = combined_content
@@ -427,7 +470,7 @@ create_model_event <- function(turn, sample) {
       }
     }
   })
-  
+
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(turn, "working_start"),
@@ -454,7 +497,8 @@ create_model_event <- function(turn, sample) {
       request = list(
         messages = request_messages,
         tools = tools_list,
-        tool_choice = if (length(tools_list) > 0) list(type = "auto") else "none",
+        tool_choice = if (length(tools_list) > 0) list(type = "auto") else
+          "none",
         model = solver_chat$get_model(),
         max_tokens = 4096,
         extra_headers = list(
@@ -525,7 +569,7 @@ create_scorer_begin_event <- function(timestamp, working_start) {
 create_scoring_model_event <- function(turn, sample, timestamp) {
   user_id <- generate_id()
   scorer_chat <- sample$scorer_chat[[1]]
-  
+
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(turn, "working_start"),
@@ -595,7 +639,8 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         type = "message",
         usage = turn_tokens(turn),
         time = 100000
-      )),
+      )
+    ),
     completed = events_timestamp(timestamp),
     working_time = attr(turn, "working_time")
   ))
@@ -651,8 +696,11 @@ create_scorer_end_event <- function(timestamp, working_start) {
 # the events log the timestamp a bit differently than everywhere
 # else in the log
 events_timestamp <- function(time) {
-  sub(pattern = "(\\d{2})(\\d{2})$", replacement = "\\1:\\2", 
-    x = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z"))
+  sub(
+    pattern = "(\\d{2})(\\d{2})$",
+    replacement = "\\1:\\2",
+    x = format(Sys.time(), "%Y-%m-%dT%H:%M:%OS6%z")
+  )
 }
 
 turn_tokens <- function(turn) {
@@ -668,49 +716,49 @@ turn_tokens <- function(turn) {
 
 # log working_time and working_starts values by pre-computing them from the Chat
 # objects before mapping over turns (#97).
-# `working_start` is the clock time when a turn started minus the clock time 
-# when the first chat in the solver or scorer started, in seconds. 
-# `working_time` is the duration of the turn (completed time of the turn 
+# `working_start` is the clock time when a turn started minus the clock time
+# when the first chat in the solver or scorer started, in seconds.
+# `working_time` is the duration of the turn (completed time of the turn
 # minus the completed time of the turn preceding it).
 add_working_times_to_turns <- function(chat) {
   turns <- chat$get_turns()
-  
+
   if (length(turns) < 2) {
     return(chat)
   }
-  
+
   attr(turns[[1]], "working_time") <- NA_real_
   for (i in 2:length(turns)) {
-    attr(turns[[i]], "working_time") <- 
+    attr(turns[[i]], "working_time") <-
       as.numeric(difftime(
         turns[[i - 1]]@completed,
         turns[[i]]@completed,
         units = "secs"
       ))
   }
-  
+
   chat$set_turns(turns)
-  
+
   chat
 }
 
 add_working_start_to_turns <- function(chat, first_turn_time) {
   turns <- chat$get_turns()
-  
+
   if (length(turns) < 2) {
     return(chat)
   }
-  
+
   for (i in 1:length(turns)) {
-    attr(turns[[i]], "working_start") <- 
+    attr(turns[[i]], "working_start") <-
       as.numeric(difftime(
         first_turn_time,
         turns[[i]]@completed,
         units = "secs"
       ))
   }
-  
+
   chat$set_turns(turns)
-  
+
   chat
 }

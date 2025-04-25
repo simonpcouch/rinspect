@@ -14,7 +14,9 @@ test_that("vitals_view() errors informatively on failure to restart", {
   suppressMessages(vitals_view(log_dir))
 
   testthat::local_mocked_bindings(
-    stopServer = function(...) {rlang::abort("no way!")},
+    stopServer = function(...) {
+      rlang::abort("no way!")
+    },
     .package = "httpuv"
   )
   expect_snapshot(vitals_view(log_dir), error = TRUE)

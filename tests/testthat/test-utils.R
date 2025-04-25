@@ -21,7 +21,6 @@ test_that("is_testing works", {
 
   withr::local_envvar(TESTTHAT = "false")
   expect_false(is_testing())
-
 })
 
 test_that("check_inherits works", {
@@ -45,6 +44,12 @@ test_that("solver_chat works", {
 test_that("check_log_dir warns informatively", {
   withr::local_envvar(VITALS_LOG_DIR = NA)
   expect_snapshot(
-    res <- Task$new(tibble(input = 1, target = 1), function() {}, function() {})
+    res <- Task$new(
+      tibble(input = 1, target = 1),
+      function() {
+      },
+      function() {
+      }
+    )
   )
 })

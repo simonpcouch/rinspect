@@ -13,62 +13,62 @@
 #' [model_graded_qa()]), or other custom schemes.
 #'
 #' **The usual flow of LLM evaluation with Tasks calls `$new()` and then `$eval()`.**
-#' `$eval()` just calls `$solve()`, `$score()`, `$measure()`, `$log()`, 
-#' and `$view()` in order. The remaining methods are generally only 
+#' `$eval()` just calls `$solve()`, `$score()`, `$measure()`, `$log()`,
+#' and `$view()` in order. The remaining methods are generally only
 #' recommended for expert use.
-#' 
+#'
 #' @param solver A function that takes a vector of inputs from the
-#' dataset's `input` column as its first argument and determines values 
-#' approximating `dataset$target`. Its return value must be a list with 
+#' dataset's `input` column as its first argument and determines values
+#' approximating `dataset$target`. Its return value must be a list with
 #' the following elements:
-#' 
-#' * `result` - A character vector of the final responses, with the same length 
+#'
+#' * `result` - A character vector of the final responses, with the same length
 #'   as `dataset$input`.
-#' * `solver_chat` - A list of ellmer Chat objects that were used to solve 
+#' * `solver_chat` - A list of ellmer Chat objects that were used to solve
 #'   each input, also with the same length as `dataset$input`.
-#' 
+#'
 #' Additional output elements can be included in a slot `solver_metadata` that
-#' has the same length as `dataset$input`, which will be logged in 
+#' has the same length as `dataset$input`, which will be logged in
 #' `solver_metadata`.
-#' 
+#'
 #' Additional arguments can be passed to the solver via `$solve(...)`
 #' or `$eval(...)`. See the definition of [generate()] for a function that
 #' outputs a valid solver that just passes inputs to ellmer Chat objects'
 #' `$chat()` method in parallel.
-#' 
+#'
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`. The function
-#' should take in the `$samples` slot of a Task object and return a list with 
+#' should take in the `$samples` slot of a Task object and return a list with
 #' the following elements:
 #'
-#' * `score` - A vector of scores with length equal to `nrow(samples)`. 
+#' * `score` - A vector of scores with length equal to `nrow(samples)`.
 #'   Built-in scorers return ordered factors with
 #'   levels `I` < `P` (optionally) < `C` (standing for "Incorrect", "Partially
 #'   Correct", and "Correct"). If your scorer returns this output type, the
 #'   package will automatically calculate metrics.
-#' 
-#' Optionally: 
-#' * `scorer_chat` - If your scorer makes use of ellmer, also include a list of 
-#'   ellmer Chat objects that were used to score each result, also with 
+#'
+#' Optionally:
+#' * `scorer_chat` - If your scorer makes use of ellmer, also include a list of
+#'   ellmer Chat objects that were used to score each result, also with
 #'   length `nrow(samples)`.
 #' * `scorer_metadata` - Any intermediate results or other values that you'd
-#'   like to be stored in the persistent log. This should also have length 
+#'   like to be stored in the persistent log. This should also have length
 #'   equal to `nrow(samples)`.
-#' 
-#' Scorers will probably make use of `samples$input`, `samples$target`, and 
-#' `samples$result` specifically. See [model-based scoring][scorer_model] 
+#'
+#' Scorers will probably make use of `samples$input`, `samples$target`, and
+#' `samples$result` specifically. See [model-based scoring][scorer_model]
 #' for examples.
-#' 
+#'
 #' @param metrics A named list of functions that take in a vector of scores
 #' (as in `task$samples$score`) and output a single numeric value.
-#' 
+#'
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
-#' multiple times to better quantify variation. Optional, defaults to `1L`. 
-#' The value of `epochs` supplied to `$eval()` or `$score()` will take 
+#' multiple times to better quantify variation. Optional, defaults to `1L`.
+#' The value of `epochs` supplied to `$eval()` or `$score()` will take
 #' precedence over the value in `$new()`.
-#' 
-#' @seealso [generate()] for the simplest possible solver, and 
-#' [scorer_model] and [scorer_detect] for two built-in approaches to 
+#'
+#' @seealso [generate()] for the simplest possible solver, and
+#' [scorer_model] and [scorer_detect] for two built-in approaches to
 #' scoring.
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -93,15 +93,16 @@
 #' }
 #'
 #' @export
-Task <- R6::R6Class("Task",
+Task <- R6::R6Class(
+  "Task",
   lock_objects = FALSE,
   public = list(
     #' @field dir The directory where evaluation logs will be written to. Defaults
-    #' to `vitals_log_dir()`. 
+    #' to `vitals_log_dir()`.
     dir = vitals_log_dir(),
 
     #' @field samples A tibble representing the evaluation. Based on the `dataset`,
-    #' `epochs` may duplicate rows, and the solver and scorer will append 
+    #' `epochs` may duplicate rows, and the solver and scorer will append
     #' columns to this data.
     samples = NULL,
 
@@ -140,10 +141,14 @@ Task <- R6::R6Class("Task",
       # TODO: for non-built in scorers, what to do?
       check_metrics(metrics)
       check_number_whole(epochs, min = 1, allow_null = TRUE)
-      
+
       # dataset names can contain dashes or alphanumerics--transition
       # underscores and spaces to dashes (#92)
-      private$dataset_name <- gsub("[^[:alnum:]\\-]", "", gsub("_| ", "-", name))
+      private$dataset_name <- gsub(
+        "[^[:alnum:]\\-]",
+        "",
+        gsub("_| ", "-", name)
+      )
       self$dir <- dir
       private$solver <- logged(solver, fn_name = solver_name)
       private$scorer <- logged(scorer, fn_name = scorer_name)
@@ -159,10 +164,10 @@ Task <- R6::R6Class("Task",
     },
 
     #' @description
-    #' Evaluates the task by running the solver, scorer, logging results, and 
-    #' viewing (if interactive). This method works by calling `$solve()`, 
+    #' Evaluates the task by running the solver, scorer, logging results, and
+    #' viewing (if interactive). This method works by calling `$solve()`,
     #' `$score()`, `$log()`, and `$view()` in sequence.
-    #' 
+    #'
     #' The typical flow of LLM evaluation with vitals tends to involve first
     #' calling `$new()` and then this method on the resulting object.
     #'
@@ -173,7 +178,7 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     eval = function(..., epochs = NULL, view = interactive()) {
       check_number_whole(epochs, min = 1, allow_null = TRUE)
-      
+
       if (private$solved || private$scored) {
         private$reset_for_new_eval()
       }
@@ -204,7 +209,7 @@ Task <- R6::R6Class("Task",
     #' @return The Task object (invisibly)
     solve = function(..., epochs = NULL) {
       check_number_whole(epochs, min = 1, allow_null = TRUE)
-      
+
       if (private$solved) {
         private$reset_for_new_eval()
       }
@@ -212,7 +217,7 @@ Task <- R6::R6Class("Task",
       self$samples <- join_epochs(self$samples, epochs %||% private$epochs)
 
       private$run_id <- generate_id()
-      
+
       self$samples$result <- NA
       self$samples$solver_chat <- NA
 
@@ -243,26 +248,26 @@ Task <- R6::R6Class("Task",
         )
         return(invisible(self))
       }
-      
+
       self$samples$score <- NA
-      
+
       private$track_token_usage("scorer_token_usage")
       private$scores <- private$scorer(self$samples, ...)
       private$check_scorer_outputs()
       private$cbind_scores()
-      
+
       private$scored <- TRUE
       invisible(self)
     },
 
     #' @description
     #' Applies metrics to a scored Task.
-    #' 
+    #'
     measure = function() {
       if (!private$scored) {
-         cli::cli_abort(
+        cli::cli_abort(
           "Task has not been scored yet. Run task$score() first."
-         )
+        )
       }
 
       if (!is.null(private$metric_fns)) {
@@ -272,7 +277,11 @@ Task <- R6::R6Class("Task",
       }
 
       private$check_metric_output()
-      self$metrics <- purrr::map_dbl(private$metric_results, purrr::pluck, "value")
+      self$metrics <- purrr::map_dbl(
+        private$metric_results,
+        purrr::pluck,
+        "value"
+      )
 
       invisible(self)
     },
@@ -297,8 +306,8 @@ Task <- R6::R6Class("Task",
           task = private$dataset_name,
           task_id = private$task_id,
           dataset = list(
-            samples = length(unique(samples$id)), 
-            sample_ids = as.list(seq_len(length(unique(samples$id)))), 
+            samples = length(unique(samples$id)),
+            sample_ids = as.list(seq_len(length(unique(samples$id)))),
             shuffled = FALSE
           ),
           model = samples$solver_chat[[1]]$get_model(),
@@ -306,10 +315,12 @@ Task <- R6::R6Class("Task",
             name = samples$scorer[[1]]
           )
         ),
-        plan = translate_to_plan(steps = translate_to_plan_steps(
-          name = private$solutions$name,
-          arguments = private$solutions$arguments
-        )),
+        plan = translate_to_plan(
+          steps = translate_to_plan_steps(
+            name = private$solutions$name,
+            arguments = private$solutions$arguments
+          )
+        ),
         results = translate_to_results(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
@@ -319,7 +330,9 @@ Task <- R6::R6Class("Task",
           )
         ),
         stats = translate_to_stats(
-          started_at = eval_log_timestamp(samples$solver_chat[[1]]$get_turns()[[1]]@completed),
+          started_at = eval_log_timestamp(
+            samples$solver_chat[[1]]$get_turns()[[1]]@completed
+          ),
           completed_at = translate_to_completed_at(samples),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
@@ -355,56 +368,56 @@ Task <- R6::R6Class("Task",
       vitals_view(self$dir)
       invisible(self)
     },
-    
+
     #' @description
     #' Set the solver function
-    #' 
+    #'
     #' @return The Task object (invisibly)
     set_solver = function(solver) {
       solver_name <- deparse(substitute(solver))
       private$solver <- logged(solver, fn_name = solver_name)
-      
+
       private$reset_solutions()
-      
+
       invisible(self)
     },
-    
+
     #' @description
     #' Set the scorer function
-    #' 
+    #'
     #' @return The Task object (invisibly)
     set_scorer = function(scorer) {
       scorer_name <- deparse(substitute(scorer))
       private$scorer <- logged(scorer, fn_name = scorer_name)
       private$reset_scores()
-      
+
       invisible(self)
     },
-    
+
     #' @description
     #' Set the metrics that will be applied in `$measure()` (and thus `$eval()`).
-    #' 
+    #'
     #' @return The Task (invisibly)
     set_metrics = function(metrics) {
       metrics_name <- deparse(substitute(metrics))
-    
+
       if (is.null(metrics)) {
         private$metric_fns <- NULL
       }
-    
+
       check_metrics(metrics)
       private$metric_fns <- metrics
       private$reset_metrics()
-    
+
       invisible(self)
     },
 
     #' @description The cost of this eval
-    #' This is a wrapper around ellmer's `$token_usage()` function. 
+    #' This is a wrapper around ellmer's `$token_usage()` function.
     #' That function is called at the beginning and end of each call to
     #' `$solve()` and `$score()`; this function returns the cost inferred
     #' by taking the differences in values of `$token_usage()` over time.
-    #' 
+    #'
     #' @return The sum of the cost of solving and scoring the evaluation.
     #' The sum only includes the cost from the most recent runs of the
     #' solver and scorer.
@@ -421,11 +434,11 @@ Task <- R6::R6Class("Task",
 
   private = list(
     dataset_name = NULL,
-    
+
     solver = NULL,
     solver_token_usage = NULL,
     solved = FALSE,
-    
+
     scorer = NULL,
     scorer_token_usage = NULL,
     scored = FALSE,
@@ -441,7 +454,7 @@ Task <- R6::R6Class("Task",
       env$.last_task <- self
       invisible(NULL)
     },
-    
+
     reset_solutions = function() {
       self$samples$result <- NA
       self$samples$solver_chat <- NULL
@@ -459,7 +472,7 @@ Task <- R6::R6Class("Task",
 
       invisible(NULL)
     },
-    
+
     reset_scores = function() {
       self$samples$score <- NA
       self$samples$scorer_chat <- NULL
@@ -476,7 +489,7 @@ Task <- R6::R6Class("Task",
     reset_metrics = function() {
       self$metrics <- NULL
     },
-    
+
     reset_for_new_eval = function() {
       private$reset_solutions()
       private$reset_scores()
@@ -484,11 +497,13 @@ Task <- R6::R6Class("Task",
     },
 
     check_solver_outputs = function() {
-      if (!all(c("result", "solver_chat") %in% names(private$solutions$value))) {
+      if (
+        !all(c("result", "solver_chat") %in% names(private$solutions$value))
+      ) {
         cli::cli_abort(
           "{.arg solver} must return slots {.field result} and 
            {.field solver_chat}.",
-           call = call2("$solve()")
+          call = call2("$solve()")
         )
       }
 
@@ -497,7 +512,7 @@ Task <- R6::R6Class("Task",
         cli::cli_abort(
           "Elements in the {.field solver_chat} output from {.arg solver} must be
            ellmer Chat objects, not {.obj_type_friendly {first_solver_chat}}.",
-           call = call2("$solve()")
+          call = call2("$solve()")
         )
       }
     },
@@ -506,7 +521,7 @@ Task <- R6::R6Class("Task",
       if (!"score" %in% names(private$scores$value)) {
         cli::cli_abort(
           "{.arg scorer} must return a list with (at least) the slot {.field score}.",
-           call = call2("$score()")
+          call = call2("$score()")
         )
       }
 
@@ -519,7 +534,7 @@ Task <- R6::R6Class("Task",
         cli::cli_abort(
           "Elements in the {.field scorer_chat} output from {.arg scorer} must be
            ellmer Chat objects, not {.obj_type_friendly {first_scorer_chat}}.",
-           call = call2("$score()")
+          call = call2("$score()")
         )
       }
     },
@@ -528,9 +543,11 @@ Task <- R6::R6Class("Task",
       for (metric_result in private$metric_results) {
         if (!is.numeric(metric_result$value)) {
           cli::cli_abort(
-            c("Each metric function must return a single numeric value",
+            c(
+              "Each metric function must return a single numeric value",
               "{.fun {metric_result$name}} returned 
-               {.obj_type_friendly {metric_result$value}}"),
+               {.obj_type_friendly {metric_result$value}}"
+            ),
             call = call2("measure")
           )
         }
@@ -563,7 +580,7 @@ Task <- R6::R6Class("Task",
 
     # For a named list of metric functions, apply each as `logged(fn_i)(scores)`
     apply_metrics = function() {
-      private$metric_results <- 
+      private$metric_results <-
         purrr::map2(
           private$metric_fns,
           names(private$metric_fns),
@@ -576,21 +593,23 @@ Task <- R6::R6Class("Task",
 
     # A default metric, mirroring the default accuracy in Inspect
     apply_naive_accuracy = function() {
-      if (is.factor(self$samples$score) && 
-        (any(c("C", "I") %in% levels(self$samples$score)))) {
-       # map factor to numeric for a simple accuracy (#51, #53)
-       numeric_scores <- as.numeric(self$samples$score) - 1
-       numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
-       private$metric_results <- 
-         list2(
-           accuracy = logged(accuracy)(numeric_scores)
-         )
-     } else if (is.numeric(self$samples$score)) {
-       private$metric_results <- 
-         list2(
-           accuracy = logged(accuracy)(self$samples$score)
-         )
-     }
+      if (
+        is.factor(self$samples$score) &&
+          (any(c("C", "I") %in% levels(self$samples$score)))
+      ) {
+        # map factor to numeric for a simple accuracy (#51, #53)
+        numeric_scores <- as.numeric(self$samples$score) - 1
+        numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
+        private$metric_results <-
+          list2(
+            accuracy = logged(accuracy)(numeric_scores)
+          )
+      } else if (is.numeric(self$samples$score)) {
+        private$metric_results <-
+          list2(
+            accuracy = logged(accuracy)(self$samples$score)
+          )
+      }
     },
 
     # `slot` is one of "solver_token_usage" or "scorer_token_usage"
@@ -599,13 +618,16 @@ Task <- R6::R6Class("Task",
       suppressMessages({
         initial_usage <- ellmer::token_usage()
       })
-      
-      withr::defer({
-        suppressMessages({
-          final_usage <- ellmer::token_usage()
-        })
-        private[[slot]] <- diff_token_usage(initial_usage, final_usage)
-      }, envir = env)
+
+      withr::defer(
+        {
+          suppressMessages({
+            final_usage <- ellmer::token_usage()
+          })
+          private[[slot]] <- diff_token_usage(initial_usage, final_usage)
+        },
+        envir = env
+      )
     },
 
     # log working_time values by pre-computing durations from the Chat
@@ -671,7 +693,9 @@ Task <- R6::R6Class("Task",
 print.Task <- function(x, ...) {
   dataset_name <- x$.__enclos_env__$private$dataset_name
 
-  cli::cat_line(cli::format_inline("An evaluation {cli::col_blue('task')} {.field {dataset_name}}."))
+  cli::cat_line(cli::format_inline(
+    "An evaluation {cli::col_blue('task')} {.field {dataset_name}}."
+  ))
 
   if ("score" %in% names(x$samples)) {
     cli::cat_line(cli::format_inline(
@@ -702,13 +726,15 @@ check_dataset <- function(dataset, call = caller_env()) {
 # Must be a named list of functions.
 check_metrics <- function(metrics, call = caller_env()) {
   if (is.null(metrics)) return()
-  
-  if (!is.list(metrics) ||
-      (is.list(metrics) && !is_named(metrics))) {
+
+  if (
+    !is.list(metrics) ||
+      (is.list(metrics) && !is_named(metrics))
+  ) {
     cli::cli_abort(
       "{.arg metrics} must be a named list of functions or NULL, 
        not {.obj_type_friendly {metrics}}",
-       call = call
+      call = call
     )
   }
 
@@ -730,7 +756,7 @@ set_id_column <- function(dataset, call = caller_env()) {
   } else {
     dataset$id <- seq_len(nrow(dataset))
   }
-  
+
   invisible(dataset)
 }
 
@@ -790,7 +816,7 @@ diff_token_usage <- function(before, after) {
     res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
   }
   res <- dplyr::select(res, provider, model, input, output, any_of("price"))
-  
+
   dplyr::filter(res, input != 0 | output != 0)
 }
 
@@ -817,7 +843,7 @@ sum_token_usage <- function(solver, scorer) {
     )
   }
   res <- dplyr::select(res, provider, model, input, output, any_of("price"))
-  
+
   res
 }
 

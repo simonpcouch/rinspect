@@ -1,5 +1,5 @@
 # concatenate the json files in `data-raw/are`
-are <- 
+are <-
   list.files("data-raw/are", pattern = "*.json", full.names = TRUE) %>%
   purrr::map(function(.x) {
     .x <- jsonlite::fromJSON(.x)

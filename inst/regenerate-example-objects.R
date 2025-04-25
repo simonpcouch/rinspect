@@ -26,13 +26,13 @@ regenerate_example_task <- function() {
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-    
+
   tsk <- Task$new(
-    dataset = simple_addition, 
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = model_graded_qa()
   )
-  
+
   tsk$eval()
   save(tsk, file = "inst/test/example-task.rda")
 }
@@ -53,7 +53,9 @@ regenerate_are_1e <- function() {
     pattern = "\\.json$",
     full.names = TRUE
   )
-  if (length(json_files) > 0) {file.remove(json_files)}
+  if (length(json_files) > 0) {
+    file.remove(json_files)
+  }
 
   withr::local_envvar(VITALS_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/vitals.Rmd')
@@ -68,7 +70,9 @@ regenerate_are_custom_solvers <- function() {
     pattern = "\\.json$",
     full.names = TRUE
   )
-  if (length(json_files) > 0) {file.remove(json_files)}
+  if (length(json_files) > 0) {
+    file.remove(json_files)
+  }
 
   withr::local_envvar(VITALS_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/articles/solvers.Rmd')
