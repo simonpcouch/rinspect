@@ -1,9 +1,9 @@
 eval_log <- function(
-    eval = translate_to_eval(),
-    plan = translate_to_plan(),
-    results = translate_to_results(),
-    stats = translate_to_stats(),
-    samples
+  eval = translate_to_eval(),
+  plan = translate_to_plan(),
+  results = translate_to_results(),
+  stats = translate_to_stats(),
+  samples
 ) {
   res <-
     list(
@@ -21,26 +21,26 @@ eval_log <- function(
 
 # top-level entries ------------------------------------------------------------
 translate_to_eval <- function(
-    run_id,
-    created = eval_log_timestamp(),
-    task,
-    task_id,
-    task_version = 0,
-    task_file = active_file(),
-    task_attribs = c(),
-    task_args = c(),
-    dataset,
-    model,
-    model_args = c(),
-    config = c(),
-    # TODO: look into what this actually does
-    revision = list(
-      type = "git",
-      origin = "https://github.com/UKGovernmentBEIS/inspect_ai.git",
-      commit = "9140d8a2"
-    ),
-    packages = list(inspect_ai = "0.3.63"),
-    scorers
+  run_id,
+  created = eval_log_timestamp(),
+  task,
+  task_id,
+  task_version = 0,
+  task_file = active_file(),
+  task_attribs = c(),
+  task_args = c(),
+  dataset,
+  model,
+  model_args = c(),
+  config = c(),
+  # TODO: look into what this actually does
+  revision = list(
+    type = "git",
+    origin = "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+    commit = "9140d8a2"
+  ),
+  packages = list(inspect_ai = "0.3.63"),
+  scorers
 ) {
   list(
     run_id = run_id,
@@ -62,9 +62,9 @@ translate_to_eval <- function(
 }
 
 translate_to_plan <- function(
-    name = "plan",
-    steps = translate_to_plan_steps(),
-    config = c()
+  name = "plan",
+  steps = translate_to_plan_steps(),
+  config = c()
 ) {
   list(
     name = name,
@@ -74,9 +74,9 @@ translate_to_plan <- function(
 }
 
 translate_to_results <- function(
-    total_samples,
-    completed_samples,
-    scores
+  total_samples,
+  completed_samples,
+  scores
 ) {
   list(
     total_samples = total_samples,
@@ -93,9 +93,9 @@ translate_to_plan_steps <- function(name, arguments) {
 }
 
 translate_to_stats <- function(
-    started_at,
-    completed_at,
-    model_usage
+  started_at,
+  completed_at,
+  model_usage
 ) {
   list(
     started_at = started_at,
@@ -120,7 +120,9 @@ translate_to_sample <- function(sample, scores) {
   turns <- chat$get_turns()
   list(
     id = sample$id,
-    epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {1},
+    epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {
+      1
+    },
     input = input_string(sample$input[[1]]),
     target = sample$target,
     messages = translate_to_messages(chat),
@@ -144,13 +146,13 @@ translate_to_sample <- function(sample, scores) {
     # TODO: these seem to be prompts passed to the judges
     attachments = c()
   )
-} 
+}
 
 # sub-level entries ------------------------------------------------------------
 translate_to_metrics <- function(
-    name = character(),
-    value = numeric(),
-    options = list()
+  name = character(),
+  value = numeric(),
+  options = list()
 ) {
   list(
     name = name,
@@ -171,7 +173,7 @@ translate_to_score <- function(output, score, scorer, scorer_chat = NULL) {
 
   turns <- scorer_chat$get_turns()
   explanation <- scorer_chat$last_turn()@text
-  
+
   list(
     value = score,
     answer = output,
@@ -198,7 +200,7 @@ translate_to_metadata_grading <- function(turn) {
   list(
     id = generate_id(),
     content = list(list(type = "text", text = turn@text)),
-    source = "generate", 
+    source = "generate",
     role = turn@role
   )
 }
@@ -215,15 +217,17 @@ translate_to_eval_scorers <- function(name) {
   ))
 }
 
-# format single-row tibble as a string with column names as prefixes 
+# format single-row tibble as a string with column names as prefixes
 # followed by a colon, with entries separated by newlines.
 input_string <- function(x) {
-  if (is.character(x)) {return(x)}
+  if (is.character(x)) {
+    return(x)
+  }
   paste0(
     mapply(
       function(name, value) paste0(name, ": ", value),
       names(x),
-      as.list(x[1,])
+      as.list(x[1, ])
     ),
     collapse = "\n\n"
   )

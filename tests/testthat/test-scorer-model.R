@@ -3,7 +3,8 @@ test_that("model_graded_qa works", {
   skip_on_cran()
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
 
   library(ellmer)
@@ -14,11 +15,11 @@ test_that("model_graded_qa works", {
   )
 
   tsk <- Task$new(
-    dataset = simple_addition, 
-    solver = generate(chat_openai(model = "gpt-4.1-nano")), 
+    dataset = simple_addition,
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
-  
+
   tsk$eval()
   expect_valid_log(tsk$log())
 
@@ -43,22 +44,26 @@ test_that("model_graded_fact works", {
   skip_on_cran()
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
 
   library(ellmer)
 
   r_history <- tibble::tibble(
-    input = c("Who created R?", "In what year was version 1.0.0 of R released?"),
+    input = c(
+      "Who created R?",
+      "In what year was version 1.0.0 of R released?"
+    ),
     target = c("Ross Ihaka and Robert Gentleman.", "2000.")
   )
 
   tsk <- Task$new(
-    dataset = r_history, 
-    solver = generate(chat_openai(model = "gpt-4.1-nano")), 
+    dataset = r_history,
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_fact()
   )
-  
+
   tsk$eval()
   expect_valid_log(tsk$log())
 

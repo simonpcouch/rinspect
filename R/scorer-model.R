@@ -24,12 +24,12 @@
 #' See [Task]'s `scorer` argument for a description of the returned function.
 #' The functions that `model_graded_qa()` and `model_graded_fact()` output
 #' can be passed directly to `$eval()`.
-#' 
-#' See the documentation for the `scorer` argument in [Task] for more 
+#'
+#' See the documentation for the `scorer` argument in [Task] for more
 #' information on the return type.
 #'
 #' @seealso [scorer_detect] for string detection-based scoring.
-#' 
+#'
 #' @examples
 #' # Quality assurance -----------------------------
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
@@ -42,11 +42,11 @@
 #'   )
 #'
 #'   tsk <- Task$new(
-#'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+#'     dataset = simple_addition,
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")),
 #'     scorer = model_graded_qa()
 #'   )
-#'   
+#'
 #'   tsk$eval()
 #' }
 #'
@@ -64,11 +64,11 @@
 #'   )
 #'
 #'   tsk <- Task$new(
-#'     dataset = r_history, 
-#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+#'     dataset = r_history,
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")),
 #'     scorer = model_graded_fact()
 #'   )
-#'   
+#'
 #'   tsk$eval()
 #' }
 #'
@@ -115,19 +115,19 @@ model_graded_qa_impl <- function(
       instructions
     )
   })
-  
+
   if (is.null(scorer_chat)) {
     scorer_chat <- solver_chat(samples[1, ])
   }
-  
+
   scorer_chat <- scorer_chat$clone()
   responses <- scorer_chat$chat_parallel(as.list(prompts))
-  
+
   grades <- purrr::map_chr(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text
     qa_extract_grade(response_text, grade_pattern, partial_credit)
   })
-  
+
   if (partial_credit) {
     scores <- factor(
       grades,
@@ -141,7 +141,7 @@ model_graded_qa_impl <- function(
       ordered = TRUE
     )
   }
-  
+
   metadata <- purrr::map(seq_along(prompts), function(i) {
     list(
       prompt = prompts[i],
@@ -149,7 +149,7 @@ model_graded_qa_impl <- function(
       grade_pattern = grade_pattern
     )
   })
-  
+
   list(
     score = scores,
     scorer_chat = responses,
@@ -174,13 +174,14 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
   )[[1]][2]
 
   if (is.na(grade_letter)) return(NA)
-  
+
   toupper(grade_letter)
 }
 
 qa_default_instructions <- function(partial_credit = FALSE) {
-  partial_letter <- if(partial_credit) ", P, or " else " or "
-  partial_prompt <- if (partial_credit) '"P" for partially correct answers,' else ""
+  partial_letter <- if (partial_credit) ", P, or " else " or "
+  partial_prompt <- if (partial_credit)
+    '"P" for partially correct answers,' else ""
 
   glue::glue(
     "After assessing the submitted answer, reply with 'GRADE: $LETTER' where
@@ -217,7 +218,7 @@ model_graded_fact <- function(
   scorer_chat = NULL
 ) {
   ch <- scorer_chat
-  
+
   function(samples, scorer_chat = ch) {
     model_graded_qa_impl(
       samples = samples,

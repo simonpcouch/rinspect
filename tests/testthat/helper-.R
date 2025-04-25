@@ -39,11 +39,13 @@ example_task <- function(solved = TRUE, scored = TRUE) {
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   res <- Task$new(
-    dataset = simple_addition, 
-    solver = function(...) {}, 
-    scorer = function(...) {}
+    dataset = simple_addition,
+    solver = function(...) {
+    },
+    scorer = function(...) {
+    }
   )
 
   if (!solved) {

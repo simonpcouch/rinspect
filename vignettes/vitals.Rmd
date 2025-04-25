@@ -7,7 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r}
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -43,7 +44,8 @@ This vignette will explore these three components using `are`, an example datase
 
 First, load the required packages:
 
-```{r setup}
+```{r}
+#| label: setup
 #| message: false
 #| warning: false
 #| eval: true
@@ -59,7 +61,8 @@ From the `are` docs:
 
 > An R Eval is a dataset of challenging R coding problems. Each `input` is a question about R code which could be solved on first-read only by human experts and, with a chance to read documentation and run some code, by  fluent data scientists. Solutions are in `target` and enable a fluent  data scientist to evaluate whether the solution deserves full, partial, or no credit.
 
-```{r explore-dataset}
+```{r}
+#| label: explore-dataset
 glimpse(are)
 ```
 
@@ -73,13 +76,15 @@ At a high level:
 
 For the purposes of actually carrying out the initial evaluation, we're specifically interested in the `input` and `target` columns. Let's print out the first entry in full so you can get a taste of a typical problem in this dataset:
 
-```{r input-1}
+```{r}
+#| label: input-1
 cat(are$input[1])
 ```
 
 Here's the suggested solution:
 
-```{r target-1}
+```{r}
+#| label: target-1
 cat(are$target[1])
 ```
 
@@ -89,7 +94,9 @@ LLM evaluation with vitals happens in two main steps:
 
 1) Use `Task$new()` to situate a dataset, solver, and scorer in a `Task`.
 
-```{r create-task, eval = should_eval}
+```{r}
+#| label: create-task
+#| eval: !expr should_eval
 are_task <- Task$new(
   dataset = are,
   solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
@@ -102,11 +109,14 @@ are_task
 
 2) Use `Task$eval()` to evaluate the solver, evaluate the scorer, and then explore a persistent log of the results in the interactive Inspect log viewer.
 
-```{r solve-and-score, eval = should_eval}
+```{r}
+#| label: solve-and-score
+#| eval: !expr should_eval
 are_task$eval()
 ```
 
-```{r save-are-task-scored}
+```{r}
+#| label: save-are-task-scored
 #| include: false
 if (should_eval) {
   save(are_task, file = here::here("vignettes/data/are_task.rda"))
@@ -115,7 +125,8 @@ if (should_eval) {
 
 After evaluation, the task contains information from the solving and scoring steps. Here's what the model responded to that first question with:
 
-```{r output-1}
+```{r}
+#| label: output-1
 cat(are_task$samples$result[1])
 ```
 
@@ -161,13 +172,14 @@ Under the hood, when you call `task$eval()`, results are written to a `.json` fi
 
 For a cursory analysis, we can start off by visualizing correct vs. partially correct vs. incorrect answers:
 
-```{r plot-1}
+```{r}
+#| label: plot-1
 #| fig-alt: "A ggplot2 bar plot, showing Claude was correct most of the time."
 are_task_data <- vitals_bind(are_task)
 
 are_task_data
 
-are_task_data %>%
+are_task_data |>
   ggplot() +
   aes(x = score) +
   geom_bar()
@@ -182,12 +194,15 @@ Claude answered fully correctly in `r sum(are_task_data$score == "C")` out of `r
 
 These questions can be explored by evaluating Tasks against different solvers and scorers. For example, to compare Claude's performance with OpenAI's GPT-4o, we just need to clone the object and then run `$eval()` with a different solver `chat`:
 
-```{r are-task-openai, eval = should_eval}
+```{r}
+#| label: are-task-openai
+#| eval: !expr should_eval
 are_task_openai <- are_task$clone()
 are_task_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
 
-```{r save-are-task-openai}
+```{r}
+#| label: save-are-task-openai
 #| include: false
 if (should_eval) {
   save(are_task_openai, file = here::here("vignettes/data/are_task_openai.rda"))
@@ -200,13 +215,13 @@ Using this data, we can quickly juxtapose those evaluation results:
 
 ```{r}
 are_task_eval <-
-  vitals_bind(are_task, are_task_openai) %>%
+  vitals_bind(are_task, are_task_openai) |>
   mutate(
     task = if_else(task == "are_task", "Claude", "GPT-4o")
-  ) %>%
+  ) |>
   rename(model = task)
 
-are_task_eval %>%
+are_task_eval |>
   mutate(
     score = factor(
       case_when(
@@ -217,7 +232,7 @@ are_task_eval %>%
       levels = c("Incorrect", "Partially correct", "Correct"),
       ordered = TRUE
     )
-  ) %>%
+  ) |>
   ggplot(aes(y = model, fill = score)) +
   geom_bar() +
   scale_fill_brewer(breaks = rev, palette = "RdYlGn")
@@ -250,7 +265,8 @@ If we had evaluated this model across multiple epochs, the question ID could bec
 
 This vignette demonstrated the simplest possible evaluation based on the `are` dataset. If you're interested in carrying out more advanced evals, check out the other vignettes in this package!
 
-```{r, eval = should_eval}
+```{r}
+#| eval: !expr should_eval
 #| include: false
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`

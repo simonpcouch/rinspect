@@ -10,7 +10,7 @@ test_that("expect_valid_log fails when log file is nonsense", {
   writeLines(c("beep", "bop", "boop"), tmp_file)
 
   expect_error(
-    suppressWarnings(expect_valid_log(tmp_file)), 
+    suppressWarnings(expect_valid_log(tmp_file)),
     regexp = "Expecting value: line 1 column 1"
   )
 })
@@ -19,7 +19,8 @@ test_that("vitals writes valid eval logs (basic, openai)", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
 
   simple_addition <- tibble::tibble(
@@ -40,7 +41,8 @@ test_that("vitals writes valid eval logs (basic, claude)", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
 
   simple_addition <- tibble::tibble(
@@ -50,7 +52,9 @@ test_that("vitals writes valid eval logs (basic, claude)", {
 
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(ellmer::chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    solver = generate(ellmer::chat_anthropic(
+      model = "claude-3-7-sonnet-latest"
+    )),
     scorer = model_graded_qa()
   )
   tsk$eval()
@@ -61,7 +65,8 @@ test_that("vitals writes valid eval logs (basic, gemini)", {
   skip_if(identical(Sys.getenv("GOOGLE_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
 
   simple_addition <- tibble::tibble(
@@ -83,7 +88,8 @@ test_that("vitals writes valid eval logs (solver tool calls, claude)", {
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -98,7 +104,9 @@ test_that("vitals writes valid eval logs (solver tool calls, claude)", {
   tsk <- Task$new(
     dataset = current_date,
     solver = generate(ch),
-    scorer = function(samples) {list(score = factor("C", levels = c("I", "C"), ordered = TRUE))}
+    scorer = function(samples) {
+      list(score = factor("C", levels = c("I", "C"), ordered = TRUE))
+    }
   )
   tsk$eval()
   expect_valid_log(tsk$log())
@@ -108,7 +116,8 @@ test_that("vitals writes valid eval logs (solver errors on tool call, claude)", 
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -125,7 +134,9 @@ test_that("vitals writes valid eval logs (solver errors on tool call, claude)", 
   tsk <- Task$new(
     dataset = current_date,
     solver = generate(ch),
-    scorer = function(samples) {list(score = factor("C", levels = c("I", "C"), ordered = TRUE))}
+    scorer = function(samples) {
+      list(score = factor("C", levels = c("I", "C"), ordered = TRUE))
+    }
   )
 
   # a tool call will fail here and raise a warning; this is intentional.

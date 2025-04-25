@@ -3,36 +3,36 @@
 #' @description
 #' The following functions use string pattern detection to score model outputs.
 #'
-#' - `detect_includes()`: Determine whether the `target` from the sample 
-#' appears anywhere inside the model output. Can be case sensitive or 
+#' - `detect_includes()`: Determine whether the `target` from the sample
+#' appears anywhere inside the model output. Can be case sensitive or
 #' insensitive (defaults to the latter).
-#' - `detect_match()`: Determine whether the `target` from the sample appears 
-#' at the beginning or end of model output (defaults to looking at the end). 
-#' Has options for ignoring case, white-space, and punctuation 
+#' - `detect_match()`: Determine whether the `target` from the sample appears
+#' at the beginning or end of model output (defaults to looking at the end).
+#' Has options for ignoring case, white-space, and punctuation
 #' (all are ignored by default).
 #' - `detect_pattern()`: Extract matches of a pattern from the model response
 #' and determine whether those matches also appear in `target`.
-#' - `detect_answer()`: Scorer for model output that precedes answers with 
+#' - `detect_answer()`: Scorer for model output that precedes answers with
 #' "ANSWER: ". Can extract letters, words, or the remainder of the line.
-#' - `detect_exact()`: Scorer which will normalize the text of the answer and 
-#' target(s) and perform an exact matching comparison of the text. This 
-#' scorer will return `CORRECT` when the answer is an exact match to one 
+#' - `detect_exact()`: Scorer which will normalize the text of the answer and
+#' target(s) and perform an exact matching comparison of the text. This
+#' scorer will return `CORRECT` when the answer is an exact match to one
 #' or more targets.
 #'
 #' @param case_sensitive Logical, whether comparisons are case sensitive.
-#' @param location Where to look for match: one of `"begin"`, `"end"`, 
+#' @param location Where to look for match: one of `"begin"`, `"end"`,
 #' `"any"`, or `"exact"`. Defaults to `"end"`.
 #' @param pattern Regular expression pattern to extract answer.
 #' @param all Logical: for multiple captures, whether all must match.
-#' @param format What to extract after `"ANSWER:"`: `"letter"`, `"word"`, 
+#' @param format What to extract after `"ANSWER:"`: `"letter"`, `"word"`,
 #' or `"line"`. Defaults to `"line"`.
-#' 
-#' @seealso [model_graded_qa()] and [model_graded_fact()] for model-based 
+#'
+#' @seealso [model_graded_qa()] and [model_graded_fact()] for model-based
 #' scoring.
-#' 
+#'
 #' @returns
 #' A function that scores model output based on string matching. Pass the
-#' returned value to `$eval(scorer)`. See the documentation for the `scorer` 
+#' returned value to `$eval(scorer)`. See the documentation for the `scorer`
 #' argument in [Task] for more information on the return type.
 #'
 #' @examples
@@ -47,15 +47,15 @@
 #'
 #'   # create a new Task
 #'   tsk <- Task$new(
-#'     dataset = simple_addition, 
-#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+#'     dataset = simple_addition,
+#'     solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")),
 #'     scorer = detect_includes()
 #'   )
-#'   
+#'
 #'   # evaluate the task (runs solver and scorer)
 #'   tsk$eval()
 #' }
-#' 
+#'
 #' @name scorer_detect
 #' @export
 detect_includes <- function(case_sensitive = FALSE) {
@@ -64,12 +64,13 @@ detect_includes <- function(case_sensitive = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...) detect_includes_impl(
-        list(...),
-        case_sensitive = case_sensitive
-      )
+      function(...)
+        detect_includes_impl(
+          list(...),
+          case_sensitive = case_sensitive
+        )
     )
-    
+
     list(
       score = factor(
         ifelse(purrr::map_lgl(results, "result"), "C", "I"),
@@ -104,8 +105,8 @@ detect_includes_impl <- function(sample, case_sensitive) {
 #' @rdname scorer_detect
 #' @export
 detect_match <- function(
-    location = c("end", "begin", "end", "any"),
-    case_sensitive = FALSE
+  location = c("end", "begin", "end", "any"),
+  case_sensitive = FALSE
 ) {
   location <- arg_match(location)
   check_bool(case_sensitive)
@@ -113,13 +114,14 @@ detect_match <- function(
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...) detect_match_impl(
-        list(...),
-        location = location,
-        case_sensitive = case_sensitive
-      )
+      function(...)
+        detect_match_impl(
+          list(...),
+          location = location,
+          case_sensitive = case_sensitive
+        )
     )
-    
+
     list(
       score = factor(
         ifelse(purrr::map_lgl(results, "result"), "C", "I"),
@@ -140,7 +142,8 @@ detect_match_impl <- function(sample, location, case_sensitive) {
     target <- tolower(target)
   }
 
-  result <- switch(location,
+  result <- switch(
+    location,
     begin = startsWith(answer, target),
     end = endsWith(answer, target),
     any = grepl(target, answer, fixed = TRUE),
@@ -167,14 +170,15 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...) detect_pattern_impl(
-        list(...),
-        pattern = pattern,
-        case_sensitive = case_sensitive,
-        all = all
-      )
+      function(...)
+        detect_pattern_impl(
+          list(...),
+          pattern = pattern,
+          case_sensitive = case_sensitive,
+          all = all
+        )
     )
-    
+
     list(
       score = factor(
         ifelse(purrr::map_lgl(results, "result"), "C", "I"),
@@ -230,12 +234,13 @@ detect_exact <- function(case_sensitive = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...) detect_exact_impl(
-        list(...),
-        case_sensitive = case_sensitive
-      )
+      function(...)
+        detect_exact_impl(
+          list(...),
+          case_sensitive = case_sensitive
+        )
     )
-    
+
     list(
       score = factor(
         ifelse(purrr::map_lgl(results, "result"), "C", "I"),
@@ -276,10 +281,11 @@ detect_answer <- function(format = c("line", "word", "letter")) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...) detect_answer_impl(
-        list(...),
-        format = format
-      )
+      function(...)
+        detect_answer_impl(
+          list(...),
+          format = format
+        )
     )
 
     list(
@@ -294,7 +300,8 @@ detect_answer <- function(format = c("line", "word", "letter")) {
 }
 
 detect_answer_impl <- function(sample, format) {
-  pattern <- switch(format,
+  pattern <- switch(
+    format,
     letter = "ANSWER:\\s*([A-Za-z])",
     word = "ANSWER:\\s*(\\w+)",
     line = "ANSWER:\\s*(.+)$",

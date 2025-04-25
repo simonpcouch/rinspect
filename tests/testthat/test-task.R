@@ -2,7 +2,8 @@ test_that("Task R6 class works", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -16,21 +17,31 @@ test_that("Task R6 class works", {
     solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
-  
+
   expect_true(R6::is.R6(tsk))
   expect_true(inherits(tsk, "Task"))
   expect_snapshot(tsk)
-  
+
   expect_equal(nrow(tsk$samples), nrow(simple_addition))
   expect_named(tsk$samples, c("input", "target", "id"))
-  
+
   tsk$eval()
   expect_valid_log(tsk$log())
   expect_snapshot(tsk)
-  
+
   expect_named(
     tsk$samples,
-    c("input", "target", "id", "result", "solver_chat", "score", "scorer", "scorer_chat", "scorer_metadata"),
+    c(
+      "input",
+      "target",
+      "id",
+      "result",
+      "solver_chat",
+      "score",
+      "scorer",
+      "scorer_chat",
+      "scorer_metadata"
+    ),
     ignore.order = TRUE
   )
 
@@ -41,9 +52,10 @@ test_that("Task with epochs works", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   library(ellmer)
 
   simple_addition <- tibble::tibble(
@@ -56,14 +68,25 @@ test_that("Task with epochs works", {
     solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = model_graded_qa()
   )
-  
+
   tsk$eval(epochs = 2)
   expect_valid_log(tsk$log())
-  
+
   expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
   expect_named(
     tsk$samples,
-    c("input", "target", "id", "epoch", "result", "solver_chat", "score", "scorer", "scorer_chat", "scorer_metadata"),
+    c(
+      "input",
+      "target",
+      "id",
+      "epoch",
+      "result",
+      "solver_chat",
+      "score",
+      "scorer",
+      "scorer_chat",
+      "scorer_metadata"
+    ),
     ignore.order = TRUE
   )
 })
@@ -72,9 +95,10 @@ test_that("Task respects `$new(epochs)`", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   library(ellmer)
 
   simple_addition <- tibble::tibble(
@@ -88,10 +112,10 @@ test_that("Task respects `$new(epochs)`", {
     scorer = model_graded_qa(),
     epochs = 2
   )
-  
+
   tsk$eval()
   expect_valid_log(tsk$log())
-  
+
   expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
 })
 
@@ -99,9 +123,10 @@ test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   library(ellmer)
 
   simple_addition <- tibble::tibble(
@@ -115,10 +140,10 @@ test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
     scorer = model_graded_qa(),
     epochs = 2
   )
-  
+
   tsk$eval(epochs = 1)
   expect_valid_log(tsk$log())
-  
+
   expect_equal(nrow(tsk$samples), nrow(simple_addition))
 })
 
@@ -126,28 +151,34 @@ test_that("check_dataset works", {
   expect_snapshot(
     Task$new(
       dataset = data.frame(input = 1),
-      solver = function() {},
-      scorer = function() {}
+      solver = function() {
+      },
+      scorer = function() {
+      }
     ),
     error = TRUE
   )
   expect_snapshot(
     Task$new(
       dataset = data.frame(target = 1),
-      solver = function() {},
-      scorer = function() {}
+      solver = function() {
+      },
+      scorer = function() {
+      }
     ),
     error = TRUE
   )
   expect_snapshot(
     Task$new(
       dataset = data.frame(x = 1),
-      solver = function() {},
-      scorer = function() {}
+      solver = function() {
+      },
+      scorer = function() {
+      }
     ),
     error = TRUE
   )
-  
+
   d <- data.frame(input = "hey", target = "there")
   expect_equal(d, check_dataset(d))
 })
@@ -166,7 +197,7 @@ test_that("set_id_column works", {
   # no existing `id`
   df <- tibble::tibble(input = c("a", "b"), target = c("c", "d"))
   result <- set_id_column(df)
-  
+
   expect_equal(nrow(result), 2)
   expect_true("id" %in% names(result))
   expect_equal(result$id, 1:2)
@@ -174,7 +205,7 @@ test_that("set_id_column works", {
   # existing `id``
   df <- tibble::tibble(input = c("a", "b"), target = c("c", "d"), id = c(5, 10))
   result <- set_id_column(df)
-  
+
   expect_equal(nrow(result), 2)
   expect_true("id" %in% names(result))
   expect_equal(result$id, c(5, 10))
@@ -183,36 +214,40 @@ test_that("set_id_column works", {
 test_that("Task preserves existing id column", {
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   d <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5"),
     id = c(10, 20)
   )
-  
+
   tsk <- Task$new(
     dataset = d,
-    solver = function() {},
-    scorer = function() {}
+    solver = function() {
+    },
+    scorer = function() {
+    }
   )
-  
+
   expect_equal(tsk$samples$id, c(10, 20))
 })
 
 test_that("Task errors informatively with duplicate ids", {
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  
+
   d <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5"),
     id = c(10, 10)
   )
-  
+
   expect_snapshot(
     Task$new(
       dataset = d,
-      solver = function() {},
-      scorer = function() {}
+      solver = function() {
+      },
+      scorer = function() {
+      }
     ),
     error = TRUE
   )
@@ -223,30 +258,36 @@ test_that("set_solver works", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     result = c("4", "5"),
     target = c("4", "5")
   )
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = function() {},
-    scorer = function() {}
+    solver = function() {
+    },
+    scorer = function() {
+    }
   )
-  
+
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
+      solver_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      )
     )
   }
   tsk$set_solver(new_solver)
   tsk$solve()
-  
+
   expect_equal(tsk$samples$result, c("4", "5"))
   expect_false("solver_metadata" %in% names(tsk$samples))
 
@@ -254,7 +295,10 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
+      solver_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      ),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -271,30 +315,36 @@ test_that("set_solver works", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     result = c("4", "5"),
     target = c("4", "5")
   )
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = function() {},
-    scorer = function() {}
+    solver = function() {
+    },
+    scorer = function() {
+    }
   )
-  
+
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
+      solver_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      )
     )
   }
   tsk$set_solver(new_solver)
   tsk$solve()
-  
+
   expect_equal(tsk$samples$result, c("4", "5"))
   expect_false("solver_metadata" %in% names(tsk$samples))
 
@@ -302,7 +352,10 @@ test_that("set_solver works", {
   new_solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
+      solver_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      ),
       solver_metadata = c("boop!", "bop!")
     )
   }
@@ -320,28 +373,33 @@ test_that("set_scorer works", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     result = c("4", "5"),
     target = c("4", "5")
   )
-  
+
   solver <- function(inputs) {
     list(
       result = c("4", "5"),
-      solver_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
+      solver_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      )
     )
   }
 
   tsk <- Task$new(
     dataset = simple_addition,
     solver = solver,
-    scorer = function() {}
+    scorer = function() {
+    }
   )
-  
+
   tsk$solve()
 
   # first, return only the score
@@ -350,7 +408,7 @@ test_that("set_scorer works", {
   }
   tsk$set_scorer(scorer_minimal)
   tsk$score()
-  
+
   expect_equal(tsk$samples$score, c(1, 1))
   expect_false(any(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
 
@@ -358,7 +416,10 @@ test_that("set_scorer works", {
   scorer_chat <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano"))
+      scorer_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      )
     )
   }
   tsk$set_scorer(scorer_chat)
@@ -370,7 +431,10 @@ test_that("set_scorer works", {
   scorer_metadata <- function(samples) {
     list(
       score = c(1, 1),
-      scorer_chat = list(ellmer::chat_openai(model = "gpt-4.1-nano"), ellmer::chat_openai(model = "gpt-4.1-nano")),
+      scorer_chat = list(
+        ellmer::chat_openai(model = "gpt-4.1-nano"),
+        ellmer::chat_openai(model = "gpt-4.1-nano")
+      ),
       scorer_metadata = c("beep", "bop")
     )
   }
@@ -386,7 +450,8 @@ test_that("default metrics are applied effectively", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -398,8 +463,10 @@ test_that("default metrics are applied effectively", {
   tsk <- Task$new(
     dataset = simple_addition,
     solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
-    scorer = function(...) {list(
-      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    scorer = function(...) {
+      list(
+        score = factor(c("C", "C"), levels = c("I", "P", "C"))
+      )
     }
   )
 
@@ -413,7 +480,8 @@ test_that("task applies non-default metrics", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -426,10 +494,14 @@ test_that("task applies non-default metrics", {
   tsk <- Task$new(
     dataset = simple_addition,
     solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
-    scorer = function(...) {list(
-      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    scorer = function(...) {
+      list(
+        score = factor(c("C", "C"), levels = c("I", "P", "C"))
+      )
     },
-    metrics = list(pct_correct = function(scores) {mean(scores == "C") * 100})
+    metrics = list(pct_correct = function(scores) {
+      mean(scores == "C") * 100
+    })
   )
 
   tsk$eval()
@@ -438,7 +510,9 @@ test_that("task applies non-default metrics", {
   expect_valid_log(tsk$log())
 
   # via set_metrics...
-  tsk$set_metrics(list(prop_correct = function(scores) {mean(scores == "C")}))
+  tsk$set_metrics(list(prop_correct = function(scores) {
+    mean(scores == "C")
+  }))
   expect_null(tsk$metrics)
   tsk$measure()
   expect_equal(tsk$metrics, c("prop_correct" = 1))
@@ -448,7 +522,8 @@ test_that("task errors informatively with bad metrics", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -462,10 +537,14 @@ test_that("task errors informatively with bad metrics", {
     tsk <- Task$new(
       dataset = simple_addition,
       solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
-      scorer = function(...) {list(
-        score = factor(c("C", "C"), levels = c("I", "P", "C")))
+      scorer = function(...) {
+        list(
+          score = factor(c("C", "C"), levels = c("I", "P", "C"))
+        )
       },
-      metrics = function(scores) {mean(scores == "C") * 100}
+      metrics = function(scores) {
+        mean(scores == "C") * 100
+      }
     ),
     error = TRUE
   )
@@ -473,10 +552,14 @@ test_that("task errors informatively with bad metrics", {
   tsk <- Task$new(
     dataset = simple_addition,
     solver = generate(ellmer::chat_openai(model = "gpt-4.1-nano")),
-    scorer = function(...) {list(
-      score = factor(c("C", "C"), levels = c("I", "P", "C")))
+    scorer = function(...) {
+      list(
+        score = factor(c("C", "C"), levels = c("I", "P", "C"))
+      )
     },
-    metrics = list(pct_correct = function(scores) {mean(scores == "C") * 100})
+    metrics = list(pct_correct = function(scores) {
+      mean(scores == "C") * 100
+    })
   )
 
   # wrong type supplied to `$set_metrics()`
@@ -485,10 +568,12 @@ test_that("task errors informatively with bad metrics", {
     error = TRUE
   )
 
-  # valid type but bad return type 
+  # valid type but bad return type
   expect_snapshot(
     {
-      tsk$set_metrics(list(bad_metric = function(scores) "this is not a numeric"))
+      tsk$set_metrics(list(
+        bad_metric = function(scores) "this is not a numeric"
+      ))
       tsk$eval()
     },
     error = TRUE
@@ -499,20 +584,20 @@ test_that("task errors informatively with bad metrics", {
 test_that("task ids are deterministic", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
 
-  tsk_1 <- 
+  tsk_1 <-
     Task$new(
       dataset = are,
       solver = generate(),
       scorer = model_graded_qa()
     )
-  
-  tsk_2 <- 
+
+  tsk_2 <-
     Task$new(
       dataset = are,
       solver = generate(),
       scorer = model_graded_qa()
     )
-  
+
   tsk_id_1 <- tsk_1$.__enclos_env__$private$task_id
   tsk_id_2 <- tsk_2$.__enclos_env__$private$task_id
 
@@ -524,72 +609,73 @@ test_that("Task completeness is tracked and preserved", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   tmp_dir <- withr::local_tempdir()
   withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   mock_scorer <- function(samples) {
     list(
       score = c(1),
       metadata = list(NULL)
     )
   }
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
     solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = mock_scorer
   )
-  
+
   expect_false(tsk$.__enclos_env__$private$solved)
   expect_false(tsk$.__enclos_env__$private$scored)
-  
+
   tsk$solve()
   expect_true(tsk$.__enclos_env__$private$solved)
-  
+
   tsk$score()
   expect_true(tsk$.__enclos_env__$private$scored)
-  
+
   tsk$set_solver(generate(chat_openai(model = "gpt-4.1-nano")))
   expect_false(tsk$.__enclos_env__$private$solved)
-  
+
   tsk$solve()
   expect_true(tsk$.__enclos_env__$private$solved)
-  
+
   tsk$set_scorer(mock_scorer)
   expect_false(tsk$.__enclos_env__$private$scored)
-  
+
   tsk$solve()
   tsk$score()
-  
+
   tsk_clone <- tsk$clone()
   original_results <- tsk$samples$result
   original_scores <- tsk$samples$score
-  
+
   tsk_clone$eval()
   # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_clone$samples), nrow(simple_addition))
-  
+
   expect_equal(tsk$samples$result, original_results)
   expect_equal(tsk$samples$score, original_scores)
-  
+
   # test re-evaluation with epochs
   tsk_epochs <- Task$new(
     dataset = simple_addition,
     solver = generate(chat_openai(model = "gpt-4.1-nano")),
     scorer = mock_scorer
   )
-  
+
   tsk_epochs$eval(epochs = 2)
   # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 2)
   expect_true("epoch" %in% names(tsk_epochs$samples))
-  
+
   tsk_epochs$eval(epochs = 3)
   # TODO: expect_valid_log(tsk$log())
   expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 3)
@@ -598,68 +684,73 @@ test_that("Task completeness is tracked and preserved", {
 
 test_that("Task errors informatively with bad solver output", {
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   bad_solver_missing_fields <- function(inputs) {
     list(
       wrong_name = c("4", "5")
       # missing solver_chat
     )
   }
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
     solver = bad_solver_missing_fields,
-    scorer = function() {}
+    scorer = function() {
+    }
   )
-  
+
   expect_snapshot(tsk$solve(), error = TRUE)
 })
 
 test_that("Task detects non-Chat objects in solver_chat", {
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   bad_solver_wrong_type <- function(inputs) {
     list(
       result = c("4", "5"),
       solver_chat = list("not a Chat object", "also not a Chat object")
     )
   }
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
     solver = bad_solver_wrong_type,
-    scorer = function() {}
+    scorer = function() {
+    }
   )
-  
+
   expect_snapshot(tsk$solve(), error = TRUE)
 })
 
 test_that("Task errors informatively with bad scorer output", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
-  
+
   tsk <- Task$new(
     dataset = simple_addition,
     solver = generate(chat_openai(model = "gpt-4.1-nano")),
@@ -667,17 +758,18 @@ test_that("Task errors informatively with bad scorer output", {
       list(wrong_name = c("4", "5"))
     }
   )
-  
+
   expect_snapshot(tsk$eval(), error = TRUE)
 })
 
 test_that("Task detects non-Chat objects in scorer_chat", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
-  
+
   simple_addition <- tibble::tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
@@ -693,14 +785,15 @@ test_that("Task detects non-Chat objects in scorer_chat", {
       )
     }
   )
-  
+
   expect_snapshot(tsk$eval(), error = TRUE)
 })
 
 test_that("token usage is logged correctly", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 
@@ -752,7 +845,8 @@ test_that("token usage is logged correctly (with unrelated token usage)", {
   skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
   skip_if(identical(Sys.getenv("ANTHROPIC_API_KEY"), ""))
   withr::local_envvar(list(VITALS_LOG_DIR = withr::local_tempdir()))
-  withr::local_options(cli.default_handler = function(...) { })
+  withr::local_options(cli.default_handler = function(...) {
+  })
   local_mocked_bindings(interactive = function(...) FALSE)
   library(ellmer)
 

@@ -12,7 +12,7 @@
 #' Both `vitals_log_dir()` and `vitals_log_dir_set()` return the current
 #' value of the environment variable `VITALS_LOG_DIR`. `vitals_log_dir_set()`
 #' additionally sets it to a new value.
-#' 
+#'
 #' To set this variable in every new R session, you might consider adding it
 #' to your `.Rprofile`, perhaps with `usethis::edit_r_profile()`.
 #'
@@ -84,7 +84,7 @@ eval_log_write <- function(x = eval_log(), dir = vitals_log_dir()) {
 # take up the most storage by far. reading with `simplifyVector = FALSE` is
 # much faster, so read the whole thing, subset out what we need, and
 # then write/read the simplified version. (#26)
-header_fields <- 
+header_fields <-
   c("version", "status", "eval", "plan", "results", "stats")
 
 eval_log_read_headers <- function(x) {
