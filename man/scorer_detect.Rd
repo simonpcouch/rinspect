@@ -72,11 +72,11 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
   # create a new Task
   tsk <- Task$new(
-    dataset = simple_addition, 
-    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+    dataset = simple_addition,
+    solver = generate(solver_chat = chat_anthropic(model = "claude-3-7-sonnet-latest")),
     scorer = detect_includes()
   )
-  
+
   # evaluate the task (runs solver and scorer)
   tsk$eval()
 }
