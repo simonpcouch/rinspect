@@ -206,10 +206,10 @@ turn_called_a_tool <- function(turn) {
   any(purrr::map_lgl(turn@contents, inherits, "ellmer::ContentToolRequest"))
 }
 
-are_btw_data %>%
-  tidyr::hoist(metadata, "solver_chat") %>%
-  mutate(called_a_tool = purrr::map_lgl(solver_chat, chat_called_a_tool)) %>%
-  pull(called_a_tool) %>% 
+are_btw_data |>
+  tidyr::hoist(metadata, "solver_chat") |>
+  mutate(called_a_tool = purrr::map_lgl(solver_chat, chat_called_a_tool)) |>
+  pull(called_a_tool) |> 
   table()
 ```
 
@@ -260,7 +260,7 @@ if (should_eval) {
 ```{r are-eval-data}
 are_eval_data <- 
   # the argument names will become the entries in `task`
-  vitals_bind(btw = are_btw, basic = are_basic) %>%
+  vitals_bind(btw = are_btw, basic = are_basic) |>
   # and, in this case, different tasks correspond to different solvers
   rename(solver = task)
 

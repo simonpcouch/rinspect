@@ -167,7 +167,7 @@ are_task_data <- vitals_bind(are_task)
 
 are_task_data
 
-are_task_data %>%
+are_task_data |>
   ggplot() +
   aes(x = score) +
   geom_bar()
@@ -200,13 +200,13 @@ Using this data, we can quickly juxtapose those evaluation results:
 
 ```{r}
 are_task_eval <-
-  vitals_bind(are_task, are_task_openai) %>%
+  vitals_bind(are_task, are_task_openai) |>
   mutate(
     task = if_else(task == "are_task", "Claude", "GPT-4o")
-  ) %>%
+  ) |>
   rename(model = task)
 
-are_task_eval %>%
+are_task_eval |>
   mutate(
     score = factor(
       case_when(
@@ -217,7 +217,7 @@ are_task_eval %>%
       levels = c("Incorrect", "Partially correct", "Correct"),
       ordered = TRUE
     )
-  ) %>%
+  ) |>
   ggplot(aes(y = model, fill = score)) +
   geom_bar() +
   scale_fill_brewer(breaks = rev, palette = "RdYlGn")
