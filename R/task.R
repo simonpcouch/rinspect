@@ -779,15 +779,14 @@ diff_token_usage <- function(before, after) {
     res,
     output = output - ifelse(is.na(output_before), 0, output_before)
   )
-  res <- dplyr::mutate(
-    res,
-    price = as.numeric(
-      gsub("\\$", "", price)) - ifelse(is.na(price_before), 0, 
-      as.numeric(gsub("\\$", "", price_before))
+  if ("price" %in% colnames(res)) {
+    res <- dplyr::mutate(
+      res,
+      price = numeric_price(price) - numeric_price(price_before),
+      price = sprintf("$%.2f", price)
     )
-  )
-  res <- dplyr::select(res, provider, model, input, output, price)
-  res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
+  }
+  res <- dplyr::select(res, provider, model, input, output, any_of("price"))
   
   dplyr::filter(res, input != 0 | output != 0)
 }
@@ -807,15 +806,20 @@ sum_token_usage <- function(solver, scorer) {
     res,
     output = output + ifelse(is.na(output_scorer), 0, output_scorer)
   )
-  res <- dplyr::mutate(
-    res,
-    price = as.numeric(
-      gsub("\\$", "", price)) + ifelse(is.na(price_scorer), 0, 
-      as.numeric(gsub("\\$", "", price_scorer))
+  if ("price" %in% colnames(res)) {
+    res <- dplyr::mutate(
+      res,
+      price = numeric_price(price) + numeric_price(price_scorer),
+      price = sprintf("$%.2f", price)
     )
-  )
-  res <- dplyr::select(res, provider, model, input, output, price)
-  res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
+  }
+  res <- dplyr::select(res, provider, model, input, output, any_of("price"))
   
   res
+}
+
+numeric_price <- function(price) {
+  result <- as.numeric(gsub("\\$", "", price))
+  result[is.na(result)] <- 0
+  result
 }
