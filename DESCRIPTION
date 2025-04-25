@@ -48,3 +48,4 @@ RoxygenNote: 7.3.2
 LazyData: true
 VignetteBuilder: knitr
 Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw
+Config/usethis/last-upkeep: 2025-04-25
