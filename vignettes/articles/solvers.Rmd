@@ -2,7 +2,8 @@
 title: "Custom solvers and tool calling"
 ---
 
-```{r, include = FALSE}
+```{r}
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -37,7 +38,8 @@ We'll briefly reintroduce the `are` dataset, define the custom solver, and then 
 
 First, loading the required packages:
 
-```{r setup}
+```{r}
+#| label: setup
 #| message: false
 #| warning: false
 #| eval: true
@@ -54,7 +56,8 @@ From the `are` docs:
 
 > An R Eval is a dataset of challenging R coding problems. Each `input` is a question about R code which could be solved on first-read only by human experts and, with a chance to read documentation and run some code, by  fluent data scientists. Solutions are in `target` and enable a fluent  data scientist to evaluate whether the solution deserves full, partial, or no credit.
 
-```{r explore-dataset}
+```{r}
+#| label: explore-dataset
 glimpse(are)
 ```
 
@@ -72,7 +75,8 @@ In the introductory vignette, we just provided the `input`s as-is to an ellmer c
 
 To help us better understand how solvers work, lets look at the implementation of `generate()`. `generate()` is a function factory, meaning that the function itself outputs a function.
 
-```{r generate-output}
+```{r}
+#| label: generate-output
 sonnet_3_7 <- chat_anthropic(model = "claude-3-7-sonnet-latest")
 generate(solver_chat = sonnet_3_7$clone())
 ```
@@ -94,7 +98,8 @@ We will work with a slightly modified version of `generate()` that equips models
 ch <- sonnet_3_7$clone()
 ```
 
-```{r btw-register}
+```{r}
+#| label: btw-register
 #| eval: false
 ch <- sonnet_3_7$clone()
 btw_register_tools(ch, tools = "docs")
@@ -109,7 +114,8 @@ btw_register_tools(ch, tools = "docs")
 
 `btw_register_tools()` modifies the chat object in place, so I can use the chat's `$chat()` method to interact with it like before. As an example, after registering btw with a Claude Sonnet 3.7 chat object, I can ask it about this package. At the time of writing, vitals is not on CRAN, and Claude Sonnet 3.7 completed training several months before I started working on it. Nonetheless, the model is able to tell me about how custom solvers work:
 
-```{r btw-chat}
+```{r}
+#| label: btw-chat
 #| eval: false
 ch$chat("How do custom solvers work in vitals?")
 ```
@@ -144,7 +150,8 @@ Pretty spot-on. But will this capability help the models better answer questions
 
 The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_register_tools()` before calling `$chat_parallel()`.
 
-```{r btw-solver}
+```{r}
+#| label: btw-solver
 btw_solver <- function(inputs, ..., solver_chat) {
   ch <- solver_chat$clone()
   btw_register_tools(ch, tools = "docs")
@@ -162,7 +169,9 @@ This solver is ready to situate in a Task and get solving!
 
 Situate a custom solver in a dataset in the same way you would with a built-in one:
 
-```{r are-btw, eval = should_eval}
+```{r}
+#| label: are-btw
+#| eval: !expr should_eval
 are_btw <- Task$new(
   dataset = are,
   solver = btw_solver,
@@ -175,13 +184,16 @@ are_btw
 
 As in the introductory vignette, we supply the `are` dataset and the built-in scorer `model_graded_qa()`. Then, we use `$eval()` to evaluate our custom solver, evaluate the scorer, and then explore a persistent log of the results in the interactive Inspect log viewer.
 
-```{r are-btw-eval, eval = should_eval}
+```{r}
+#| label: are-btw-eval
+#| eval: !expr should_eval
 are_btw$eval(solver_chat = sonnet_3_7$clone())
 ```
 
 Any arguments to solving or scoring functions can be passed directly to `$eval()`, allowing for quickly evaluating tasks across several parameterizations. We'll just use Claude Sonnet 3.7 for now.
 
-```{r save-are-btw}
+```{r}
+#| label: save-are-btw
 #| include: false
 if (should_eval) {
   save(are_btw, file = here::here("vignettes/articles/data/solvers/are_btw.rda"))
@@ -237,7 +249,9 @@ Did perusing documentation actually help the model write better R code, though? 
 
 Using the same code from the introductory vignette:
 
-```{r are-basic, eval = should_eval}
+```{r}
+#| label: are-basic
+#| eval: !expr should_eval
 are_basic <- Task$new(
   dataset = are,
   solver = generate(solver_chat = sonnet_3_7$clone()),
@@ -250,14 +264,16 @@ are_basic$eval()
 
 (Note that we also could have used `are_btw$set_solver()` here if we didn't want to recreate the task.)
 
-```{r save-are-basic}
+```{r}
+#| label: save-are-basic
 #| include: false
 if (should_eval) {
   save(are_basic, file = here::here("vignettes/articles/data/solvers/are_basic.rda"))
 }
 ```
 
-```{r are-eval-data}
+```{r}
+#| label: are-eval-data
 are_eval_data <- 
   # the argument names will become the entries in `task`
   vitals_bind(btw = are_btw, basic = are_basic) |>
@@ -294,7 +310,8 @@ If we had evaluated this model across multiple epochs, the question ID could bec
 
 This article demonstrated using a custom solver by modifying the built-in `generate()` to allow models to make tool calls that peruse package documentation. With vitals, tool calling "just works"; calls to any tool registered with ellmer will automatically be incorporated into evaluation logs.
 
-```{r, eval = should_eval}
+```{r}
+#| eval: !expr should_eval
 #| include: false
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`
