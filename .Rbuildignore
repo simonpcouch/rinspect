@@ -17,3 +17,5 @@ R/README.md
 inst/hex
 inst/sandbox
 inst/log_dump
+^[\.]?air\.toml$
+^\.vscode$
