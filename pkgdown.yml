@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/solvers: solvers.html
   vitals: vitals.html
-last_built: 2025-04-24T21:58Z
+last_built: 2025-04-25T13:40Z
 urls:
   reference: https://vitals.tidyverse.org/reference
   article: https://vitals.tidyverse.org/articles
