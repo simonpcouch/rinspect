@@ -1,5 +1,5 @@
 test_that("translate_turns works", {
-  example_sample <- example_task()$samples[1, , drop = FALSE]
+  example_sample <- example_task()$get_samples()[1, , drop = FALSE]
   chat_translated <- translate_to_events(example_sample)
 
   inspect_log <- example_inspect_log()

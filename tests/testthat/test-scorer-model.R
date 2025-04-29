@@ -24,18 +24,18 @@ test_that("model_graded_qa works", {
   expect_valid_log(tsk$log())
 
   # returns scores and a complete scorer chat
-  expect_s3_class(tsk$samples$score, "factor")
-  expect_true(all(levels(tsk$samples$score) %in% c("I", "C")))
-  expect_true(is.ordered(tsk$samples$score))
-  expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
-  expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")
-  expect_length(tsk$samples$scorer_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$get_samples()$score, "factor")
+  expect_true(all(levels(tsk$get_samples()$score) %in% c("I", "C")))
+  expect_true(is.ordered(tsk$get_samples()$score))
+  expect_s3_class(tsk$get_samples()$solver_chat[[1]], "Chat")
+  expect_length(tsk$get_samples()$solver_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$get_samples()$scorer_chat[[1]], "Chat")
+  expect_length(tsk$get_samples()$scorer_chat[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
   expect_equal(
-    tsk$samples$solver_chat[[1]]$get_model(),
-    tsk$samples$scorer_chat[[1]]$get_model()
+    tsk$get_samples()$solver_chat[[1]]$get_model(),
+    tsk$get_samples()$scorer_chat[[1]]$get_model()
   )
 })
 
@@ -68,17 +68,17 @@ test_that("model_graded_fact works", {
   expect_valid_log(tsk$log())
 
   # returns scores and a complete scorer chat
-  expect_s3_class(tsk$samples$score, "factor")
-  expect_true(all(levels(tsk$samples$score) %in% c("I", "C")))
-  expect_true(is.ordered(tsk$samples$score))
-  expect_s3_class(tsk$samples$solver_chat[[1]], "Chat")
-  expect_length(tsk$samples$solver_chat[[1]]$get_turns(), 2)
-  expect_s3_class(tsk$samples$scorer_chat[[1]], "Chat")
-  expect_length(tsk$samples$scorer_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$get_samples()$score, "factor")
+  expect_true(all(levels(tsk$get_samples()$score) %in% c("I", "C")))
+  expect_true(is.ordered(tsk$get_samples()$score))
+  expect_s3_class(tsk$get_samples()$solver_chat[[1]], "Chat")
+  expect_length(tsk$get_samples()$solver_chat[[1]]$get_turns(), 2)
+  expect_s3_class(tsk$get_samples()$scorer_chat[[1]], "Chat")
+  expect_length(tsk$get_samples()$scorer_chat[[1]]$get_turns(), 2)
 
   # by default, scorer detects last model used to solve
   expect_equal(
-    tsk$samples$solver_chat[[1]]$get_model(),
-    tsk$samples$scorer_chat[[1]]$get_model()
+    tsk$get_samples()$solver_chat[[1]]$get_model(),
+    tsk$get_samples()$scorer_chat[[1]]$get_model()
   )
 })

@@ -18,7 +18,7 @@ additional fields.
 Combine multiple \link{Task} objects into a single tibble for comparison.
 
 This function takes multiple (optionally named) \link{Task} objects and row-binds
-their \verb{$samples} together, adding a \code{task} column to identify the source of each
+their \verb{$get_samples()} together, adding a \code{task} column to identify the source of each
 row. The resulting tibble nests additional columns into a \code{metadata} column
 and is ready for further analysis.
 }

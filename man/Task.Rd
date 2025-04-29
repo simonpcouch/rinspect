@@ -55,10 +55,6 @@ scoring.
 \item{\code{dir}}{The directory where evaluation logs will be written to. Defaults
 to \code{vitals_log_dir()}.}
 
-\item{\code{samples}}{A tibble representing the evaluation. Based on the \code{dataset},
-\code{epochs} may duplicate rows, and the solver and scorer will append
-columns to this data.}
-
 \item{\code{metrics}}{A named vector of metric values resulting from \verb{$measure()}
 (called inside of \verb{$eval()}). Will be \code{NULL} if metrics have yet to
 be applied.}
@@ -70,6 +66,7 @@ be applied.}
 \itemize{
 \item \href{#method-Task-new}{\code{Task$new()}}
 \item \href{#method-Task-eval}{\code{Task$eval()}}
+\item \href{#method-Task-get_samples}{\code{Task$get_samples()}}
 \item \href{#method-Task-solve}{\code{Task$solve()}}
 \item \href{#method-Task-score}{\code{Task$score()}}
 \item \href{#method-Task-measure}{\code{Task$measure()}}
@@ -127,7 +124,7 @@ outputs a valid solver that just passes inputs to ellmer Chat objects'
 
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. The function
-should take in the \verb{$samples} slot of a Task object and return a list with
+should take in the \verb{$get_samples()} slot of a Task object and return a list with
 the following elements:
 \itemize{
 \item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
@@ -197,6 +194,24 @@ TRUE if interactive, FALSE otherwise).}
 }
 \subsection{Returns}{
 The Task object (invisibly)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Task-get_samples"></a>}}
+\if{latex}{\out{\hypertarget{method-Task-get_samples}{}}}
+\subsection{Method \code{get_samples()}}{
+The task's samples represent the evaluation in a data frame format.
+
+\code{\link[=vitals_bind]{vitals_bind()}} row-binds the output of this
+function called across several tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Task$get_samples()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A tibble representing the evaluation. Based on the \code{dataset},
+\code{epochs} may duplicate rows, and the solver and scorer will append
+columns to this data.
 }
 }
 \if{html}{\out{<hr>}}
@@ -343,7 +358,7 @@ Set the scorer function
 \describe{
 \item{\code{scorer}}{A function that evaluates how well the solver's return value
 approximates the corresponding elements of \code{dataset$target}. The function
-should take in the \verb{$samples} slot of a Task object and return a list with
+should take in the \verb{$get_samples()} slot of a Task object and return a list with
 the following elements:
 \itemize{
 \item \code{score} - A vector of scores with length equal to \code{nrow(samples)}.
@@ -386,7 +401,7 @@ Set the metrics that will be applied in \verb{$measure()} (and thus \verb{$eval(
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{metrics}}{A named list of functions that take in a vector of scores
-(as in \code{task$samples$score}) and output a single numeric value.}
+(as in \code{task$get_samples()$score}) and output a single numeric value.}
 }
 \if{html}{\out{</div>}}
 }

@@ -1,14 +1,14 @@
 {
-  "2025-04-10T16-15-36-05-00_AnREval_1da30c33406baede90d819.json": {
+  "2025-04-29T14-37-34-05-00_An-R-Eval_1da30c33406baede90d819.json": {
     "version": 2,
     "status": "success",
     "eval": {
-      "run_id": "5J8Mi92R0ACnSIniKcmKqM",
-      "created": "2025-04-10T16:15:36-05:00",
-      "task": "AnREval",
+      "run_id": "IWL8sfLairWvL2Xy9MPODm",
+      "created": "2025-04-29T14:37:34-05:00",
+      "task": "An-R-Eval",
       "task_id": "1da30c33406baede90d819",
       "task_version": 0,
-      "task_file": "/Users/simoncouch/Documents/rrr/vitals/vignettes/articles/solvers.Rmd",
+      "task_file": "/Users/simoncouch/Documents/rrr/vitals/inst/regenerate-example-objects.R",
       "task_attribs": {},
       "task_args": {},
       "dataset": {
@@ -47,7 +47,7 @@
         {
           "solver": "btw_solver",
           "params": {
-            "1": "self$samples$input",
+            "1": "self$get_samples()$input",
             "solver_chat": "sonnet_3_7$clone()"
           }
         }
@@ -65,7 +65,7 @@
           "metrics": {
             "accuracy": {
               "name": "accuracy",
-              "value": 63.4615,
+              "value": 26.9231,
               "params": {
                 "1": "numeric_scores"
               }
@@ -75,29 +75,29 @@
       ]
     },
     "stats": {
-      "started_at": "2025-04-10T10:57:34-05:00",
-      "completed_at": "2025-04-10T11:06:47-05:00",
+      "started_at": "2025-04-29T14:37:07-05:00",
+      "completed_at": "2025-04-29T14:37:34-05:00",
       "model_usage": {
         "claude-3-7-sonnet-latest": {
-          "input_tokens": 100470,
+          "input_tokens": 34685,
           "cache_creation_input_tokens": 0,
           "cache_read_input_tokens": 0,
-          "output_tokens": 17323,
-          "total_tokens": 117793
+          "output_tokens": 5313,
+          "total_tokens": 39998
         }
       }
     }
   },
-  "2025-04-10T16-15-47-05-00_AnREval_db267f5e7251238aac6d76.json": {
+  "2025-04-29T14-38-09-05-00_An-R-Eval_db267f5e7251238aac6d76.json": {
     "version": 2,
     "status": "success",
     "eval": {
-      "run_id": "6NkXkubIKst5e2R7Q5pGwx",
-      "created": "2025-04-10T16:15:47-05:00",
-      "task": "AnREval",
+      "run_id": "C94RDYxtp3cVDfoXV8V81U",
+      "created": "2025-04-29T14:38:09-05:00",
+      "task": "An-R-Eval",
       "task_id": "db267f5e7251238aac6d76",
       "task_version": 0,
-      "task_file": "/Users/simoncouch/Documents/rrr/vitals/vignettes/articles/solvers.Rmd",
+      "task_file": "/Users/simoncouch/Documents/rrr/vitals/inst/regenerate-example-objects.R",
       "task_attribs": {},
       "task_args": {},
       "dataset": {
@@ -136,7 +136,7 @@
         {
           "solver": "generate(solver_chat = sonnet_3_7$clone())",
           "params": {
-            "1": "self$samples$input"
+            "1": "self$get_samples()$input"
           }
         }
       ],
@@ -153,7 +153,7 @@
           "metrics": {
             "accuracy": {
               "name": "accuracy",
-              "value": 59.6154,
+              "value": 57.6923,
               "params": {
                 "1": "numeric_scores"
               }
@@ -163,15 +163,15 @@
       ]
     },
     "stats": {
-      "started_at": "2025-04-10T14:26:15-05:00",
-      "completed_at": "2025-04-10T14:31:27-05:00",
+      "started_at": "2025-04-29T14:37:34-05:00",
+      "completed_at": "2025-04-29T14:38:09-05:00",
       "model_usage": {
         "claude-3-7-sonnet-latest": {
           "input_tokens": 11493,
           "cache_creation_input_tokens": 0,
           "cache_read_input_tokens": 0,
-          "output_tokens": 10967,
-          "total_tokens": 22460
+          "output_tokens": 11078,
+          "total_tokens": 22571
         }
       }
     }

@@ -38,7 +38,7 @@
 #'
 #' @param scorer A function that evaluates how well the solver's return value
 #' approximates the corresponding elements of `dataset$target`. The function
-#' should take in the `$samples` slot of a Task object and return a list with
+#' should take in the `$get_samples()` slot of a Task object and return a list with
 #' the following elements:
 #'
 #' * `score` - A vector of scores with length equal to `nrow(samples)`.
@@ -60,7 +60,7 @@
 #' for examples.
 #'
 #' @param metrics A named list of functions that take in a vector of scores
-#' (as in `task$samples$score`) and output a single numeric value.
+#' (as in `task$get_samples()$score`) and output a single numeric value.
 #'
 #' @param epochs The number of times to repeat each sample. Evaluate each sample
 #' multiple times to better quantify variation. Optional, defaults to `1L`.
@@ -100,11 +100,6 @@ Task <- R6::R6Class(
     #' @field dir The directory where evaluation logs will be written to. Defaults
     #' to `vitals_log_dir()`.
     dir = vitals_log_dir(),
-
-    #' @field samples A tibble representing the evaluation. Based on the `dataset`,
-    #' `epochs` may duplicate rows, and the solver and scorer will append
-    #' columns to this data.
-    samples = NULL,
 
     #' @field metrics A named vector of metric values resulting from `$measure()`
     #' (called inside of `$eval()`). Will be `NULL` if metrics have yet to
@@ -160,7 +155,7 @@ Task <- R6::R6Class(
       private$task_id <- substr(hash(c(name, solver_name, scorer_name)), 1, 22)
       private$epochs <- epochs
 
-      self$samples <- set_id_column(dataset)
+      private$samples <- set_id_column(dataset)
     },
 
     #' @description
@@ -202,6 +197,20 @@ Task <- R6::R6Class(
     },
 
     #' @description
+    #' The task's samples represent the evaluation in a data frame format.
+    #'
+    #' [vitals_bind()] row-binds the output of this
+    #' function called across several tasks.
+    #'
+    #' @return
+    #' A tibble representing the evaluation. Based on the `dataset`,
+    #' `epochs` may duplicate rows, and the solver and scorer will append
+    #' columns to this data.
+    get_samples = function() {
+      private$samples
+    },
+
+    #' @description
     #' Solve the task by running the solver
     #'
     #' @param ... Additional arguments passed to the solver function.
@@ -214,15 +223,18 @@ Task <- R6::R6Class(
         private$reset_for_new_eval()
       }
 
-      self$samples <- join_epochs(self$samples, epochs %||% private$epochs)
+      private$samples <- join_epochs(
+        self$get_samples(),
+        epochs %||% private$epochs
+      )
 
       private$run_id <- generate_id()
 
-      self$samples$result <- NA
-      self$samples$solver_chat <- NA
+      private$samples$result <- NA
+      private$samples$solver_chat <- NA
 
       private$track_token_usage("solver_token_usage")
-      private$solutions <- private$solver(self$samples$input, ...)
+      private$solutions <- private$solver(self$get_samples()$input, ...)
 
       # TODO: it might be nice to just run one of the inputs async and check for
       # this earlier on so that a full eval's worth of results isn't thrown
@@ -249,10 +261,10 @@ Task <- R6::R6Class(
         return(invisible(self))
       }
 
-      self$samples$score <- NA
+      private$samples$score <- NA
 
       private$track_token_usage("scorer_token_usage")
-      private$scores <- private$scorer(self$samples, ...)
+      private$scores <- private$scorer(self$get_samples(), ...)
       private$check_scorer_outputs()
       private$cbind_scores()
 
@@ -296,7 +308,7 @@ Task <- R6::R6Class(
     #'
     #' @return The path to the logged file, invisibly.
     log = function(dir = vitals_log_dir()) {
-      samples <- self$samples
+      samples <- self$get_samples()
       samples <- private$add_working_times(samples)
       samples <- private$add_working_starts(samples)
 
@@ -443,6 +455,8 @@ Task <- R6::R6Class(
     scorer_token_usage = NULL,
     scored = FALSE,
 
+    samples = NULL,
+
     stash_last_task = function() {
       if (!"pkg:vitals" %in% search()) {
         do.call(
@@ -456,14 +470,16 @@ Task <- R6::R6Class(
     },
 
     reset_solutions = function() {
-      self$samples$result <- NA
-      self$samples$solver_chat <- NULL
-      self$samples$solver_metadata <- NULL
+      private$samples$result <- NA
+      private$samples$solver_chat <- NULL
+      private$samples$solver_metadata <- NULL
       private$solved <- FALSE
 
-      if ("epoch" %in% names(self$samples)) {
-        self$samples <- self$samples[self$samples$epoch == 1, ]
-        self$samples$epoch <- NULL
+      if ("epoch" %in% names(self$get_samples())) {
+        private$samples <- private$samples[
+          private$samples$epoch == 1,
+        ]
+        private$samples$epoch <- NULL
       }
 
       if (private$scored) {
@@ -474,9 +490,9 @@ Task <- R6::R6Class(
     },
 
     reset_scores = function() {
-      self$samples$score <- NA
-      self$samples$scorer_chat <- NULL
-      self$samples$scorer_metadata <- NULL
+      private$samples$score <- NA
+      private$samples$scorer_chat <- NULL
+      private$samples$scorer_metadata <- NULL
       private$scored <- FALSE
 
       if (!is.null(self$metrics)) {
@@ -555,11 +571,11 @@ Task <- R6::R6Class(
     },
 
     cbind_solutions = function() {
-      self$samples$result <- private$solutions$value$result
-      self$samples$solver_chat <- private$solutions$value$solver_chat
+      private$samples$result <- private$solutions$value$result
+      private$samples$solver_chat <- private$solutions$value$solver_chat
 
       if ("solver_metadata" %in% names(private$solutions$value)) {
-        self$samples$solver_metadata <- private$solutions$value$solver_metadata
+        private$samples$solver_metadata <- private$solutions$value$solver_metadata
       }
 
       invisible()
@@ -567,15 +583,15 @@ Task <- R6::R6Class(
 
     cbind_scores = function() {
       scorer_res <- private$scores$value
-      self$samples$score <- scorer_res$score
+      private$samples$score <- scorer_res$score
       if ("scorer_chat" %in% names(scorer_res)) {
-        self$samples$scorer_chat <- scorer_res$scorer_chat
+        private$samples$scorer_chat <- scorer_res$scorer_chat
       }
       if ("scorer_metadata" %in% names(scorer_res)) {
-        self$samples$scorer_metadata <- scorer_res$scorer_metadata
+        private$samples$scorer_metadata <- scorer_res$scorer_metadata
       }
 
-      self$samples$scorer <- private$scores$name
+      private$samples$scorer <- private$scores$name
     },
 
     # For a named list of metric functions, apply each as `logged(fn_i)(scores)`
@@ -586,7 +602,7 @@ Task <- R6::R6Class(
           names(private$metric_fns),
           function(metric, metric_name) {
             # TODO: handle errors here? or should `logged()` do that?
-            logged(metric, metric_name)(self$samples$score)
+            logged(metric, metric_name)(self$get_samples()$score)
           }
         )
     },
@@ -594,20 +610,20 @@ Task <- R6::R6Class(
     # A default metric, mirroring the default accuracy in Inspect
     apply_naive_accuracy = function() {
       if (
-        is.factor(self$samples$score) &&
-          (any(c("C", "I") %in% levels(self$samples$score)))
+        is.factor(self$get_samples()$score) &&
+          (any(c("C", "I") %in% levels(self$get_samples()$score)))
       ) {
         # map factor to numeric for a simple accuracy (#51, #53)
-        numeric_scores <- as.numeric(self$samples$score) - 1
+        numeric_scores <- as.numeric(self$get_samples()$score) - 1
         numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
         private$metric_results <-
           list2(
             accuracy = logged(accuracy)(numeric_scores)
           )
-      } else if (is.numeric(self$samples$score)) {
+      } else if (is.numeric(self$get_samples()$score)) {
         private$metric_results <-
           list2(
-            accuracy = logged(accuracy)(self$samples$score)
+            accuracy = logged(accuracy)(self$get_samples()$score)
           )
       }
     },
@@ -697,7 +713,7 @@ print.Task <- function(x, ...) {
     "An evaluation {cli::col_blue('task')} {.field {dataset_name}}."
   ))
 
-  if ("score" %in% names(x$samples)) {
+  if ("score" %in% names(x$get_samples())) {
     cli::cat_line(cli::format_inline(
       "Explore interactively with {.run .last_task$view()}."
     ))

@@ -22,15 +22,15 @@ test_that("Task R6 class works", {
   expect_true(inherits(tsk, "Task"))
   expect_snapshot(tsk)
 
-  expect_equal(nrow(tsk$samples), nrow(simple_addition))
-  expect_named(tsk$samples, c("input", "target", "id"))
+  expect_equal(nrow(tsk$get_samples()), nrow(simple_addition))
+  expect_named(tsk$get_samples(), c("input", "target", "id"))
 
   tsk$eval()
   expect_valid_log(tsk$log())
   expect_snapshot(tsk)
 
   expect_named(
-    tsk$samples,
+    tsk$get_samples(),
     c(
       "input",
       "target",
@@ -72,9 +72,9 @@ test_that("Task with epochs works", {
   tsk$eval(epochs = 2)
   expect_valid_log(tsk$log())
 
-  expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
+  expect_equal(nrow(tsk$get_samples()), nrow(simple_addition) * 2)
   expect_named(
-    tsk$samples,
+    tsk$get_samples(),
     c(
       "input",
       "target",
@@ -116,7 +116,7 @@ test_that("Task respects `$new(epochs)`", {
   tsk$eval()
   expect_valid_log(tsk$log())
 
-  expect_equal(nrow(tsk$samples), nrow(simple_addition) * 2)
+  expect_equal(nrow(tsk$get_samples()), nrow(simple_addition) * 2)
 })
 
 test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
@@ -144,7 +144,7 @@ test_that("`$eval(epochs)` takes precedence over `$new(epochs)`", {
   tsk$eval(epochs = 1)
   expect_valid_log(tsk$log())
 
-  expect_equal(nrow(tsk$samples), nrow(simple_addition))
+  expect_equal(nrow(tsk$get_samples()), nrow(simple_addition))
 })
 
 test_that("check_dataset works", {
@@ -229,7 +229,7 @@ test_that("Task preserves existing id column", {
     }
   )
 
-  expect_equal(tsk$samples$id, c(10, 20))
+  expect_equal(tsk$get_samples()$id, c(10, 20))
 })
 
 test_that("Task errors informatively with duplicate ids", {
@@ -288,8 +288,8 @@ test_that("set_solver works", {
   tsk$set_solver(new_solver)
   tsk$solve()
 
-  expect_equal(tsk$samples$result, c("4", "5"))
-  expect_false("solver_metadata" %in% names(tsk$samples))
+  expect_equal(tsk$get_samples()$result, c("4", "5"))
+  expect_false("solver_metadata" %in% names(tsk$get_samples()))
 
   # set a new solver that includes metadata
   new_solver <- function(inputs) {
@@ -304,11 +304,11 @@ test_that("set_solver works", {
   }
   tsk$set_solver(new_solver)
   expect_false(
-    any(c("solver_chat", "solver_metadata") %in% names(tsk$samples))
+    any(c("solver_chat", "solver_metadata") %in% names(tsk$get_samples()))
   )
   tsk$solve()
 
-  expect_true("solver_metadata" %in% names(tsk$samples))
+  expect_true("solver_metadata" %in% names(tsk$get_samples()))
 })
 
 test_that("set_solver works", {
@@ -345,8 +345,8 @@ test_that("set_solver works", {
   tsk$set_solver(new_solver)
   tsk$solve()
 
-  expect_equal(tsk$samples$result, c("4", "5"))
-  expect_false("solver_metadata" %in% names(tsk$samples))
+  expect_equal(tsk$get_samples()$result, c("4", "5"))
+  expect_false("solver_metadata" %in% names(tsk$get_samples()))
 
   # set a new solver that includes metadata
   new_solver <- function(inputs) {
@@ -361,11 +361,11 @@ test_that("set_solver works", {
   }
   tsk$set_solver(new_solver)
   expect_false(
-    any(c("solver_chat", "solver_metadata") %in% names(tsk$samples))
+    any(c("solver_chat", "solver_metadata") %in% names(tsk$get_samples()))
   )
   tsk$solve()
 
-  expect_true("solver_metadata" %in% names(tsk$samples))
+  expect_true("solver_metadata" %in% names(tsk$get_samples()))
 })
 
 # scorer ------------------------------------------------------------------
@@ -409,8 +409,10 @@ test_that("set_scorer works", {
   tsk$set_scorer(scorer_minimal)
   tsk$score()
 
-  expect_equal(tsk$samples$score, c(1, 1))
-  expect_false(any(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
+  expect_equal(tsk$get_samples()$score, c(1, 1))
+  expect_false(any(
+    c("scorer_chat", "scorer_metadata") %in% names(tsk$get_samples())
+  ))
 
   # return scorer chats
   scorer_chat <- function(samples) {
@@ -423,9 +425,9 @@ test_that("set_scorer works", {
     )
   }
   tsk$set_scorer(scorer_chat)
-  expect_true(all(is.na(tsk$samples$score)))
+  expect_true(all(is.na(tsk$get_samples()$score)))
   tsk$score()
-  expect_true("scorer_chat" %in% names(tsk$samples))
+  expect_true("scorer_chat" %in% names(tsk$get_samples()))
 
   # return metadata, too
   scorer_metadata <- function(samples) {
@@ -439,10 +441,14 @@ test_that("set_scorer works", {
     )
   }
   tsk$set_scorer(scorer_metadata)
-  expect_true(all(is.na(tsk$samples$score)))
-  expect_false(any(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
+  expect_true(all(is.na(tsk$get_samples()$score)))
+  expect_false(any(
+    c("scorer_chat", "scorer_metadata") %in% names(tsk$get_samples())
+  ))
   tsk$score()
-  expect_true(all(c("scorer_chat", "scorer_metadata") %in% names(tsk$samples)))
+  expect_true(all(
+    c("scorer_chat", "scorer_metadata") %in% names(tsk$get_samples())
+  ))
 })
 
 # metrics ------------------------------------------------------------------
@@ -654,15 +660,15 @@ test_that("Task completeness is tracked and preserved", {
   tsk$score()
 
   tsk_clone <- tsk$clone()
-  original_results <- tsk$samples$result
-  original_scores <- tsk$samples$score
+  original_results <- tsk$get_samples()$result
+  original_scores <- tsk$get_samples()$score
 
   tsk_clone$eval()
   # TODO: expect_valid_log(tsk$log())
-  expect_equal(nrow(tsk_clone$samples), nrow(simple_addition))
+  expect_equal(nrow(tsk_clone$get_samples()), nrow(simple_addition))
 
-  expect_equal(tsk$samples$result, original_results)
-  expect_equal(tsk$samples$score, original_scores)
+  expect_equal(tsk$get_samples()$result, original_results)
+  expect_equal(tsk$get_samples()$score, original_scores)
 
   # test re-evaluation with epochs
   tsk_epochs <- Task$new(
@@ -673,13 +679,13 @@ test_that("Task completeness is tracked and preserved", {
 
   tsk_epochs$eval(epochs = 2)
   # TODO: expect_valid_log(tsk$log())
-  expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 2)
-  expect_true("epoch" %in% names(tsk_epochs$samples))
+  expect_equal(nrow(tsk_epochs$get_samples()), nrow(simple_addition) * 2)
+  expect_true("epoch" %in% names(tsk_epochs$get_samples()))
 
   tsk_epochs$eval(epochs = 3)
   # TODO: expect_valid_log(tsk$log())
-  expect_equal(nrow(tsk_epochs$samples), nrow(simple_addition) * 3)
-  expect_true("epoch" %in% names(tsk_epochs$samples))
+  expect_equal(nrow(tsk_epochs$get_samples()), nrow(simple_addition) * 3)
+  expect_true("epoch" %in% names(tsk_epochs$get_samples()))
 })
 
 test_that("Task errors informatively with bad solver output", {

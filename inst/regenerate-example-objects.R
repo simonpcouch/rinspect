@@ -61,8 +61,6 @@ regenerate_are_1e <- function() {
   rmarkdown::render('vignettes/vitals.Rmd')
 }
 
-regenerate_example_objects()
-
 # An R Eval on 1 epoch, via the intro vignette ------------------------
 regenerate_are_custom_solvers <- function() {
   json_files <- list.files(

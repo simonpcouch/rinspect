@@ -52,16 +52,16 @@ example_task <- function(solved = TRUE, scored = TRUE) {
     return(res)
   }
 
-  res$samples$result <- tsk$samples$result
-  res$samples$solver_chat <- tsk$samples$solver_chat
+  res$.__enclos_env__$private$samples$result <- tsk$get_samples()$result
+  res$.__enclos_env__$private$samples$solver_chat <- tsk$get_samples()$solver_chat
   res$.__enclos_env__$private$solved <- TRUE
 
   if (!scored) {
     return(res)
   }
 
-  res$samples$score <- tsk$samples$score
-  res$samples$scorer_chat <- tsk$samples$scorer_chat
+  res$.__enclos_env__$private$samples$score <- tsk$get_samples()$score
+  res$.__enclos_env__$private$samples$scorer_chat <- tsk$get_samples()$scorer_chat
   res$.__enclos_env__$private$scored <- TRUE
 
   res

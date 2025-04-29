@@ -4,7 +4,7 @@
 #' Combine multiple [Task] objects into a single tibble for comparison.
 #'
 #' This function takes multiple (optionally named) [Task] objects and row-binds
-#' their `$samples` together, adding a `task` column to identify the source of each
+#' their `$get_samples()` together, adding a `task` column to identify the source of each
 #' row. The resulting tibble nests additional columns into a `metadata` column
 #' and is ready for further analysis.
 #'
@@ -21,7 +21,7 @@ vitals_bind <- function(...) {
 
   x <- purrr::map2(x, names(x), function(task, task_name) {
     dplyr::mutate(
-      task$samples,
+      task$get_samples(),
       task = task_name,
       .before = everything()
     )
