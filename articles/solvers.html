@@ -154,8 +154,8 @@ function.</p>
 <span><span class="co">#&gt;     list(result = purrr::map_chr(res, function(c) c$last_turn()@text), </span></span>
 <span><span class="co">#&gt;         solver_chat = res)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x55aa2902fb18&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x55aa2902eae8&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;bytecode: 0x556e5ce8cc20&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x556e5ce8bbf0&gt;</span></span></code></pre></div>
 <p>While, in documentation, I’ve mostly written “<code><a href="../reference/generate.html">generate()</a></code>
 just calls <code>$chat()</code>,” there are a couple extra tricks up
 <code><a href="../reference/generate.html">generate()</a></code>’s sleeves:</p>
@@ -179,7 +179,7 @@ case, <code>purrr::map_chr(res, function(c) c$last_turn()@text)</code>
 just grabs the text from the last assistant run and returns it.
 <code>result</code> is a vector of length equal to
 <code>inputs</code>—it should be able to be tacked onto
-<code>task$samples</code> as another column.</li>
+<code>task$get_samples()</code> as another column.</li>
 <li>
 <code>solver_chat</code> is a list of chats that led to the
 <code>result</code>. This may seem redundant with <code>result</code>,
@@ -297,18 +297,18 @@ several parameterizations. We’ll just use Claude Sonnet 3.7 for now.</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> are_btw after-stat-bar-heights      I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> are_btw conditional-grouped-summary P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> are_btw correlated-delays-reasoning C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> are_btw curl-http-get               C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> are_btw correlated-delays-reasoning I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> are_btw curl-http-get               I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> are_btw dropped-level-legend        I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> are_btw geocode-req-perform         C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> are_btw geocode-req-perform         I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> are_btw ggplot-breaks-feature       I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> are_btw grouped-filter-summarize    P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> are_btw grouped-mutate              C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> are_btw grouped-mutate              I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> are_btw implement-nse-arg           P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 16 more rows</span></span></span></code></pre></div>
-<p>Claude answered fully correctly in 14 out of 26 samples, and
-partially correctly 5 times. Using the metadata, we can also determine
-how often the model looked at at least one help-page before supplying an
+<p>Claude answered fully correctly in 0 out of 26 samples, and partially
+correctly 7 times. Using the metadata, we can also determine how often
+the model looked at at least one help-page before supplying an
 answer:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chat_called_a_tool</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">chat</span><span class="op">)</span> <span class="op">{</span></span>
@@ -327,7 +327,7 @@ answer:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;     2    24</span></span></code></pre></div>
+<span><span class="co">#&gt;     3    23</span></span></code></pre></div>
 <p>When equipped with the ability to peruse documentation, the model
 almost always made use of it. To see the kinds of docs it decided to
 look at, click in a few samples in the log viewer for this eval:</p>
@@ -362,13 +362,13 @@ here if we didn’t want to recreate the task.)</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;ord&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> btw    after-stat-bar-heights      I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> btw    conditional-grouped-summary P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> btw    correlated-delays-reasoning C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> btw    curl-http-get               C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> btw    correlated-delays-reasoning I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> btw    curl-http-get               I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> btw    dropped-level-legend        I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> btw    geocode-req-perform         C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> btw    geocode-req-perform         I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> btw    ggplot-breaks-feature       I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> btw    grouped-filter-summarize    P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> btw    grouped-mutate              C     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> btw    grouped-mutate              I     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> btw    implement-nse-arg           P     <span style="color: #949494;">&lt;tibble [1 × 10]&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 42 more rows</span></span></span></code></pre></div>
 <p>Is this difference in performance just a result of noise, though? We
@@ -388,27 +388,27 @@ question.</p>
 <span><span class="co">#&gt; formula: score ~ solver</span></span>
 <span><span class="co">#&gt; data:    are_eval_data</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  link  threshold nobs logLik AIC    niter max.grad cond.H </span></span>
-<span><span class="co">#&gt;  logit flexible  52   -52.78 111.56 5(0)  1.22e-07 1.7e+01</span></span>
+<span><span class="co">#&gt;  link  threshold nobs logLik AIC   niter max.grad cond.H </span></span>
+<span><span class="co">#&gt;  logit flexible  52   -45.46 96.92 4(0)  1.25e-07 9.0e+00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients:</span></span>
 <span><span class="co">#&gt; solverbtw </span></span>
-<span><span class="co">#&gt;    0.1661 </span></span>
+<span><span class="co">#&gt;    -2.333 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Threshold coefficients:</span></span>
-<span><span class="co">#&gt;       I|P       P|C </span></span>
-<span><span class="co">#&gt; -0.821030  0.006203</span></span></code></pre></div>
-<p>The coefficient for <code>solver == "btw"</code> is 0.166, indicating
-that allowing the model to peruse documentation tends to be associated
-with higher grades. If a 95% confidence interval for this coefficient
-contains zero, we can conclude that there is not sufficient evidence to
-reject the null hypothesis that the difference between GPT-4o and
-Claude’s performance on this eval is zero at the 0.05 significance
-level.</p>
+<span><span class="co">#&gt;     I|P     P|C </span></span>
+<span><span class="co">#&gt; -1.2549  0.4655</span></span></code></pre></div>
+<p>The coefficient for <code>solver == "btw"</code> is -2.333,
+indicating that allowing the model to peruse documentation tends to be
+associated with lower grades. If a 95% confidence interval for this
+coefficient contains zero, we can conclude that there is not sufficient
+evidence to reject the null hypothesis that the difference between
+GPT-4o and Claude’s performance on this eval is zero at the 0.05
+significance level.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">are_mod</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               2.5 %   97.5 %</span></span>
-<span><span class="co">#&gt; solverbtw -0.871408 1.210623</span></span></code></pre></div>
+<span><span class="co">#&gt;               2.5 %    97.5 %</span></span>
+<span><span class="co">#&gt; solverbtw -3.617944 -1.173259</span></span></code></pre></div>
 <div class="callout-note">
 <p>If we had evaluated this model across multiple epochs, the question
 ID could become a “nuisance parameter” in a mixed model, e.g. with the
@@ -434,7 +434,7 @@ incorporated into evaluation logs.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
   </div></footer>
