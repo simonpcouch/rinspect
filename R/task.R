@@ -308,6 +308,12 @@ Task <- R6::R6Class(
     #'
     #' @return The path to the logged file, invisibly.
     log = function(dir = vitals_log_dir()) {
+      if (!private$scored) {
+        cli::cli_abort(
+          "Task has not been scored yet. Run task$score() first."
+        )
+      }
+
       samples <- self$get_samples()
       samples <- private$add_working_times(samples)
       samples <- private$add_working_starts(samples)
