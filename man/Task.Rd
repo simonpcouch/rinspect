@@ -148,7 +148,8 @@ Scorers will probably make use of \code{samples$input}, \code{samples$target}, a
 \code{samples$result} specifically. See \link[=scorer_model]{model-based scoring}
 for examples.}
 
-\item{\code{metrics}}{A metric summarizing the results from the scorer.}
+\item{\code{metrics}}{A named list of functions that take in a vector of scores
+(as in \code{task$get_samples()$score}) and output a single numeric value.}
 
 \item{\code{epochs}}{The number of times to repeat each sample. Evaluate each sample
 multiple times to better quantify variation. Optional, defaults to \code{1L}.

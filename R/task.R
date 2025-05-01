@@ -111,7 +111,6 @@ Task <- R6::R6Class(
     #' calling this method and then `$eval()` on the resulting object.
     #'
     #' @param dataset A tibble with, minimally, columns `input` and `target`.
-    #' @param metrics A metric summarizing the results from the scorer.
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
