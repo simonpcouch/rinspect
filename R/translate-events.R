@@ -491,7 +491,7 @@ create_model_event <- function(turn, sample) {
         )
       ),
       usage = turn_tokens(turn),
-      time = 100000
+      time = attr(turn, "working_time")
     ),
     call = list(
       request = list(
@@ -537,7 +537,7 @@ create_model_event <- function(turn, sample) {
         type = "message",
         usage = turn_tokens(turn)
       ),
-      time = 100000
+      time = attr(turn, "working_time")
     ),
     completed = events_timestamp(timestamp),
     working_time = attr(turn, "working_time")
@@ -606,7 +606,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         )
       ),
       usage = turn_tokens(turn),
-      time = 100000
+      time = attr(turn, "working_time")
     ),
     call = list(
       request = list(
@@ -638,7 +638,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
         stop_sequence = NULL,
         type = "message",
         usage = turn_tokens(turn),
-        time = 100000
+        time = attr(turn, "working_time")
       )
     ),
     completed = events_timestamp(timestamp),
@@ -731,8 +731,8 @@ add_working_times_to_turns <- function(chat) {
   for (i in 2:length(turns)) {
     attr(turns[[i]], "working_time") <-
       as.numeric(difftime(
-        turns[[i - 1]]@completed,
         turns[[i]]@completed,
+        turns[[i - 1]]@completed,
         units = "secs"
       ))
   }
@@ -752,8 +752,8 @@ add_working_start_to_turns <- function(chat, first_turn_time) {
   for (i in 1:length(turns)) {
     attr(turns[[i]], "working_start") <-
       as.numeric(difftime(
-        first_turn_time,
         turns[[i]]@completed,
+        first_turn_time,
         units = "secs"
       ))
   }
