@@ -116,7 +116,17 @@ translate_to_samples <- function(dataset, scores) {
 translate_to_sample <- function(sample, scores) {
   chat <- sample$solver_chat[[1]]
   scorer_name <- scores$name
-
+  if ("scorer_chat" %in% names(sample)) {
+    scorer_name <- paste0(
+      c(
+        scorer_name,
+        " (",
+        sample$scorer_chat[[1]]$get_model(),
+        ")"
+      ),
+      collapse = ""
+    )
+  }
   turns <- chat$get_turns()
   list(
     id = sample$id,

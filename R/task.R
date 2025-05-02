@@ -317,6 +317,19 @@ Task <- R6::R6Class(
       samples <- private$add_working_times(samples)
       samples <- private$add_working_starts(samples)
 
+      scorer_name <- private$scores$name
+      if ("scorer_chat" %in% names(samples)) {
+        scorer_name <- paste0(
+          c(
+            scorer_name,
+            " (",
+            samples$scorer_chat[[1]]$get_model(),
+            ")"
+          ),
+          collapse = ""
+        )
+      }
+
       eval_log <- eval_log(
         eval = translate_to_eval(
           run_id = private$run_id,
@@ -342,7 +355,7 @@ Task <- R6::R6Class(
           total_samples = nrow(samples),
           completed_samples = nrow(samples),
           scores = results_scores(
-            name = private$scores$name,
+            name = scorer_name,
             metrics = map(private$metric_results, rename_metric_fields)
           )
         ),
