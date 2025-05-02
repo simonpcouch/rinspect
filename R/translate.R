@@ -136,10 +136,11 @@ translate_to_sample <- function(sample, scores) {
           sample$scorer_chat[[1]]
         } else {
           NULL
-        }
+        },
+        metadata = as_metadata(sample[names(sample) == "scorer_metadata"])
       )
     ),
-    metadata = c(),
+    metadata = as_metadata(sample[names(sample) == "solver_metadata"]),
     store = c(),
     events = translate_to_events(sample = sample),
     model_usage = sum_model_usage(list(chat)),
@@ -161,13 +162,19 @@ translate_to_metrics <- function(
   )
 }
 
-translate_to_score <- function(output, score, scorer, scorer_chat = NULL) {
+translate_to_score <- function(
+  output,
+  score,
+  scorer,
+  scorer_chat = NULL,
+  metadata
+) {
   if (is.null(scorer_chat)) {
     return(list(
       value = score,
       answer = output,
-      explanation = paste0("Detected correct answer."),
-      metadata = c()
+      explanation = scorer,
+      metadata = metadata
     ))
   }
 
@@ -178,8 +185,11 @@ translate_to_score <- function(output, score, scorer, scorer_chat = NULL) {
     value = score,
     answer = output,
     explanation = explanation,
-    metadata = list(
-      grading = lapply(turns, translate_to_metadata_grading)
+    metadata = c(
+      list(
+        grading = lapply(turns, translate_to_metadata_grading)
+      ),
+      metadata
     )
   )
 }
@@ -231,4 +241,38 @@ input_string <- function(x) {
     ),
     collapse = "\n\n"
   )
+}
+
+# metadata entries must ultimately be a "flattened", named list.
+# note `c()` is interpreted as a named list by jsonlite.
+as_metadata <- function(x) {
+  if (length(x) == 0) {
+    return(c())
+  }
+
+  if (is.atomic(x)) {
+    return(set_reasonable_names(as.list(x)))
+  }
+
+  res <- tryCatch(
+    purrr::list_flatten(as.list(x)),
+    error = function(e) NULL
+  )
+
+  if (is.null(res)) {
+    return(c())
+  }
+
+  set_reasonable_names(res)
+}
+
+set_reasonable_names <- function(x) {
+  if (is.null(names(x))) {
+    names(x) <- as.character(seq_along(x))
+    return(x)
+  }
+
+  unnamed_idx <- which(names(x) == "")
+  names(x)[unnamed_idx] <- as.character(unnamed_idx)
+  x
 }

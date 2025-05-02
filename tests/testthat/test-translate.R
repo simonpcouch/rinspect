@@ -148,3 +148,28 @@ test_that("vitals writes valid eval logs (solver errors on tool call, claude)", 
 
   expect_valid_log(log_file[1])
 })
+
+test_that("as_metadata can make lists into a named vector (#69)", {
+  res <- as_metadata(mtcars[1:2, 1:2])
+  expect_type(res, "list")
+  expect_named(res, c("mpg", "cyl"))
+  expect_snapshot(res)
+
+  res <- as_metadata(tibble(x = list(list(a = 1, b = 2)), y = 3))
+  expect_type(res, "list")
+  expect_named(res, c("x", "y"))
+  expect_snapshot(res)
+
+  res <- as_metadata(list(1:3, b = 2))
+  expect_type(res, "list")
+  expect_named(res, c("1", "b"))
+  expect_snapshot(res)
+
+  res <- as_metadata(list(1:3, b = 2))
+  expect_type(res, "list")
+  expect_named(res, c("1", "b"))
+  expect_snapshot(res)
+
+  vec <- c(a = 1, b = 2)
+  expect_equal(as_metadata(vec), as.list(vec))
+})
