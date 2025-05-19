@@ -104,16 +104,20 @@ translate_to_stats <- function(
   )
 }
 
-translate_to_samples <- function(dataset, scores) {
+translate_to_samples <- function(dataset, scores, timestamps) {
   res <- list()
   for (i in seq_len(nrow(dataset))) {
     sample <- dataset[i, , drop = FALSE]
-    res[[i]] <- translate_to_sample(sample, scores = scores)
+    res[[i]] <- translate_to_sample(
+      sample,
+      scores = scores,
+      timestamps = timestamps
+    )
   }
   res
 }
 
-translate_to_sample <- function(sample, scores) {
+translate_to_sample <- function(sample, scores, timestamps) {
   chat <- sample$solver_chat[[1]]
   scorer_name <- scores$name
   if ("scorer_chat" %in% names(sample)) {
@@ -152,7 +156,7 @@ translate_to_sample <- function(sample, scores) {
     ),
     metadata = as_metadata(sample[names(sample) == "solver_metadata"]),
     store = c(),
-    events = translate_to_events(sample = sample),
+    events = translate_to_events(sample = sample, timestamps = timestamps),
     model_usage = sum_model_usage(list(chat)),
     # TODO: these seem to be prompts passed to the judges
     attachments = c()

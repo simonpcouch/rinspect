@@ -142,12 +142,3 @@ rename_metric_fields <- function(metrics) {
   metrics$arguments <- NULL
   metrics
 }
-
-translate_to_completed_at <- function(samples) {
-  if ("scorer_chat" %in% names(samples)) {
-    last_scorer_chat <- samples[nrow(samples), ]$scorer_chat[[1]]
-    return(eval_log_timestamp(last_scorer_chat$last_turn()@completed))
-  }
-
-  eval_log_timestamp(Sys.time())
-}

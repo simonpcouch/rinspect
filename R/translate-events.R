@@ -6,24 +6,21 @@
 # - Scorer
 #
 # TODO: how is the tool registered if it's in the scorer?
-translate_to_events <- function(sample) {
-  events <- translate_events_initialize(sample)
-  events <- translate_events_tool_use(events, sample)
-  events <- translate_events_solver(events, sample)
-  events <- translate_events_scorer(events, sample)
+translate_to_events <- function(sample, timestamps) {
+  events <- translate_events_initialize(sample, timestamps = timestamps)
+  events <- translate_events_tool_use(events, sample, timestamps = timestamps)
+  events <- translate_events_solver(events, sample, timestamps = timestamps)
+  events <- translate_events_scorer(events, sample, timestamps = timestamps)
   events
 }
 
 # higher-level helpers ------------------------------------------------------
-translate_events_initialize <- function(sample) {
+translate_events_initialize <- function(sample, timestamps) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
 
-  time_user <- solver_turns[[1]]@completed
-  last_working_start <- attr(
-    solver_turns[[length(solver_turns)]],
-    "working_start"
-  )
+  time_user <- timestamps$solve$started_at
+  last_working_start <- timestamps$solve$completed_at
 
   events <- list()
   events <- c(events, create_init_begin_event(time_user))
@@ -39,11 +36,11 @@ translate_events_initialize <- function(sample) {
   events
 }
 
-translate_events_tool_use <- function(events, sample) {
+translate_events_tool_use <- function(events, sample, timestamps) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
 
-  time_user <- solver_turns[[1]]@completed
+  time_user <- timestamps$solve$started_at
 
   if (has_tool_calls(solver_turns)) {
     events <- c(
@@ -69,13 +66,13 @@ translate_events_tool_use <- function(events, sample) {
   events
 }
 
-translate_events_solver <- function(events, sample) {
+translate_events_solver <- function(events, sample, timestamps) {
   solver_chat <- sample$solver_chat[[1]]
   solver_turns <- solver_chat$get_turns()
   solver_turn <- solver_chat$last_turn()
 
-  time_user <- solver_turns[[1]]@completed
-  time_solver <- solver_turn@completed
+  time_user <- timestamps$solve$started_at
+  time_solver <- timestamps$solve$started_at
 
   # From here, the solver logging goes turn-by-turn. For each turn, log
   # the content from that turn as well as the "state" (e.g. previous response
@@ -97,7 +94,10 @@ translate_events_solver <- function(events, sample) {
         inherits(turn@contents[[1]], "ellmer::ContentToolResult")
     ) {
       tool_result <- turn@contents[[1]]
-      events <- c(events, create_tool_event(turn, tool_result))
+      events <- c(
+        events,
+        create_tool_event(turn, tool_result, timestamps = timestamps)
+      )
       next
     }
 
@@ -121,11 +121,11 @@ translate_events_solver <- function(events, sample) {
   events
 }
 
-translate_events_scorer <- function(events, sample) {
+translate_events_scorer <- function(events, sample, timestamps = timestamps) {
   if ("scorer_chat" %in% names(sample)) {
     scorer_chat <- sample$scorer_chat[[1]]
     scorer_turn <- scorer_chat$last_turn()
-    time_scorer <- scorer_turn@completed
+    time_scorer <- timestamps$score$started_at
 
     events <- c(
       events,
@@ -279,7 +279,7 @@ create_use_tools_end_event <- function(timestamp, working_start) {
 }
 
 create_tool_event <- function(turn, tool_result) {
-  timestamp <- turn@completed
+  timestamp <- timestamps$solve$started_at
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(turn, "working_start"),
@@ -720,21 +720,29 @@ turn_tokens <- function(turn) {
 # when the first chat in the solver or scorer started, in seconds.
 # `working_time` is the duration of the turn (completed time of the turn
 # minus the completed time of the turn preceding it).
-add_working_times_to_turns <- function(chat) {
+#
+# this was initially added to process `@completed` slots of turns. those were
+# removed in ellmer 0.2.0, so we're temporarily filling them in with
+# the average timing (#112)
+add_working_times_to_turns <- function(chat, which, timestamps) {
   turns <- chat$get_turns()
 
   if (length(turns) < 2) {
     return(chat)
   }
 
+  average_working_time <-
+    as.numeric(difftime(
+      timestamps[[which]]$completed_at,
+      timestamps[[which]]$started_at,
+      units = "secs"
+    )) /
+    length(turns)
+
   attr(turns[[1]], "working_time") <- NA_real_
   for (i in 2:length(turns)) {
-    attr(turns[[i]], "working_time") <-
-      as.numeric(difftime(
-        turns[[i]]@completed,
-        turns[[i - 1]]@completed,
-        units = "secs"
-      ))
+    # TODO: revisit once durations are added to ellmer turns (#112)
+    attr(turns[[i]], "working_time") <- average_working_time
   }
 
   chat$set_turns(turns)
@@ -742,23 +750,30 @@ add_working_times_to_turns <- function(chat) {
   chat
 }
 
-add_working_start_to_turns <- function(chat, first_turn_time) {
-  turns <- chat$get_turns()
+# this was initially added to process `@completed` slots of turns. those were
+# removed in ellmer 0.2.0, so we're temporarily filling them in with
+# the estimated timing if every sample took the same amount of time (#112)
+add_working_start_to_turns <- function(chats, which, timestamps) {
+  total_duration <-
+    as.numeric(difftime(
+      timestamps[[which]]$completed_at,
+      timestamps[[which]]$started_at,
+      units = "secs"
+    ))
+  duration_per_chat <- total_duration / length(chats)
+  current_working_start <- 0
 
-  if (length(turns) < 2) {
-    return(chat)
+  for (i in 1:length(chats)) {
+    chat <- chats[[i]]
+    chat_turns <- chat$get_turns()
+    duration_per_turn <- duration_per_chat / (length(chat_turns) - 1)
+    for (j in 1:length(chat_turns)) {
+      attr(chat_turns[[j]], "working_start") <- current_working_start
+      current_working_start <- current_working_start + duration_per_turn
+    }
+    chat$set_turns(chat_turns)
+    chats[[i]] <- chat
   }
 
-  for (i in 1:length(turns)) {
-    attr(turns[[i]], "working_start") <-
-      as.numeric(difftime(
-        turns[[i]]@completed,
-        first_turn_time,
-        units = "secs"
-      ))
-  }
-
-  chat$set_turns(turns)
-
-  chat
+  chats
 }

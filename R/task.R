@@ -222,6 +222,8 @@ Task <- R6::R6Class(
         private$reset_for_new_eval()
       }
 
+      private$timestamps$solve$started_at <- Sys.time()
+
       private$samples <- join_epochs(
         self$get_samples(),
         epochs %||% private$epochs
@@ -242,6 +244,7 @@ Task <- R6::R6Class(
       private$cbind_solutions()
 
       private$solved <- TRUE
+      private$timestamps$solve$completed_at <- Sys.time()
       invisible(self)
     },
 
@@ -260,6 +263,7 @@ Task <- R6::R6Class(
         return(invisible(self))
       }
 
+      private$timestamps$score$started_at <- Sys.time()
       private$samples$score <- NA
 
       private$track_token_usage("scorer_token_usage")
@@ -268,6 +272,7 @@ Task <- R6::R6Class(
       private$cbind_scores()
 
       private$scored <- TRUE
+      private$timestamps$score$completed_at <- Sys.time()
       invisible(self)
     },
 
@@ -360,13 +365,17 @@ Task <- R6::R6Class(
           )
         ),
         stats = translate_to_stats(
-          started_at = eval_log_timestamp(
-            samples$solver_chat[[1]]$get_turns()[[1]]@completed
+          started_at = eval_log_timestamp(private$timestamps$solve$started_at),
+          completed_at = eval_log_timestamp(
+            private$timestamps$score$completed_at
           ),
-          completed_at = translate_to_completed_at(samples),
           model_usage = sum_model_usage(samples$solver_chat)
         ),
-        samples = translate_to_samples(samples, scores = private$scores)
+        samples = translate_to_samples(
+          samples,
+          scores = private$scores,
+          timestamps = private$timestamps
+        )
       )
 
       if (is.na(dir)) {
@@ -475,6 +484,10 @@ Task <- R6::R6Class(
 
     samples = NULL,
 
+    # log when solving/scoring starts
+    # eventually, this will be derived from the chats themselves (#112)
+    timestamps = list(),
+
     stash_last_task = function() {
       if (!"pkg:vitals" %in% search()) {
         do.call(
@@ -491,6 +504,7 @@ Task <- R6::R6Class(
       private$samples$result <- NA
       private$samples$solver_chat <- NULL
       private$samples$solver_metadata <- NULL
+      private$timestamps$solve <- NULL
       private$solved <- FALSE
 
       if ("epoch" %in% names(self$get_samples())) {
@@ -511,6 +525,7 @@ Task <- R6::R6Class(
       private$samples$score <- NA
       private$samples$scorer_chat <- NULL
       private$samples$scorer_metadata <- NULL
+      private$timestamps$score <- NULL
       private$scored <- FALSE
 
       if (!is.null(self$metrics)) {
@@ -669,33 +684,38 @@ Task <- R6::R6Class(
     add_working_times = function(samples) {
       samples$solver_chat <- purrr::map(
         samples$solver_chat,
-        add_working_times_to_turns
+        add_working_times_to_turns,
+        which = "solve",
+        timestamps = private$timestamps
       )
 
       if ("scorer_chat" %in% names(samples)) {
         samples$scorer_chat <- purrr::map(
           samples$scorer_chat,
-          add_working_times_to_turns
+          add_working_times_to_turns,
+          which = "score",
+          timestamps = private$timestamps
         )
       }
 
       samples
     },
 
-    # log working_start values by pre-computing timings from the Chat
-    # objects before mapping over turns (#97)
+    # log working_start values by estimating timings as if every turn in every
+    # sample took the same amount of time (#112)
+    #
     add_working_starts = function(samples) {
-      samples$solver_chat <- purrr::map(
+      samples$solver_chat <- add_working_start_to_turns(
         samples$solver_chat,
-        add_working_start_to_turns,
-        first_turn_time = samples$solver_chat[[1]]$get_turns()[[1]]@completed
+        which = "solve",
+        timestamps = private$timestamps
       )
 
       if ("scorer_chat" %in% names(samples)) {
-        samples$scorer_chat <- purrr::map(
+        samples$scorer_chat <- add_working_start_to_turns(
           samples$scorer_chat,
-          add_working_start_to_turns,
-          first_turn_time = samples$scorer_chat[[1]]$get_turns()[[1]]@completed
+          which = "score",
+          timestamps = private$timestamps
         )
       }
 
