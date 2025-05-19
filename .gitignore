@@ -9,3 +9,7 @@ __pycache__/
 docs
 inst/log_dump
 /.quarto/
+
+*are*.rda
+*task*.rda
+*tsk*.rda
