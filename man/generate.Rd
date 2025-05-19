@@ -22,7 +22,7 @@ information on the return type.
 vitals; it just passes its inputs to the supplied model and returns
 its raw responses. The inputs are evaluated in parallel,
 not in the sense of multiple R sessions, but in the sense of multiple,
-asynchronous HTTP requests using \verb{$chat_parallel()}. \code{generate()}'s output
+asynchronous HTTP requests using \code{\link[ellmer:parallel_chat]{ellmer::parallel_chat()}}. \code{generate()}'s output
 can be passed directory to the \code{solver} argument of \link{Task}'s \verb{$new()}
 method.
 }

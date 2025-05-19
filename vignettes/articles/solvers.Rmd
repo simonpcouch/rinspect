@@ -84,7 +84,7 @@ generate(solver_chat = sonnet_3_7$clone())
 While, in documentation, I've mostly written "`generate()` just calls `$chat()`," there are a couple extra tricks up `generate()`'s sleeves:
 
 1) The chat is first cloned with `$clone()` so that the original chat object isn't modified once vitals calls it.
-2) Rather than `$chat()`, `generate()` calls `$chat_parallel()`. This is why `generate()` takes `inputs`--e.g. the whole `input` column--rather than a single `input`. `$chat_parallel()` will send off all of the requests in parallel (not in the usual R sense of multiple R processes, but in the sense of asychronous HTTP requests), greatly reducing the amount of time it takes to run evaluations.
+2) Rather than `$chat()`, `generate()` calls `ellmer::parallel_chat()`. This is why `generate()` takes `inputs`--e.g. the whole `input` column--rather than a single `input`. `parallel_chat()` will send off all of the requests in parallel (not in the usual R sense of multiple R processes, but in the sense of asychronous HTTP requests), greatly reducing the amount of time it takes to run evaluations.
 
 The function that `generate` outputs takes in a list of `inputs` and outputs a list with two elements:
 
@@ -148,14 +148,14 @@ ch$chat("How do custom solvers work in vitals?")
 
 Pretty spot-on. But will this capability help the models better answer questions in R? `are` is built from questions about base R and popular packages like dplyr and shiny, information about which is presumably baked into their weights.
 
-The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_register_tools()` before calling `$chat_parallel()`.
+The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_register_tools()` before calling `ellmer::parallel_chat()`.
 
 ```{r}
 #| label: btw-solver
 btw_solver <- function(inputs, ..., solver_chat) {
   ch <- solver_chat$clone()
   btw_register_tools(ch, tools = "docs")
-  res <- ch$chat_parallel(as.list(inputs))
+  res <- ellmer::parallel_chat(ch, as.list(inputs))
   list(
     result = purrr::map_chr(res, function(c) c$last_turn()@text), 
     solver_chat = res

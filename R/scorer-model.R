@@ -121,7 +121,7 @@ model_graded_qa_impl <- function(
   }
 
   scorer_chat <- scorer_chat$clone()
-  responses <- scorer_chat$chat_parallel(as.list(prompts))
+  responses <- ellmer::parallel_chat(scorer_chat, as.list(prompts))
 
   grades <- purrr::map_chr(responses, function(response_chat) {
     response_text <- response_chat$last_turn()@text

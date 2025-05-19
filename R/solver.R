@@ -5,7 +5,7 @@
 #' vitals; it just passes its inputs to the supplied model and returns
 #' its raw responses. The inputs are evaluated in parallel,
 #' not in the sense of multiple R sessions, but in the sense of multiple,
-#' asynchronous HTTP requests using `$chat_parallel()`. `generate()`'s output
+#' asynchronous HTTP requests using [ellmer::parallel_chat()]. `generate()`'s output
 #' can be passed directory to the `solver` argument of [Task]'s `$new()`
 #' method.
 #'
@@ -27,7 +27,7 @@ generate <- function(solver_chat = NULL) {
     check_inherits(solver_chat, "Chat")
 
     ch <- solver_chat$clone()
-    res <- ch$chat_parallel(as.list(inputs), ...)
+    res <- ellmer::parallel_chat(ch, as.list(inputs), ...)
 
     list(
       result = purrr::map_chr(res, function(c) c$last_turn()@text),
