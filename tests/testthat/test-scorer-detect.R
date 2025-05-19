@@ -59,12 +59,9 @@ test_that("detect_match works", {
   withr::local_options(cli.default_handler = function(...) {
   })
   local_mocked_bindings(interactive = function(...) FALSE)
+  library(ellmer)
 
-  tsk <- example_task(
-    system_prompt = "Return only the sum as a digit, no punctuation. e.g. '3' rather than '3.' or 'three'.",
-    model = "gpt-4.1-mini",
-    scored = FALSE
-  )
+  tsk <- example_task(scored = FALSE)
   tsk$set_scorer(detect_match())
   tsk$score()
 
