@@ -196,6 +196,8 @@ Any arguments to solving or scoring functions can be passed directly to `$eval()
 #| label: save-are-btw
 #| include: false
 if (should_eval) {
+  scrub_providers_ <- getFromNamespace("scrub_providers", "vitals")
+  are_btw <- scrub_providers_(are_btw)
   save(are_btw, file = here::here("vignettes/articles/data/solvers/are_btw.rda"))
 }
 ```
@@ -268,6 +270,8 @@ are_basic$eval()
 #| label: save-are-basic
 #| include: false
 if (should_eval) {
+  scrub_providers_ <- getFromNamespace("scrub_providers", "vitals")
+  are_basic <- scrub_providers_(are_basic)
   save(are_basic, file = here::here("vignettes/articles/data/solvers/are_basic.rda"))
 }
 ```

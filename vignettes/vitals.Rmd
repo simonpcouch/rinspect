@@ -119,6 +119,8 @@ are_task$eval()
 #| label: save-are-task-scored
 #| include: false
 if (should_eval) {
+  scrub_providers_ <- getFromNamespace("scrub_providers", "vitals")
+  are_task <- scrub_providers_(are_task)
   save(are_task, file = here::here("vignettes/data/are_task.rda"))
 }
 ```
@@ -205,6 +207,8 @@ are_task_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 #| label: save-are-task-openai
 #| include: false
 if (should_eval) {
+  scrub_providers_ <- getFromNamespace("scrub_providers", "vitals")
+  are_task_openai <- scrub_providers_(are_task_openai)
   save(are_task_openai, file = here::here("vignettes/data/are_task_openai.rda"))
 }
 ```
