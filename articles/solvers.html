@@ -150,12 +150,12 @@ function.</p>
 <span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt;     check_inherits(solver_chat, "Chat")</span></span>
 <span><span class="co">#&gt;     ch &lt;- solver_chat$clone()</span></span>
-<span><span class="co">#&gt;     res &lt;- ch$chat_parallel(as.list(inputs), ...)</span></span>
+<span><span class="co">#&gt;     res &lt;- ellmer::parallel_chat(ch, as.list(inputs), ...)</span></span>
 <span><span class="co">#&gt;     list(result = purrr::map_chr(res, function(c) c$last_turn()@text), </span></span>
 <span><span class="co">#&gt;         solver_chat = res)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x558e3e0c1c30&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x558e3e0c7320&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;bytecode: 0x561e2d2f2848&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x561e2d2f7b60&gt;</span></span></code></pre></div>
 <p>While, in documentation, I’ve mostly written “<code><a href="../reference/generate.html">generate()</a></code>
 just calls <code>$chat()</code>,” there are a couple extra tricks up
 <code><a href="../reference/generate.html">generate()</a></code>’s sleeves:</p>
@@ -163,12 +163,13 @@ just calls <code>$chat()</code>,” there are a couple extra tricks up
 <li>The chat is first cloned with <code>$clone()</code> so that the
 original chat object isn’t modified once vitals calls it.</li>
 <li>Rather than <code>$chat()</code>, <code><a href="../reference/generate.html">generate()</a></code> calls
-<code>$chat_parallel()</code>. This is why <code><a href="../reference/generate.html">generate()</a></code> takes
-<code>inputs</code>–e.g. the whole <code>input</code> column–rather than
-a single <code>input</code>. <code>$chat_parallel()</code> will send off
-all of the requests in parallel (not in the usual R sense of multiple R
-processes, but in the sense of asychronous HTTP requests), greatly
-reducing the amount of time it takes to run evaluations.</li>
+<code><a href="https://ellmer.tidyverse.org/reference/parallel_chat.html" class="external-link">ellmer::parallel_chat()</a></code>. This is why
+<code><a href="../reference/generate.html">generate()</a></code> takes <code>inputs</code>–e.g. the whole
+<code>input</code> column–rather than a single <code>input</code>.
+<code><a href="https://ellmer.tidyverse.org/reference/parallel_chat.html" class="external-link">parallel_chat()</a></code> will send off all of the requests in
+parallel (not in the usual R sense of multiple R processes, but in the
+sense of asychronous HTTP requests), greatly reducing the amount of time
+it takes to run evaluations.</li>
 </ol>
 <p>The function that <code>generate</code> outputs takes in a list of
 <code>inputs</code> and outputs a list with two elements:</p>
@@ -251,12 +252,12 @@ which is presumably baked into their weights.</p>
 <p>The implementation of our custom solver looks almost exactly like
 <code><a href="../reference/generate.html">generate()</a></code>s implementation, except we add a call to
 <code>btw_register_tools()</code> before calling
-<code>$chat_parallel()</code>.</p>
+<code><a href="https://ellmer.tidyverse.org/reference/parallel_chat.html" class="external-link">ellmer::parallel_chat()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">btw_solver</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">inputs</span>, <span class="va">...</span>, <span class="va">solver_chat</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="va">solver_chat</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu">btw_register_tools</span><span class="op">(</span><span class="va">ch</span>, tools <span class="op">=</span> <span class="st">"docs"</span><span class="op">)</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">chat_parallel</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/parallel_chat.html" class="external-link">parallel_chat</a></span><span class="op">(</span><span class="va">ch</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    result <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">res</span>, <span class="kw">function</span><span class="op">(</span><span class="va">c</span><span class="op">)</span> <span class="va">c</span><span class="op">$</span><span class="fu">last_turn</span><span class="op">(</span><span class="op">)</span><span class="op">@</span><span class="va">text</span><span class="op">)</span>, </span>
 <span>    solver_chat <span class="op">=</span> <span class="va">res</span></span>
