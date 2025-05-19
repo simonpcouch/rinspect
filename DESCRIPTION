@@ -46,8 +46,6 @@ Remotes:
     tidyverse/ellmer
 Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw
 Config/testthat/edition: 3
-Config/testthat/parallel: true
-Config/testthat/start-first: task
 Config/usethis/last-upkeep: 2025-04-25
 Encoding: UTF-8
 LazyData: true
