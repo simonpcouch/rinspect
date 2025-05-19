@@ -27,22 +27,28 @@ regenerate_example_task <- function() {
     target = c("4", "5")
   )
 
+  ch <- chat_anthropic(model = "claude-3-7-sonnet-latest")
   tsk <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
-    scorer = model_graded_qa()
+    solver = generate(ch$set_system_prompt("Respond in the format 'a+b=c'.")),
+    scorer = model_graded_qa(scorer_chat = ch)
   )
 
   tsk$eval()
+  tsk <- scrub_providers(tsk)
   save(tsk, file = "inst/test/example-task.rda")
 }
 
 regenerate_example_solver <- function() {
   library(ellmer)
 
-  solver <- chat_anthropic(model = "claude-3-7-sonnet-latest")
+  solver <- chat_anthropic(
+    "Respond in the format 'a+b=c'.",
+    model = "claude-3-7-sonnet-latest"
+  )
   solver$chat("What's 2+2?")
 
+  solver <- scrub_provider(solver)
   save(solver, file = "inst/test/solver.rda")
 }
 
