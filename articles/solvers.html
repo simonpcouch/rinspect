@@ -154,8 +154,8 @@ function.</p>
 <span><span class="co">#&gt;     list(result = purrr::map_chr(res, function(c) c$last_turn()@text), </span></span>
 <span><span class="co">#&gt;         solver_chat = res)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x55a631cf79c0&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x55a631cfd0b0&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;bytecode: 0x55bca0c224e0&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x55bca0c214b0&gt;</span></span></code></pre></div>
 <p>While, in documentation, I’ve mostly written “<code><a href="../reference/generate.html">generate()</a></code>
 just calls <code>$chat()</code>,” there are a couple extra tricks up
 <code><a href="../reference/generate.html">generate()</a></code>’s sleeves:</p>
@@ -191,16 +191,16 @@ viewer.</li>
 <code><a href="../reference/generate.html">generate()</a></code> that equips models with the ability to peruse R
 package documentation before answering. We will do so using the btw
 package, available on GitHub at <a href="https://posit-dev.github.io/btw/" class="external-link uri">https://posit-dev.github.io/btw/</a>. Among other things,
-btw provides a function <code><a href="https://posit-dev.github.io/btw/reference/btw_register_tools.html" class="external-link">btw_register_tools()</a></code> that registers
+btw provides a function <code>btw_register_tools()</code> that registers
 an ellmer chat with tools to explore documentation.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="va">sonnet_3_7</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://posit-dev.github.io/btw/reference/btw_register_tools.html" class="external-link">btw_register_tools</a></span><span class="op">(</span><span class="va">ch</span>, tools <span class="op">=</span> <span class="st">"docs"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">btw_register_tools</span><span class="op">(</span><span class="va">ch</span>, tools <span class="op">=</span> <span class="st">"docs"</span><span class="op">)</span></span></code></pre></div>
 <pre><code>✔ Registered tool btw_tool_docs_package_help_topics
 ✔ Registered tool btw_tool_docs_help_page
 ✔ Registered tool btw_tool_docs_available_vignettes
 ✔ Registered tool btw_tool_docs_vignette</code></pre>
-<p><code><a href="https://posit-dev.github.io/btw/reference/btw_register_tools.html" class="external-link">btw_register_tools()</a></code> modifies the chat object in place,
+<p><code>btw_register_tools()</code> modifies the chat object in place,
 so I can use the chat’s <code>$chat()</code> method to interact with it
 like before. As an example, after registering btw with a Claude Sonnet
 3.7 chat object, I can ask it about this package. At the time of
@@ -250,12 +250,12 @@ base R and popular packages like dplyr and shiny, information about
 which is presumably baked into their weights.</p>
 <p>The implementation of our custom solver looks almost exactly like
 <code><a href="../reference/generate.html">generate()</a></code>s implementation, except we add a call to
-<code><a href="https://posit-dev.github.io/btw/reference/btw_register_tools.html" class="external-link">btw_register_tools()</a></code> before calling
+<code>btw_register_tools()</code> before calling
 <code>$chat_parallel()</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">btw_solver</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">inputs</span>, <span class="va">...</span>, <span class="va">solver_chat</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="va">solver_chat</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://posit-dev.github.io/btw/reference/btw_register_tools.html" class="external-link">btw_register_tools</a></span><span class="op">(</span><span class="va">ch</span>, tools <span class="op">=</span> <span class="st">"docs"</span><span class="op">)</span></span>
+<span>  <span class="fu">btw_register_tools</span><span class="op">(</span><span class="va">ch</span>, tools <span class="op">=</span> <span class="st">"docs"</span><span class="op">)</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">chat_parallel</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    result <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">res</span>, <span class="kw">function</span><span class="op">(</span><span class="va">c</span><span class="op">)</span> <span class="va">c</span><span class="op">$</span><span class="fu">last_turn</span><span class="op">(</span><span class="op">)</span><span class="op">@</span><span class="va">text</span><span class="op">)</span>, </span>
