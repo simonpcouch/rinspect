@@ -20,7 +20,7 @@ Depends:
 Imports: 
     cli,
     dplyr,
-    ellmer,
+    ellmer (>= 0.2.0),
     glue,
     httpuv,
     jsonlite,
@@ -42,8 +42,6 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
-Remotes:
-    tidyverse/ellmer
 Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw
 Config/testthat/edition: 3
 Config/usethis/last-upkeep: 2025-04-25
