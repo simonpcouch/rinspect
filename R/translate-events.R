@@ -20,7 +20,10 @@ translate_events_initialize <- function(sample, timestamps) {
   solver_turns <- solver_chat$get_turns()
 
   time_user <- timestamps$solve$started_at
-  last_working_start <- timestamps$solve$completed_at
+  last_working_start <- attr(
+    solver_turns[[length(solver_turns)]],
+    "working_start"
+  )
 
   events <- list()
   events <- c(events, create_init_begin_event(time_user))
@@ -278,7 +281,7 @@ create_use_tools_end_event <- function(timestamp, working_start) {
   ))
 }
 
-create_tool_event <- function(turn, tool_result) {
+create_tool_event <- function(turn, tool_result, timestamps) {
   timestamp <- timestamps$solve$started_at
   list(list(
     timestamp = events_timestamp(timestamp),
