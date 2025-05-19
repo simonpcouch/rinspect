@@ -1,18 +1,10 @@
-# an example Claude chat with:
-#> <Chat turns=2 tokens=14/9>
-#> ── user ─────────────────────────────────────────────────────────────────
-#> What's 2+2?
-#> ── assistant ────────────────────────────────────────────────────────────
-#> 2+2=4
 example_ellmer_solver <- function() {
-  load(
-    system.file(
-      "test/solver.rda",
-      package = "vitals"
-    )
+  ch <- ellmer::chat_anthropic(
+    "Return your answer in the format 'a+b=c', no spaces and no period.",
+    model = "claude-3-7-sonnet-latest"
   )
-
-  solver
+  ch$chat("What's 2+2?", echo = "none")
+  ch
 }
 
 # a log actually written by Python Inspect
@@ -26,15 +18,6 @@ example_inspect_log <- function() {
 }
 
 example_task <- function(solved = TRUE, scored = TRUE) {
-  # loads a cached `tsk` with example output.
-  # regenerate with `inst/regenerate-example-objects.R`
-  load(
-    system.file(
-      "test/example-task.rda",
-      package = "vitals"
-    )
-  )
-
   simple_addition <- tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
@@ -42,27 +25,22 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res <- Task$new(
     dataset = simple_addition,
-    solver = function(...) {
-    },
-    scorer = function(...) {
-    }
+    solver = generate(chat_openai(model = "gpt-4.1-nano")),
+    scorer = model_graded_qa()
   )
 
   if (!solved) {
     return(res)
   }
 
-  res$.__enclos_env__$private$samples$result <- tsk$get_samples()$result
-  res$.__enclos_env__$private$samples$solver_chat <- tsk$get_samples()$solver_chat
-  res$.__enclos_env__$private$solved <- TRUE
+  res$solve()
 
   if (!scored) {
     return(res)
   }
 
-  res$.__enclos_env__$private$samples$score <- tsk$get_samples()$score
-  res$.__enclos_env__$private$samples$scorer_chat <- tsk$get_samples()$scorer_chat
-  res$.__enclos_env__$private$scored <- TRUE
+  res$score()
+  res$measure()
 
   res
 }
