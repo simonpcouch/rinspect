@@ -34,14 +34,6 @@ test_that("check_inherits works", {
 })
 
 test_that("solver_chat works", {
-  skip_if(identical(Sys.getenv("OPENAI_API_KEY"), ""))
-  tmp_dir <- withr::local_tempdir()
-  withr::local_envvar(list(VITALS_LOG_DIR = tmp_dir))
-  withr::local_options(cli.default_handler = function(...) {
-  })
-  local_mocked_bindings(interactive = function(...) FALSE)
-  library(ellmer)
-
   example_sample <- example_task()$get_samples()[1, , drop = FALSE]
 
   res <- solver_chat(example_sample)
