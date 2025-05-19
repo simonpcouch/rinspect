@@ -25,5 +25,5 @@ test_that("vitals_bind works", {
 
   expect_s3_class(res, "tbl_df")
   expect_named(res, c("task", "id", "score", "metadata"))
-  expect_equal(nrow(res), nrow(are_task$get_samples()) * 2)
+  expect_equal(nrow(res), nrow(tsk_1$get_samples()) * 2)
 })

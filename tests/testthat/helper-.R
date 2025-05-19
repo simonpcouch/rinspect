@@ -17,7 +17,12 @@ example_inspect_log <- function() {
   )
 }
 
-example_task <- function(solved = TRUE, scored = TRUE) {
+example_task <- function(
+  system_prompt = NULL,
+  solved = TRUE,
+  scored = TRUE,
+  model = "gpt-4.1-nano"
+) {
   simple_addition <- tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
@@ -25,8 +30,13 @@ example_task <- function(solved = TRUE, scored = TRUE) {
 
   res <- Task$new(
     dataset = simple_addition,
-    solver = generate(chat_openai(model = "gpt-4.1-nano")),
-    scorer = model_graded_qa()
+    solver = generate(ellmer::chat_openai(
+      system_prompt = system_prompt,
+      model = model
+    )),
+    scorer = model_graded_qa(
+      scorer_chat = ellmer::chat_openai(model = model)
+    )
   )
 
   if (!solved) {
