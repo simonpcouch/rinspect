@@ -345,14 +345,14 @@ Task <- R6::R6Class(
             sample_ids = as.list(seq_len(length(unique(samples$id)))),
             shuffled = FALSE
           ),
-          model = samples$solver_chat[[1]]$get_model(),
+          model = private$solver_description(),
           scorers = translate_to_eval_scorers(
             name = samples$scorer[[1]]
           )
         ),
         plan = translate_to_plan(
           steps = translate_to_plan_steps(
-            name = private$solutions$name,
+            name = private$solver_description(),
             arguments = private$solutions$arguments
           )
         ),
@@ -477,6 +477,24 @@ Task <- R6::R6Class(
     solver = NULL,
     solver_token_usage = NULL,
     solved = FALSE,
+
+    solver_description = function() {
+      sub_name <- private$solutions$name
+      model_name <- private$samples$solver_chat[[1]]$get_model()
+
+      sub_name <- gsub("model = ", "", sub_name, fixed = TRUE)
+      sub_name <- gsub(model_name, "", sub_name, fixed = TRUE)
+      sub_name <- gsub("\"\"", "", sub_name)
+      paste0(
+        c(
+          sub_name,
+          " (",
+          model_name,
+          ")"
+        ),
+        collapse = ""
+      )
+    },
 
     scorer = NULL,
     scorer_token_usage = NULL,
