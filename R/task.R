@@ -704,7 +704,8 @@ Task <- R6::R6Class(
         samples$solver_chat,
         add_working_times_to_turns,
         which = "solve",
-        timestamps = private$timestamps
+        timestamps = private$timestamps,
+        n = length(samples$solver_chat)
       )
 
       if ("scorer_chat" %in% names(samples)) {
@@ -712,7 +713,8 @@ Task <- R6::R6Class(
           samples$scorer_chat,
           add_working_times_to_turns,
           which = "score",
-          timestamps = private$timestamps
+          timestamps = private$timestamps,
+          n = length(samples$scorer_chat)
         )
       }
 

@@ -727,7 +727,7 @@ turn_tokens <- function(turn) {
 # this was initially added to process `@completed` slots of turns. those were
 # removed in ellmer 0.2.0, so we're temporarily filling them in with
 # the average timing (#112)
-add_working_times_to_turns <- function(chat, which, timestamps) {
+add_working_times_to_turns <- function(chat, which, timestamps, n) {
   turns <- chat$get_turns()
 
   if (length(turns) < 2) {
@@ -740,7 +740,7 @@ add_working_times_to_turns <- function(chat, which, timestamps) {
       timestamps[[which]]$started_at,
       units = "secs"
     )) /
-    length(turns)
+    (length(turns) * n)
 
   attr(turns[[1]], "working_time") <- NA_real_
   for (i in 2:length(turns)) {
