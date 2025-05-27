@@ -1,0 +1,37 @@
+title: summarize-by-error
+input: |-
+  Update this error message to use `summarise()`'s .by syntax:
+
+  ```
+      cli::cli_warn(c(
+        "Values from {duplicate_names} are not uniquely identified; output will contain list-cols.",
+        "*" = "Use `values_fn = list` to suppress this warning.",
+        "*" = "Use `values_fn = {{summary_fun}}` to summarise duplicates.",
+        "*" = "Use the following dplyr code to identify duplicates.",
+        " " = "  {{data}} %>%",
+        " " = "    dplyr::group_by({group_cols}) %>%",
+        " " = "    dplyr::summarise(n = dplyr::n(), .groups = \"drop\") %>%",
+        " " = "    dplyr::filter(n > 1L)"
+      ))
+  ```
+target: |-
+  Change the lines:
+
+  ```
+        " " = "    dplyr::group_by({group_cols}) %>%",
+        " " = "    dplyr::summarise(n = dplyr::n(), .groups = \"drop\") %>%",
+  ```
+
+  To:
+
+  ```
+        " " = "    dplyr::summarise(n = dplyr::n(), .by = {group_cols}) %>%",
+  ```
+
+  The erroring code should otherwise look exactly the same.
+domain: Programming
+task: New code
+source: https://github.com/tidyverse/tidyr/commit/4afb8cadd7ddcdc6c0ab4694272c02633f2e5381#diff-082bcbb672e069ebb562fb3b877b4d9457f867d89ba382224e1041ce90a89ff4R439
+knowledge:
+- tidyverse
+- r-lib

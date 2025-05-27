@@ -1,0 +1,38 @@
+title: trailing-comma-mutate
+input: |-
+  I see:
+
+  ```
+  library(dplyr)
+
+  mtcars |> mutate(across(vs, \(x) x +1, .names = "x",))
+  #> Error in `mutate()`:
+  #> ℹ In argument: `across(vs, function(x) x + 1, .names = "x", )`.
+  #> Caused by error in `across()`:
+  #> ! Can't compute column `x`.
+  #> Caused by error in `fn()`:
+  #> ! Unused argument (alist())
+  #> Backtrace:
+  #>      ▆
+  #>   1. ├─dplyr::mutate(...)
+  #>   2. ├─dplyr:::mutate.data.frame(...)
+  #>   3. │ └─dplyr:::mutate_cols(.data, dplyr_quosures(...), by)
+  #>   4. │   ├─base::withCallingHandlers(...)
+  #>   5. │   └─dplyr:::mutate_col(dots[[i]], data, mask, new_columns)
+  #>   6. │     └─mask$eval_all_mutate(quo)
+  #>   7. │       └─dplyr (local) eval()
+  #>   8. ├─dplyr::across(vs, function(x) x + 1, .names = "x", )
+  #>   9. │ └─base::withCallingHandlers(...)
+  #>  10. └─base::.handleSimpleError(...)
+  #>  11.   └─dplyr (local) h(simpleError(msg, call))
+  #>  12.     └─rlang::abort(bullets, call = error_call, parent = cnd)
+  栀Ƭ
+  #> Error in eval(expr, envir, enclos): object'栀Ƭ' not found
+  ```
+
+  How do I fix it?
+target: There's a trailing comma after `.names = "x"` that needs to be removed.
+domain: Data analysis
+task: Debugging
+knowledge: tidyverse
+source: https://github.com/tidyverse/dplyr/issues/6868

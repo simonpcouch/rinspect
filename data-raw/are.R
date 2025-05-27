@@ -1,8 +1,8 @@
 # concatenate the json files in `data-raw/are`
 
-paths <- list.files("data-raw/are", pattern = "*.json", full.names = TRUE)
+paths <- list.files("data-raw/are", pattern = "*.yaml", full.names = TRUE)
 raw <- purrr::map(paths, function(.x) {
-  .x <- jsonlite::fromJSON(.x)
+  .x <- yaml::read_yaml(.x)
   .x$knowledge <- list(.x$knowledge)
   .x
 })

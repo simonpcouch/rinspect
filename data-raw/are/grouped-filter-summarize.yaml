@@ -1,0 +1,56 @@
+title: grouped-filter-summarize
+input: "Here's some data on flights:\n\n```\nflights\n# A tibble: 336,776 × 19\n    year
+  month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+  carrier\n   <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>
+  \    <dbl> <chr>  \n 1  2013     1     1      517            515         2      830
+  \           819        11 UA     \n 2  2013     1     1      533            529
+  \        4      850            830        20 UA     \n 3  2013     1     1      542
+  \           540         2      923            850        33 AA     \n 4  2013     1
+  \    1      544            545        -1     1004           1022       -18 B6     \n
+  5  2013     1     1      554            600        -6      812            837       -25
+  DL     \n 6  2013     1     1      554            558        -4      740            728
+  \       12 UA     \n 7  2013     1     1      555            600        -5      913
+  \           854        19 B6     \n 8  2013     1     1      557            600
+  \       -3      709            723       -14 EV     \n 9  2013     1     1      557
+  \           600        -3      838            846        -8 B6     \n10  2013     1
+  \    1      558            600        -2      753            745         8 AA     \n#
+  ℹ 336,766 more rows\n# ℹ 9 more variables: flight <int>, tailnum <chr>, origin <chr>,
+  dest <chr>, air_time <dbl>,\n#   distance <dbl>, hour <dbl>, minute <dbl>, time_hour
+  <dttm>\n```\n\nHere's some corresponding data on planes:\n\n```\nplanes\n# A tibble:
+  3,322 × 9\n   tailnum  year type                    manufacturer     model     engines
+  seats speed engine   \n   <chr>   <int> <chr>                   <chr>            <chr>
+  \      <int> <int> <int> <chr>    \n 1 N10156   2004 Fixed wing multi engine EMBRAER
+  \         EMB-145XR       2    55    NA Turbo-fan\n 2 N102UW   1998 Fixed wing multi
+  engine AIRBUS INDUSTRIE A320-214        2   182    NA Turbo-fan\n 3 N103US   1999
+  Fixed wing multi engine AIRBUS INDUSTRIE A320-214        2   182    NA Turbo-fan\n
+  4 N104UW   1999 Fixed wing multi engine AIRBUS INDUSTRIE A320-214        2   182
+  \   NA Turbo-fan\n 5 N10575   2002 Fixed wing multi engine EMBRAER          EMB-145LR
+  \      2    55    NA Turbo-fan\n 6 N105UW   1999 Fixed wing multi engine AIRBUS
+  INDUSTRIE A320-214        2   182    NA Turbo-fan\n 7 N107US   1999 Fixed wing multi
+  engine AIRBUS INDUSTRIE A320-214        2   182    NA Turbo-fan\n 8 N108UW   1999
+  Fixed wing multi engine AIRBUS INDUSTRIE A320-214        2   182    NA Turbo-fan\n
+  9 N109UW   1999 Fixed wing multi engine AIRBUS INDUSTRIE A320-214        2   182
+  \   NA Turbo-fan\n10 N110UW   1999 Fixed wing multi engine AIRBUS INDUSTRIE A320-214
+  \       2   182    NA Turbo-fan\n```\n\nWrite tidyverse code to find the `tailnum`
+  with the highest proportion of NA `arr_delay`s that has flown at least 100 flights."
+target: "There are three main steps here:\n\n1) A grouped filter: only keep rows in
+  `flights` that have > 100 rows. Notably, no persistent summarization across rows
+  should happen here. \n2) A grouped summarize: taking `mean(is.na(arr_delay))` will
+  determine the proportion of NA `arr_delay`s. Notably, `mean(arr_delay == \"NA\")`
+  or `mean(arr_delay == NA)` is not correct.\n3) Arrange by the resulting column in
+  descending order.\n\nThe `planes` data is irrelevant and should be ignored.\n\nFor
+  example:\n\n```\nflights %>%\n  filter(n() > 100, .by = tailnum) %>%\n  summarize(\n
+  \   mean_na_arr_delay = mean(is.na(arr_delay)), \n    .by = tailnum\n  ) %>%\n  arrange(desc(mean_na_arr_delay))\n```\n\nWith
+  the old `group_by()` syntax:\n\n```\nflights %>%\n  group_by(tailnum) %>%\n  filter(n()
+  > 100) %>%\n  ungroup() %>%\n  group_by(tailnum) %>%\n  summarize(\n    mean_na_arr_delay
+  = mean(is.na(arr_delay))\n  ) %>%\n  arrange(desc(mean_na_arr_delay))\n```\n\nThe
+  `ungroup()` and `group_by()` in the middle can be omitted, since the same grouping
+  variable is used for both:\n\n```\nflights %>%\n  group_by(tailnum) %>%\n  filter(n()
+  > 100) %>%\n  summarize(\n    mean_na_arr_delay = mean(is.na(arr_delay))\n  ) %>%\n
+  \ arrange(desc(mean_na_arr_delay))\n```\n\nSome `tailnum`s are NA, but there's not
+  enough context in the question to determine that; correct answers can include a
+  line along the lines of `filter(!is.na(tailnum))`."
+domain: Data analysis
+task: New code
+source: NA
+knowledge: tidyverse

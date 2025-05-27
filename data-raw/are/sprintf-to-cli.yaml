@@ -1,0 +1,22 @@
+title: sprintf-to-cli
+input: |-
+  Translate this erroring code to use `cli::cli_abort()`:
+
+  ```
+  abort(sprintf("No such '%s' function: `%s()`.", package, name))
+  ```
+
+  Use cli's inline substitution rather than the `%s` syntax.
+target: |-
+  ```
+  cli::cli_abort("No such {.pkg {package}} function: {.fn {name}}.")
+  ```
+
+  Notably:
+
+  * There should be a call to `cli_abort()`
+  * The package and function should be substituted inline rather than with `paste0()` or the existing `sprintf()` syntax.
+domain: Programming
+task: Translation
+knowledge: r-lib
+source: https://github.com/simonpcouch/chores

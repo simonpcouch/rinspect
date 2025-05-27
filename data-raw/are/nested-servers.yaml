@@ -1,0 +1,47 @@
+title: nested-servers
+input: "The nested structure of my shiny modules is working, but for the inner module,
+  I need it to generate a UI within the server portion of the module.\n\nEach inner
+  module should produce the following:\n- A header (\"Inside the Generated UI\")\n-
+  some verbatimTextOutput (\"something generated\")\n- A chart\n\nThe reprex below
+  only produces the header and not the verbatimTextOutput or the plotOutput.\n\nThis
+  feels like a namespace problem, but I can't figure out how to fix it.\n\n```\nlibrary(shiny)\n\n\ninner_UI
+  <- function(id){\n  ns <- NS(id)\n  tagList(\n    h4(\"inner_UI:\", id),\n    uiOutput(ns(\"theGeneratedUI\")),\n
+  \   verbatimTextOutput(ns(\"someText\"))\n  )\n}\ninnerServer <- function(id){\n
+  \ moduleServer(id, function(input, output, session) {\n    ns <- NS(id)\n    output$someText
+  <- renderText({\n      \"something\"\n    })\n    output$someTextGenerated <- renderText({\n
+  \     \"something Generated\"\n    })\n    output$theChart <- renderPlot({\n      t.x
+  <- sample(1:25, 25)\n      t.y <- sample(1:25, 25)\n      t.df <- data.frame(x=t.x,
+  y=t.y)\n      theOutput <- ggplot(data=t.df) +\n        geom_point(aes(x=x,y=y))
+  + \n        ggtitle(paste0(\"The title:\"))\n      theOutput\n      \n    })\n    output$theGeneratedUI
+  <- renderUI({\n      theOutput <- tagList(\n        h5(\"Inside theGeneratedUI\"),\n
+  \       verbatimTextOutput(ns(\"someTextGenerated\")),\n        plotOutput(ns(\"theChart\"))\n
+  \     )\n      theOutput\n    })\n  })\n}\nouter_UI <- function(id) {\n  ns <- NS(id)\n
+  \ tagList(\n    fluidRow(\n      column(4, inner_UI(ns(\"inner1\"))),\n      column(4,
+  inner_UI(ns(\"inner2\"))),\n      column(4, inner_UI(ns(\"inner3\")))\n    )\n  )\n}\n\nouterServer
+  <- function(id) {\n  moduleServer(id, function(input, output, session) {\n    ns
+  <- NS(id)\n    innerServer(\"inner1\")\n    innerServer(\"inner2\")\n    innerServer(\"inner3\")\n
+  \ })\n}\n\n\nui <- fluidPage(\n  outer_UI(\"outer1\")\n)\n\nserver <- function(input,
+  output, session) {\n  outerServer(\"outer1\")\n}\n\nshinyApp(ui, server)\n```\n\nHow
+  do I fix it?"
+target: |-
+  The issue is that `NS(id)` creates a new namespace function that doesn't maintain the correct hierarchical relationship with parent modules. Using `session$ns` instead ensures the dynamically generated UI elements have fully-qualified namespaces that properly match their corresponding server outputs.
+
+  So, change:
+
+  ```
+  innerServer <- function(id){
+    moduleServer(id, function(input, output, session) {
+      ns <- NS(id)
+  ```
+
+  to
+
+  ```
+  innerServer <- function(id){
+    moduleServer(id, function(input, output, session) {
+      ns <- session$ns
+  ```
+domain: Programming
+task: Debugging
+source: https://forum.posit.co/t/nested-shiny-modules-using-uioutput-in-an-inner-module/180875/2
+knowledge: shiny

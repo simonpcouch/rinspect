@@ -1,0 +1,33 @@
+title: pak-dependency-name
+input: |-
+  I have an R package that depends on a package called, lets say, spatialstuff (This is how it is defined in its DESCRIPTIONS). However it is found in an org and the repo name is different, eg org/spatial-Stuff (i have no control over this name!).
+
+  My package in its `DESCRIPTION` file has the following lines
+
+  ```
+  Imports:
+   spatialstuff
+  Remotes:
+   org/spatial-Stuff
+  ```
+
+  However the `pkgdown.yaml` workflow that is run upon pushes (created from `usethis::use_pkgdown_github_pages()`) errors with the following message.
+
+  Can someone explain if this is user error or some other error? Thanks
+
+  ```
+  ! error in pak subprocess
+  Caused by error:
+  ! Could not solve package dependencies:
+  deps::.: Can't install dependency spatialstuff
+  * spatialstuff: Can't find package called spatialstuff.
+  * local::.: Can't install dependency spatialstuff
+  * any::sessioninfo: dependency conflict
+  * any::pkgdown: dependency conflict
+  ```
+target: The user needs to specify the package name explicitly in the Remotes `DESCRIPTION`
+  field using a `<package>=` prefix, e.g. `spatialstuff=org/spatial-Stuff`.
+domain: Programming
+task: Debugging
+knowledge: r-lib
+source: https://forum.posit.co/t/r-package-dependencies/197840
