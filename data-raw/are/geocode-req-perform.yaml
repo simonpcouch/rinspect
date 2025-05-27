@@ -1,23 +1,68 @@
 title: geocode-req-perform
-input: "I am trying to use a geocoding API. My code is as follows:\n\n```\naddress
-  <- \"Prince st., New York 10012\"\napi_key <- \"my_secret_api_key\"\nurl <- glue::glue(\"https://geocode.maps.co/search?q={address}&api_key={api_key}\")\n\nresponse
-  <- httr2::request(url) %>%   \n  httr2::req_perform()\n```\n\nHowever, this does
-  not work. I am getting this error message:\n\n```\n<error/httr2_failure>\nError
-  in `httr2::req_perform()`:\n! Failed to perform HTTP request.\nCaused by error in
-  `curl::curl_fetch_memory()`:\n! URL rejected: Malformed input to a URL function\n---\nBacktrace:\n
-  \   ▆\n 1. ├─httr2::request(url) %>% httr2::req_perform()\n 2. └─httr2::req_perform(.)\n
-  3.   └─base::tryCatch(...)\n 4.     └─base (local) tryCatchList(expr, classes, parentenv,
-  handlers)\n 5.       └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])\n
-  6.         └─value[[3L]](cond)\n```\n\nHow can I fix this?"
-target: |-
-  Format the address to result in a valid URL by replacing spaces and, likely, removing punctuation. Something like:
+input: >-
+  I am trying to use a geocoding API. My code is as follows:
+
 
   ```
+
+  address <- "Prince st., New York 10012"
+
+  api_key <- "my_secret_api_key"
+
+  url <-
+  glue::glue("https://geocode.maps.co/search?q={address}&api_key={api_key}")
+
+
+  response <- httr2::request(url) %>%   
+    httr2::req_perform()
+  ```
+
+
+  However, this does not work. I am getting this error message:
+
+
+  ```
+
+  <error/httr2_failure>
+
+  Error in `httr2::req_perform()`:
+
+  ! Failed to perform HTTP request.
+
+  Caused by error in `curl::curl_fetch_memory()`:
+
+  ! URL rejected: Malformed input to a URL function
+
+  ---
+
+  Backtrace:
+      ▆
+   1. ├─httr2::request(url) %>% httr2::req_perform()
+   2. └─httr2::req_perform(.)
+   3.   └─base::tryCatch(...)
+   4.     └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+   5.       └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+   6.         └─value[[3L]](cond)
+  ```
+
+
+  How can I fix this?
+target: >-
+  Format the address to result in a valid URL by replacing spaces and, likely,
+  removing punctuation. Something like:
+
+
+  ```
+
   address <- "Prince+st+New+York+10012"
+
   ```
 
-  It would also be correct to pass the URL with the existing `address` to `URLencode()` or `url_encode()`.
+
+  It would also be correct to pass the URL with the existing `address` to
+  `URLencode()` or `url_encode()`.
 domain: Data analysis
 task: Debugging
-source: https://forum.posit.co/t/how-to-correctly-use-httr2-to-fetch-data-from-api/186118
+source: >-
+  https://forum.posit.co/t/how-to-correctly-use-httr2-to-fetch-data-from-api/186118
 knowledge: r-lib

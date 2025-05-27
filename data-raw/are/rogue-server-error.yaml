@@ -1,48 +1,139 @@
 title: rogue-server-error
-input: "I see this warning and error when I launch my shiny app:\n\n```\nListening
-  on http://127.0.0.1:3516\nWarning: Error in $: Can't read output 'plot'\n  46: <Anonymous>\n
-  \ 45: signalCondition\n  44: signal_abort\n  43: rlang::abort\n  42: $.shinyoutput\n
-  \ 40: server [#2]\n   3: runApp\n   2: print.shiny.appobj\n   1: <Anonymous>\nError
-  in output$plot : Can't read output 'plot'\n```\n\nHere's the app's code:\n\n```\n#
-  Load necessary libraries\nlibrary(ggplot2)\nlibrary(shiny)\nlibrary(dplyr)\nlibrary(readxl)\nlibrary(stringr)\n\n#
-  Load & Rename data \nKidney_Correlations_Data <- read_excel(\"Kidney Correlations
-  Data.xlsx\")\nKidney_Correlations_Data <- as.data.frame(Kidney_Correlations_Data)
-  %>%\n  mutate(\n    CKD_STAGE = str_replace(Kidney_Correlations_Data[[3]], \"CKD
-  3.*\", \"CKD 3\")\n  )\n\n# Create a reactive function to filter the data based
-  on user input\nckd_condition <- reactive({\n  input$condition\n})\n\nvisit_threshold
-  <- reactive({\n  input$visit_threshold\n})\n\nfiltered_data <- reactive({\n  Kidney_Correlations_Data
-  %>% \n    filter(CKD_STAGE == ckd_condition, VISIT_COUNT > visit_threshold)\n})\n\n#
-  Create a linear model and visualization\noutput$plot <- renderPlot({\n  validate(\n
-  \   need(input$condition != \"\", \"Please select a condition\"),\n    need(input$visit_threshold
-  > 0, \"Please enter a valid visit threshold\")\n  )\n                                 #
-  Filter the data based on the user's input\n  data <- filtered_data()\n  \n                                 #
-  Create a linear model\n  lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data =
-  data)\n  \n                                 # Create a plot of the linear model\n
-  \ ggplot(data, aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + \n    geom_point()
-  + \n    geom_smooth(method = \"lm\", se = FALSE) + \n    labs(x = \"Visit Count\",
-  y = \"Paid Amount\")\n})\n\n# Create a dropdown menu for the user to select the
-  CKD condition level\n# and a numeric input field for the visit threshold\nui <-
-  fluidPage(\n  sidebarLayout(\n    sidebarPanel(\n      selectInput(\"condition\",
-  \"Select CKD Condition:\", c(\"CKD 3\", \"CKD 4\", \"CKD 5\", \"ESRD\")),\n      numericInput(\"visit_threshold\",
-  \"Minimum Visit Count:\", value = 5, min = 0)\n    ),\n    mainPanel(\n      plotOutput(\"plot\")\n
-  \   )\n  )\n)\n\n# Run the application\nshinyApp(ui = ui, server = function(input,
-  output) {\n  output$plot\n})\n```\n\nHow do I fix it?"
-target: "There's a `output$plot` alone in the anonymous server function. The solution
-  is to move the `output$plot` and rendering code into a proper server function, like:\n\n```\n#
-  ...same ui\n\nserver <- function(input, output) {\n  # Create reactive functions
-  to filter the data based on user input\n  filtered_data <- reactive({\n    Kidney_Correlations_Data
-  %>% \n      filter(CKD_STAGE == input$condition, VISIT_COUNT > input$visit_threshold)\n
-  \ })\n  \n  # Create a linear model and visualization\n  output$plot <- renderPlot({\n
-  \   validate(\n      need(input$condition != \"\", \"Please select a condition\"),\n
-  \     need(input$visit_threshold > 0, \"Please enter a valid visit threshold\")\n
-  \   )\n                                   # Filter the data based on the user's
-  input\n    data <- filtered_data()\n    \n                                   # Create
-  a linear model\n    lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data = data)\n
-  \   \n                                   # Create a plot of the linear model\n    ggplot(data,
-  aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + \n      geom_point() + \n      geom_smooth(method
-  = \"lm\", se = FALSE) + \n      labs(x = \"Visit Count\", y = \"Paid Amount\")\n
-  \ })\n}\n\n# Run the application\nshinyApp(ui = ui, server = server)\n```"
+input: |-
+  I see this warning and error when I launch my shiny app:
+
+  ```
+  Listening on http://127.0.0.1:3516
+  Warning: Error in $: Can't read output 'plot'
+    46: <Anonymous>
+    45: signalCondition
+    44: signal_abort
+    43: rlang::abort
+    42: $.shinyoutput
+    40: server [#2]
+     3: runApp
+     2: print.shiny.appobj
+     1: <Anonymous>
+  Error in output$plot : Can't read output 'plot'
+  ```
+
+  Here's the app's code:
+
+  ```
+  # Load necessary libraries
+  library(ggplot2)
+  library(shiny)
+  library(dplyr)
+  library(readxl)
+  library(stringr)
+
+  # Load & Rename data 
+  Kidney_Correlations_Data <- read_excel("Kidney Correlations Data.xlsx")
+  Kidney_Correlations_Data <- as.data.frame(Kidney_Correlations_Data) %>%
+    mutate(
+      CKD_STAGE = str_replace(Kidney_Correlations_Data[[3]], "CKD 3.*", "CKD 3")
+    )
+
+  # Create a reactive function to filter the data based on user input
+  ckd_condition <- reactive({
+    input$condition
+  })
+
+  visit_threshold <- reactive({
+    input$visit_threshold
+  })
+
+  filtered_data <- reactive({
+    Kidney_Correlations_Data %>% 
+      filter(CKD_STAGE == ckd_condition, VISIT_COUNT > visit_threshold)
+  })
+
+  # Create a linear model and visualization
+  output$plot <- renderPlot({
+    validate(
+      need(input$condition != "", "Please select a condition"),
+      need(input$visit_threshold > 0, "Please enter a valid visit threshold")
+    )
+                                   # Filter the data based on the user's input
+    data <- filtered_data()
+    
+                                   # Create a linear model
+    lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data = data)
+    
+                                   # Create a plot of the linear model
+    ggplot(data, aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + 
+      geom_point() + 
+      geom_smooth(method = "lm", se = FALSE) + 
+      labs(x = "Visit Count", y = "Paid Amount")
+  })
+
+  # Create a dropdown menu for the user to select the CKD condition level
+  # and a numeric input field for the visit threshold
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("condition", "Select CKD Condition:", c("CKD 3", "CKD 4", "CKD 5", "ESRD")),
+        numericInput("visit_threshold", "Minimum Visit Count:", value = 5, min = 0)
+      ),
+      mainPanel(
+        plotOutput("plot")
+      )
+    )
+  )
+
+  # Run the application
+  shinyApp(ui = ui, server = function(input, output) {
+    output$plot
+  })
+  ```
+
+  How do I fix it?
+target: >-
+  There's a `output$plot` alone in the anonymous server function. The solution
+  is to move the `output$plot` and rendering code into a proper server function,
+  like:
+
+
+  ```
+
+  # ...same ui
+
+
+  server <- function(input, output) {
+    # Create reactive functions to filter the data based on user input
+    filtered_data <- reactive({
+      Kidney_Correlations_Data %>% 
+        filter(CKD_STAGE == input$condition, VISIT_COUNT > input$visit_threshold)
+    })
+    
+    # Create a linear model and visualization
+    output$plot <- renderPlot({
+      validate(
+        need(input$condition != "", "Please select a condition"),
+        need(input$visit_threshold > 0, "Please enter a valid visit threshold")
+      )
+                                     # Filter the data based on the user's input
+      data <- filtered_data()
+      
+                                     # Create a linear model
+      lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data = data)
+      
+                                     # Create a plot of the linear model
+      ggplot(data, aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + 
+        geom_point() + 
+        geom_smooth(method = "lm", se = FALSE) + 
+        labs(x = "Visit Count", y = "Paid Amount")
+    })
+  }
+
+
+  # Run the application
+
+  shinyApp(ui = ui, server = server)
+
+  ```
 domain: Programming
 task: Debugging
-source: https://forum.posit.co/t/warning-error-in-cant-read-output-plot-when-outputting-linear-model-visualizations/189355
+source: >-
+  https://forum.posit.co/t/warning-error-in-cant-read-output-plot-when-outputting-linear-model-visualizations/189355
 knowledge: shiny

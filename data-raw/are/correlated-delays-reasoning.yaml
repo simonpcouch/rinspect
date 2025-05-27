@@ -1,40 +1,78 @@
 title: correlated-delays-reasoning
-input: "Here's some data on flights:\n\n```\nflights\n# A tibble: 336,776 × 19\n    year
-  month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
-  carrier\n   <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>
-  \    <dbl> <chr>  \n 1  2013     1     1      517            515         2      830
-  \           819        11 UA     \n 2  2013     1     1      533            529
-  \        4      850            830        20 UA     \n 3  2013     1     1      542
-  \           540         2      923            850        33 AA     \n 4  2013     1
-  \    1      544            545        -1     1004           1022       -18 B6     \n
-  5  2013     1     1      554            600        -6      812            837       -25
-  DL     \n 6  2013     1     1      554            558        -4      740            728
-  \       12 UA     \n 7  2013     1     1      555            600        -5      913
-  \           854        19 B6     \n 8  2013     1     1      557            600
-  \       -3      709            723       -14 EV     \n 9  2013     1     1      557
-  \           600        -3      838            846        -8 B6     \n10  2013     1
-  \    1      558            600        -2      753            745         8 AA     \n#
-  ℹ 336,766 more rows\n# ℹ 9 more variables: flight <int>, tailnum <chr>, origin <chr>,
-  dest <chr>, air_time <dbl>,\n#   distance <dbl>, hour <dbl>, minute <dbl>, time_hour
-  <dttm>\n```\n\nDelays are typically temporally correlated: even once the problem
-  that caused the initial delay has been resolved, later flights are delayed to allow
-  earlier flights to leave. Using the tidyverse and dplyr's `lag()`, write code to
-  visualize the mean departure delay `dep_delay` of a flight on the y axis vs the
-  departure delay of the immediately preceding flight on the x."
-target: "Notably, the relevant departure delay for this question is the one at the
-  same airport. e.g. a delay at LaGuardia shouldn't affect the next flight out of
-  JFK. So, the lagged departure delay should be grouped by `origin`.\n\nAlso, the
-  mean departure delay should be taken grouped by the numeric lagged departure delay
-  variable. This is fine, as the printed flights data shows that those departure delays
-  are in whole numbers, but it's also okay if the submitted answer rounds the lagged
-  departure delay to the nearest minute (or small bin of minutes).\n\nHere's an example
-  of working code:\n\n```\nlagged_delays <- \n  flights %>%\n  arrange(origin, month,
-  day, dep_time) %>%\n  mutate(dep_delay_lag = lag(dep_delay), .by = origin) %>%\n
-  \ filter(!is.na(dep_delay), !is.na(dep_delay_lag))\n\nlagged_delays %>%\n  summarise(dep_delay_mean
-  = mean(dep_delay), .by = dep_delay_lag) %>%\n  ggplot(aes(y = dep_delay_mean, x
-  = dep_delay_lag)) +\n  geom_point()\n```\n\nAt some point before the mean departure
-  delay of the current flight is taken, NAs need to be removed or `na.rm = TRUE` needs
-  to be set in `mean()`.\n\nUsing the old `group_by()` syntax is also fine."
+input: >-
+  Here's some data on flights:
+
+
+  ```
+
+  flights
+
+  # A tibble: 336,776 × 19
+      year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay carrier
+     <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>     <dbl> <chr>  
+   1  2013     1     1      517            515         2      830            819        11 UA     
+   2  2013     1     1      533            529         4      850            830        20 UA     
+   3  2013     1     1      542            540         2      923            850        33 AA     
+   4  2013     1     1      544            545        -1     1004           1022       -18 B6     
+   5  2013     1     1      554            600        -6      812            837       -25 DL     
+   6  2013     1     1      554            558        -4      740            728        12 UA     
+   7  2013     1     1      555            600        -5      913            854        19 B6     
+   8  2013     1     1      557            600        -3      709            723       -14 EV     
+   9  2013     1     1      557            600        -3      838            846        -8 B6     
+  10  2013     1     1      558            600        -2      753           
+  745         8 AA     
+
+  # ℹ 336,766 more rows
+
+  # ℹ 9 more variables: flight <int>, tailnum <chr>, origin <chr>, dest <chr>,
+  air_time <dbl>,
+
+  #   distance <dbl>, hour <dbl>, minute <dbl>, time_hour <dttm>
+
+  ```
+
+
+  Delays are typically temporally correlated: even once the problem that caused
+  the initial delay has been resolved, later flights are delayed to allow
+  earlier flights to leave. Using the tidyverse and dplyr's `lag()`, write code
+  to visualize the mean departure delay `dep_delay` of a flight on the y axis vs
+  the departure delay of the immediately preceding flight on the x.
+target: >-
+  Notably, the relevant departure delay for this question is the one at the same
+  airport. e.g. a delay at LaGuardia shouldn't affect the next flight out of
+  JFK. So, the lagged departure delay should be grouped by `origin`.
+
+
+  Also, the mean departure delay should be taken grouped by the numeric lagged
+  departure delay variable. This is fine, as the printed flights data shows that
+  those departure delays are in whole numbers, but it's also okay if the
+  submitted answer rounds the lagged departure delay to the nearest minute (or
+  small bin of minutes).
+
+
+  Here's an example of working code:
+
+
+  ```
+
+  lagged_delays <- 
+    flights %>%
+    arrange(origin, month, day, dep_time) %>%
+    mutate(dep_delay_lag = lag(dep_delay), .by = origin) %>%
+    filter(!is.na(dep_delay), !is.na(dep_delay_lag))
+
+  lagged_delays %>%
+    summarise(dep_delay_mean = mean(dep_delay), .by = dep_delay_lag) %>%
+    ggplot(aes(y = dep_delay_mean, x = dep_delay_lag)) +
+    geom_point()
+  ```
+
+
+  At some point before the mean departure delay of the current flight is taken,
+  NAs need to be removed or `na.rm = TRUE` needs to be set in `mean()`.
+
+
+  Using the old `group_by()` syntax is also fine.
 domain: Data analysis
 task: New code
 source: NA

@@ -1,17 +1,50 @@
 title: lazy-eval
-input: "I have some code\n\n```\ntask_create <- function(\n    dataset,\n    name
-  = deparse(substitute(dataset)),\n    dir = eval_log_dir()\n) {\n...\n}\n```\n\nI'd
-  like the default name to be the symbol referring to the dataset, e.g. in\n\n```\nsimple_addition
-  <- tibble(\n  input = c(\"What's 2+2?\", \"What's 2+3?\"),\n  target = c(\"4\",
-  \"5\")\n)\n\ntsk <- \n  task_create(\n    dataset = simple_addition\n  )\n```\n\n...the
-  name would be \"simple_addition\". Instead, it's substituted to `structure(list(input
-  = c(\"What's 2+2?\", \"What's 2+3?\"), target = c(\"4\", , \"5\"), id = 1:2), row.names
-  = c(NA, -2L), class = c(\"tbl_df\", , and \"tbl\", \"data.frame\"))`. How can I
-  fix that?"
-target: The `name` default is evaluated lazily, and something else results in `dataset`
-  being evaluated before `name` is. `name` must be evaluated early in the function,
-  e.g. using `force(name)`.
+input: >-
+  I have some code
+
+
+  ```
+
+  task_create <- function(
+      dataset,
+      name = deparse(substitute(dataset)),
+      dir = eval_log_dir()
+  ) {
+
+  ...
+
+  }
+
+  ```
+
+
+  I'd like the default name to be the symbol referring to the dataset, e.g. in
+
+
+  ```
+
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+
+  tsk <- 
+    task_create(
+      dataset = simple_addition
+    )
+  ```
+
+
+  ...the name would be "simple_addition". Instead, it's substituted to
+  `structure(list(input = c("What's 2+2?", "What's 2+3?"), target = c("4", ,
+  "5"), id = 1:2), row.names = c(NA, -2L), class = c("tbl_df", , and "tbl",
+  "data.frame"))`. How can I fix that?
+target: >-
+  The `name` default is evaluated lazily, and something else results in
+  `dataset` being evaluated before `name` is. `name` must be evaluated early in
+  the function, e.g. using `force(name)`.
 domain: Programming
 task: Debugging
 knowledge: base R
-source: https://github.com/simonpcouch/rinspect
+source: 'https://github.com/simonpcouch/rinspect'
