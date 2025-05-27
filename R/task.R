@@ -457,14 +457,10 @@ Task <- R6::R6Class(
     #' `$solve()` and `$score()`; this function returns the cost inferred
     #' by taking the differences in values of `$token_usage()` over time.
     #'
-    #' @return The sum of the cost of solving and scoring the evaluation.
-    #' The sum only includes the cost from the most recent runs of the
-    #' solver and scorer.
+    #' @return A tibble displaying the cost of solving and scoring the
+    #' evaluation by model, separately for the solver and scorer.
     get_cost = function() {
-      if (is.null(private$scorer_token_usage)) {
-        return(private$solver_token_usage)
-      }
-      sum_token_usage(
+      bind_token_usage(
         private$solver_token_usage,
         private$scorer_token_usage
       )
@@ -894,31 +890,26 @@ diff_token_usage <- function(before, after) {
   dplyr::filter(res, input != 0 | output != 0)
 }
 
-sum_token_usage <- function(solver, scorer) {
-  res <- dplyr::full_join(
-    solver,
-    scorer,
-    by = c("provider", "model"),
-    suffix = c("", "_scorer")
-  )
-  res <- dplyr::mutate(
-    res,
-    input = input + ifelse(is.na(input_scorer), 0, input_scorer)
-  )
-  res <- dplyr::mutate(
-    res,
-    output = output + ifelse(is.na(output_scorer), 0, output_scorer)
-  )
-  if ("price" %in% colnames(res)) {
-    res <- dplyr::mutate(
-      res,
-      price = numeric_price(price) + numeric_price(price_scorer),
-      price = sprintf("$%.2f", price)
+bind_token_usage <- function(solver, scorer) {
+  solver_token_usage <-
+    dplyr::mutate(
+      solver,
+      source = "solver",
+      .before = everything()
     )
-  }
-  res <- dplyr::select(res, provider, model, input, output, any_of("price"))
 
-  res
+  if (is.null(scorer)) {
+    return(solver_token_usage)
+  }
+
+  dplyr::bind_rows(
+    solver_token_usage,
+    dplyr::mutate(
+      scorer,
+      source = "scorer",
+      .before = everything()
+    )
+  )
 }
 
 numeric_price <- function(price) {

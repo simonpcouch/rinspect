@@ -838,11 +838,17 @@ test_that("token usage is logged correctly", {
   cost_after_score <- tsk$get_cost()
   expect_equal(
     cost_after_score$input,
-    usage_after_score$input - usage_before$input
+    c(
+      usage_after_solve$input - usage_before$input,
+      usage_after_score$input - usage_after_solve$input
+    )
   )
   expect_equal(
     cost_after_score$output,
-    usage_after_score$output - usage_before$output
+    c(
+      usage_after_solve$output - usage_before$output,
+      usage_after_score$output - usage_after_solve$output
+    )
   )
 })
 
