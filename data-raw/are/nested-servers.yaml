@@ -3,28 +3,20 @@ input: >-
   The nested structure of my shiny modules is working, but for the inner module,
   I need it to generate a UI within the server portion of the module.
 
-
   Each inner module should produce the following:
 
   - A header ("Inside the Generated UI")
-
   - some verbatimTextOutput ("something generated")
-
   - A chart
-
 
   The reprex below only produces the header and not the verbatimTextOutput or
   the plotOutput.
-
 
   This feels like a namespace problem, but I can't figure out how to fix it.
 
 
   ```
-
   library(shiny)
-
-
 
   inner_UI <- function(id){
     ns <- NS(id)
@@ -99,9 +91,7 @@ input: >-
 
 
   shinyApp(ui, server)
-
   ```
-
 
   How do I fix it?
 target: >-
@@ -114,20 +104,15 @@ target: >-
 
   So, change:
 
-
   ```
-
   innerServer <- function(id){
     moduleServer(id, function(input, output, session) {
       ns <- NS(id)
   ```
 
-
   to
 
-
   ```
-
   innerServer <- function(id){
     moduleServer(id, function(input, output, session) {
       ns <- session$ns

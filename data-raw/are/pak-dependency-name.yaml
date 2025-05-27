@@ -25,7 +25,8 @@ input: |-
   * any::sessioninfo: dependency conflict
   * any::pkgdown: dependency conflict
   ```
-target: The user needs to specify the package name explicitly in the Remotes `DESCRIPTION`
+target: >
+  The user needs to specify the package name explicitly in the Remotes `DESCRIPTION`
   field using a `<package>=` prefix, e.g. `spatialstuff=org/spatial-Stuff`.
 domain: Programming
 task: Debugging

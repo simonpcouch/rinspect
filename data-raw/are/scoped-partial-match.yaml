@@ -13,7 +13,6 @@ input: |-
   ```
 
   Since out has `refresh_token_expires_in` (and not `refresh_token`), adding `refresh_token` doesn't work as expected.
-
   </issue>
 
   Avoid partial matching of `refresh_token` in this function:

@@ -4,20 +4,14 @@ input: >-
 
 
   ```
-
   Error:
-
   ! promise already under evaluation: recursive default argument reference or
   earlier problems?
-
   ```
-
 
   When evaluating the function returned by this function:
 
-
   ```
-
   generate <- function(chat = ellmer::chat_claude()) {
     
     function(input, chat = chat) {
@@ -26,9 +20,7 @@ input: >-
       list(result = res, chat = ch)
     }
   }
-
   ```
-
 
   How can I fix it?
 target: >-

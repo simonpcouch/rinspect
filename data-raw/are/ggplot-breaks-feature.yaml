@@ -341,14 +341,38 @@ input: |-
   ```
 
   Please propose edits so that, when discrete breaks have names, they'll be used as labels by default.
-target: "```\n      if (scale$is_discrete()) {\n        self$breaks <- scale$get_breaks()\n
-  \     } \n```\n\n...should be changed to:\n\n```\n      if (scale$is_discrete())
-  {\n        self$breaks <- setNames(scale$get_breaks())\n      } \n```\n\nand, later,
-  on:\n\n```\n    else {\n      breaks <- scale$map(self$breaks)\n    }\n```\n\ncan
-  be changed to:\n\n```\n    else {\n      breaks <- setNames(scale$map(self$breaks),
-  names(self$breaks))\n    }\n```\n\nThat's all that's needed, but both changes are
-  needed."
-domain: Programming
+target: |-
+  ```
+        if (scale$is_discrete()) {
+          self$breaks <- scale$get_breaks()
+        } 
+  ```
+
+  ...should be changed to:
+
+  ```
+        if (scale$is_discrete()) {
+          self$breaks <- setNames(scale$get_breaks())
+        } 
+  ```
+
+  and, later, on:
+
+  ```
+      else {
+        breaks <- scale$map(self$breaks)
+      }
+  ```
+
+  can be changed to:
+
+  ```
+      else {
+        breaks <- setNames(scale$map(self$breaks), names(self$breaks))
+      }
+  ```
+
+  That's all that's needed, but both changes are needed.domain: Programming
 task: New code
 source: https://github.com/teunbrand/ggplot2/commit/094b957d733e2f0dfd250091982a397a68b32bee
 knowledge:

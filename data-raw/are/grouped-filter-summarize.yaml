@@ -2,11 +2,8 @@ title: grouped-filter-summarize
 input: >-
   Here's some data on flights:
 
-
   ```
-
   flights
-
   # A tibble: 336,776 × 19
       year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay carrier
      <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>     <dbl> <chr>  
@@ -21,24 +18,16 @@ input: >-
    9  2013     1     1      557            600        -3      838            846        -8 B6     
   10  2013     1     1      558            600        -2      753           
   745         8 AA     
-
   # ℹ 336,766 more rows
-
   # ℹ 9 more variables: flight <int>, tailnum <chr>, origin <chr>, dest <chr>,
   air_time <dbl>,
-
   #   distance <dbl>, hour <dbl>, minute <dbl>, time_hour <dttm>
-
   ```
-
 
   Here's some corresponding data on planes:
 
-
   ```
-
   planes
-
   # A tibble: 3,322 × 9
      tailnum  year type                    manufacturer     model     engines seats speed engine   
      <chr>   <int> <chr>                   <chr>            <chr>       <int> <int> <int> <chr>    
@@ -56,12 +45,10 @@ input: >-
 
   ```
 
-
   Write tidyverse code to find the `tailnum` with the highest proportion of NA
   `arr_delay`s that has flown at least 100 flights.
 target: >-
   There are three main steps here:
-
 
   1) A grouped filter: only keep rows in `flights` that have > 100 rows.
   Notably, no persistent summarization across rows should happen here. 
@@ -72,15 +59,11 @@ target: >-
 
   3) Arrange by the resulting column in descending order.
 
-
   The `planes` data is irrelevant and should be ignored.
-
 
   For example:
 
-
   ```
-
   flights %>%
     filter(n() > 100, .by = tailnum) %>%
     summarize(
@@ -90,12 +73,9 @@ target: >-
     arrange(desc(mean_na_arr_delay))
   ```
 
-
   With the old `group_by()` syntax:
 
-
   ```
-
   flights %>%
     group_by(tailnum) %>%
     filter(n() > 100) %>%
@@ -107,13 +87,11 @@ target: >-
     arrange(desc(mean_na_arr_delay))
   ```
 
-
   The `ungroup()` and `group_by()` in the middle can be omitted, since the same
   grouping variable is used for both:
 
 
   ```
-
   flights %>%
     group_by(tailnum) %>%
     filter(n() > 100) %>%
@@ -122,7 +100,6 @@ target: >-
     ) %>%
     arrange(desc(mean_na_arr_delay))
   ```
-
 
   Some `tailnum`s are NA, but there's not enough context in the question to
   determine that; correct answers can include a line along the lines of

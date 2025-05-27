@@ -26,8 +26,6 @@ input: |-
   #>  10. └─base::.handleSimpleError(...)
   #>  11.   └─dplyr (local) h(simpleError(msg, call))
   #>  12.     └─rlang::abort(bullets, call = error_call, parent = cnd)
-  栀Ƭ
-  #> Error in eval(expr, envir, enclos): object'栀Ƭ' not found
   ```
 
   How do I fix it?

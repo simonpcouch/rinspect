@@ -2,11 +2,8 @@ title: correlated-delays-reasoning
 input: >-
   Here's some data on flights:
 
-
   ```
-
   flights
-
   # A tibble: 336,776 × 19
       year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay carrier
      <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>     <dbl> <chr>  
@@ -21,16 +18,11 @@ input: >-
    9  2013     1     1      557            600        -3      838            846        -8 B6     
   10  2013     1     1      558            600        -2      753           
   745         8 AA     
-
   # ℹ 336,766 more rows
-
   # ℹ 9 more variables: flight <int>, tailnum <chr>, origin <chr>, dest <chr>,
   air_time <dbl>,
-
   #   distance <dbl>, hour <dbl>, minute <dbl>, time_hour <dttm>
-
   ```
-
 
   Delays are typically temporally correlated: even once the problem that caused
   the initial delay has been resolved, later flights are delayed to allow
@@ -42,19 +34,15 @@ target: >-
   airport. e.g. a delay at LaGuardia shouldn't affect the next flight out of
   JFK. So, the lagged departure delay should be grouped by `origin`.
 
-
   Also, the mean departure delay should be taken grouped by the numeric lagged
   departure delay variable. This is fine, as the printed flights data shows that
   those departure delays are in whole numbers, but it's also okay if the
   submitted answer rounds the lagged departure delay to the nearest minute (or
   small bin of minutes).
 
-
   Here's an example of working code:
 
-
   ```
-
   lagged_delays <- 
     flights %>%
     arrange(origin, month, day, dep_time) %>%
@@ -67,10 +55,8 @@ target: >-
     geom_point()
   ```
 
-
   At some point before the mean departure delay of the current flight is taken,
   NAs need to be removed or `na.rm = TRUE` needs to be set in `mean()`.
-
 
   Using the old `group_by()` syntax is also fine.
 domain: Data analysis

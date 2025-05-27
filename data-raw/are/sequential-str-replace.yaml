@@ -3,42 +3,29 @@ input: >-
   I'd like to replace pipes `||` in the `appointment_key` with "T" and "A".
   Desired outcome is shown in the `result` column:
 
-
   ```
-
   pipe <- tibble::tribble(
             ~referral_key, ~appointment_key,        ~result,
               "OP3349021", "4289||10410||1", "4289T10410A1",
               "OP3359764", "4289||10410||2", "4289T10410A2"
             )
   pipe
-
   #> # A tibble: 2 x 3
-
   #>   referral_key appointment_key result      
-
   #>   <chr>        <chr>           <chr>       
-
   #> 1 OP3349021    4289||10410||1  4289T10410A1
-
   #> 2 OP3359764    4289||10410||2  4289T10410A2
-
   ```
-
 
   How can I do this with the tidyverse?
 target: >-
   Call `str_replace()` twice, once for the first pair of pipes and once for the
   second:
 
-
   ```
-
   library(tidyverse)
 
-
   # replace pipes
-
   pipe <- pipe |> 
     mutate(
       # first instance of ||
@@ -57,7 +44,6 @@ target: >-
       equivalent = appointment_key == result
     )
   ```
-
 
   Notably, `str_replace()` should be called twice, in order. The solution should
   not use `str_replace_all()`. Using `||` for the `pattern` is fine as long as

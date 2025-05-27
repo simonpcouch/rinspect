@@ -93,12 +93,8 @@ target: >-
   is to move the `output$plot` and rendering code into a proper server function,
   like:
 
-
   ```
-
   # ...same ui
-
-
   server <- function(input, output) {
     # Create reactive functions to filter the data based on user input
     filtered_data <- reactive({
@@ -126,11 +122,8 @@ target: >-
     })
   }
 
-
   # Run the application
-
   shinyApp(ui = ui, server = server)
-
   ```
 domain: Programming
 task: Debugging

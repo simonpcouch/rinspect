@@ -2,39 +2,26 @@ title: lazy-eval
 input: >-
   I have some code
 
-
   ```
-
   task_create <- function(
       dataset,
       name = deparse(substitute(dataset)),
       dir = eval_log_dir()
   ) {
-
-  ...
-
+    ...
   }
-
   ```
-
 
   I'd like the default name to be the symbol referring to the dataset, e.g. in
 
-
   ```
-
   simple_addition <- tibble(
     input = c("What's 2+2?", "What's 2+3?"),
     target = c("4", "5")
   )
 
-
-  tsk <- 
-    task_create(
-      dataset = simple_addition
-    )
+  tsk <- task_create(dataset = simple_addition)
   ```
-
 
   ...the name would be "simple_addition". Instead, it's substituted to
   `structure(list(input = c("What's 2+2?", "What's 2+3?"), target = c("4", ,
