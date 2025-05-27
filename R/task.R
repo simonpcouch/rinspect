@@ -879,11 +879,18 @@ diff_token_usage <- function(before, after) {
   if ("price_before" %in% colnames(res)) {
     res <- dplyr::mutate(
       res,
-      price = numeric_price(price) - numeric_price(price_before)
+      price = dplyr::if_else(
+        is.na(price),
+        NA,
+        numeric_price(price) - numeric_price(price_before)
+      )
     )
   }
   if ("price" %in% colnames(res)) {
-    res <- dplyr::mutate(res, price = sprintf("$%.2f", price))
+    res <- dplyr::mutate(
+      res,
+      price = dplyr::if_else(is.na(price), NA, sprintf("$%.2f", price))
+    )
   }
   res <- dplyr::select(res, provider, model, input, output, any_of("price"))
 
