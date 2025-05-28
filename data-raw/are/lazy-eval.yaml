@@ -1,5 +1,5 @@
 title: lazy-eval
-input: >-
+input: |-
   I have some code
 
   ```
@@ -27,7 +27,7 @@ input: >-
   `structure(list(input = c("What's 2+2?", "What's 2+3?"), target = c("4", ,
   "5"), id = 1:2), row.names = c(NA, -2L), class = c("tbl_df", , and "tbl",
   "data.frame"))`. How can I fix that?
-target: >-
+target: |-
   The `name` default is evaluated lazily, and something else results in
   `dataset` being evaluated before `name` is. `name` must be evaluated early in
   the function, e.g. using `force(name)`.

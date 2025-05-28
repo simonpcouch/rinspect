@@ -1,5 +1,5 @@
 title: correlated-delays-reasoning
-input: >-
+input: |-
   Here's some data on flights:
 
   ```
@@ -29,7 +29,7 @@ input: >-
   earlier flights to leave. Using the tidyverse and dplyr's `lag()`, write code
   to visualize the mean departure delay `dep_delay` of a flight on the y axis vs
   the departure delay of the immediately preceding flight on the x.
-target: >-
+target: |-
   Notably, the relevant departure delay for this question is the one at the same
   airport. e.g. a delay at LaGuardia shouldn't affect the next flight out of
   JFK. So, the lagged departure delay should be grouped by `origin`.

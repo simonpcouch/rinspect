@@ -1,5 +1,5 @@
 title: geocode-req-perform
-input: >-
+input: |-
   I am trying to use a geocoding API. My code is as follows:
 
   ```
@@ -31,7 +31,7 @@ input: >-
   ```
 
   How can I fix this?
-target: >-
+target: |-
   Format the address to result in a valid URL by replacing spaces and, likely,
   removing punctuation. Something like:
 
@@ -43,6 +43,6 @@ target: >-
   `URLencode()` or `url_encode()`.
 domain: Data analysis
 task: Debugging
-source: >-
+source: |-
   https://forum.posit.co/t/how-to-correctly-use-httr2-to-fetch-data-from-api/186118
 knowledge: r-lib

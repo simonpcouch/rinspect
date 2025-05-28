@@ -88,7 +88,7 @@ input: |-
   ```
 
   How do I fix it?
-target: >-
+target: |-
   There's a `output$plot` alone in the anonymous server function. The solution
   is to move the `output$plot` and rendering code into a proper server function,
   like:
@@ -127,6 +127,6 @@ target: >-
   ```
 domain: Programming
 task: Debugging
-source: >-
+source: |-
   https://forum.posit.co/t/warning-error-in-cant-read-output-plot-when-outputting-linear-model-visualizations/189355
 knowledge: shiny

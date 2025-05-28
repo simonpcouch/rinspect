@@ -1,5 +1,5 @@
 title: after-stat-bar-heights
-input: >-
+input: |-
   This bar chart shows the count of different cuts of diamonds, and each bar is
   stacked and filled  according to clarity:
 
@@ -14,7 +14,7 @@ input: >-
   Could you change this code so that the proportion of diamonds with a given cut
   corresponds to the bar height and not the count? Each bar should still be
   filled according to clarity.
-target: >-
+target: |-
   Preferably: 
 
 

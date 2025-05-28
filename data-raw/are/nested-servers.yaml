@@ -1,5 +1,5 @@
 title: nested-servers
-input: >-
+input: |-
   The nested structure of my shiny modules is working, but for the inner module,
   I need it to generate a UI within the server portion of the module.
 
@@ -94,7 +94,7 @@ input: >-
   ```
 
   How do I fix it?
-target: >-
+target: |-
   The issue is that `NS(id)` creates a new namespace function that doesn't
   maintain the correct hierarchical relationship with parent modules. Using
   `session$ns` instead ensures the dynamically generated UI elements have
@@ -119,6 +119,6 @@ target: >-
   ```
 domain: Programming
 task: Debugging
-source: >-
+source: |-
   https://forum.posit.co/t/nested-shiny-modules-using-uioutput-in-an-inner-module/180875/2
 knowledge: shiny

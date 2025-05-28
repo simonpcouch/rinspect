@@ -66,7 +66,7 @@ input: >
   |000006 | 0|
 
   How can I do this with the tidyverse?
-target: >-
+target: |-
   One solution is to `group_by()` and summarize:
 
   ```
@@ -112,6 +112,6 @@ target: >-
   No need to use the exact same syntax, and either pipe is fine.
 domain: Data analysis
 task: New code
-source: >-
+source: |-
   https://forum.posit.co/t/dplyr-case-when-summarize-conditional-summary-using-case-when-based-on-date-windows/191261
 knowledge: tidyverse

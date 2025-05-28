@@ -1,5 +1,5 @@
 title: grouped-filter-summarize
-input: >-
+input: |-
   Here's some data on flights:
 
   ```
@@ -47,7 +47,7 @@ input: >-
 
   Write tidyverse code to find the `tailnum` with the highest proportion of NA
   `arr_delay`s that has flown at least 100 flights.
-target: >-
+target: |-
   There are three main steps here:
 
   1) A grouped filter: only keep rows in `flights` that have > 100 rows.

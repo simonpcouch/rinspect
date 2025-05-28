@@ -1,5 +1,5 @@
 title: recursive-default-argument
-input: >-
+input: |-
   I see:
 
 
@@ -23,7 +23,7 @@ input: >-
   ```
 
   How can I fix it?
-target: >-
+target: |-
   It can be fixed by changing the name of the `chat` argument in one of the
   functions or assigning the `chat` object in the outer function to a different
   variable name internally and then supplying that renamed object as the default

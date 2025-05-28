@@ -1,5 +1,5 @@
 title: sequential-str-replace
-input: >-
+input: |-
   I'd like to replace pipes `||` in the `appointment_key` with "T" and "A".
   Desired outcome is shown in the `result` column:
 
@@ -18,7 +18,7 @@ input: >-
   ```
 
   How can I do this with the tidyverse?
-target: >-
+target: |-
   Call `str_replace()` twice, once for the first pair of pipes and once for the
   second:
 
