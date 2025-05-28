@@ -1,0 +1,132 @@
+title: rogue-server-error
+input: |-
+  I see this warning and error when I launch my shiny app:
+
+  ```
+  Listening on http://127.0.0.1:3516
+  Warning: Error in $: Can't read output 'plot'
+    46: <Anonymous>
+    45: signalCondition
+    44: signal_abort
+    43: rlang::abort
+    42: $.shinyoutput
+    40: server [#2]
+     3: runApp
+     2: print.shiny.appobj
+     1: <Anonymous>
+  Error in output$plot : Can't read output 'plot'
+  ```
+
+  Here's the app's code:
+
+  ```
+  # Load necessary libraries
+  library(ggplot2)
+  library(shiny)
+  library(dplyr)
+  library(readxl)
+  library(stringr)
+
+  # Load & Rename data 
+  Kidney_Correlations_Data <- read_excel("Kidney Correlations Data.xlsx")
+  Kidney_Correlations_Data <- as.data.frame(Kidney_Correlations_Data) %>%
+    mutate(
+      CKD_STAGE = str_replace(Kidney_Correlations_Data[[3]], "CKD 3.*", "CKD 3")
+    )
+
+  # Create a reactive function to filter the data based on user input
+  ckd_condition <- reactive({
+    input$condition
+  })
+
+  visit_threshold <- reactive({
+    input$visit_threshold
+  })
+
+  filtered_data <- reactive({
+    Kidney_Correlations_Data %>% 
+      filter(CKD_STAGE == ckd_condition, VISIT_COUNT > visit_threshold)
+  })
+
+  # Create a linear model and visualization
+  output$plot <- renderPlot({
+    validate(
+      need(input$condition != "", "Please select a condition"),
+      need(input$visit_threshold > 0, "Please enter a valid visit threshold")
+    )
+                                   # Filter the data based on the user's input
+    data <- filtered_data()
+    
+                                   # Create a linear model
+    lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data = data)
+    
+                                   # Create a plot of the linear model
+    ggplot(data, aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + 
+      geom_point() + 
+      geom_smooth(method = "lm", se = FALSE) + 
+      labs(x = "Visit Count", y = "Paid Amount")
+  })
+
+  # Create a dropdown menu for the user to select the CKD condition level
+  # and a numeric input field for the visit threshold
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("condition", "Select CKD Condition:", c("CKD 3", "CKD 4", "CKD 5", "ESRD")),
+        numericInput("visit_threshold", "Minimum Visit Count:", value = 5, min = 0)
+      ),
+      mainPanel(
+        plotOutput("plot")
+      )
+    )
+  )
+
+  # Run the application
+  shinyApp(ui = ui, server = function(input, output) {
+    output$plot
+  })
+  ```
+
+  How do I fix it?
+target: |-
+  There's a `output$plot` alone in the anonymous server function. The solution
+  is to move the `output$plot` and rendering code into a proper server function,
+  like:
+
+  ```
+  # ...same ui
+  server <- function(input, output) {
+    # Create reactive functions to filter the data based on user input
+    filtered_data <- reactive({
+      Kidney_Correlations_Data %>% 
+        filter(CKD_STAGE == input$condition, VISIT_COUNT > input$visit_threshold)
+    })
+    
+    # Create a linear model and visualization
+    output$plot <- renderPlot({
+      validate(
+        need(input$condition != "", "Please select a condition"),
+        need(input$visit_threshold > 0, "Please enter a valid visit threshold")
+      )
+                                     # Filter the data based on the user's input
+      data <- filtered_data()
+      
+                                     # Create a linear model
+      lm_model <- lm(Sum_Sum_MR_ALLOWED ~ VISIT_COUNT, data = data)
+      
+                                     # Create a plot of the linear model
+      ggplot(data, aes(x = VISIT_COUNT, y = Sum_Sum_MR_ALLOWED)) + 
+        geom_point() + 
+        geom_smooth(method = "lm", se = FALSE) + 
+        labs(x = "Visit Count", y = "Paid Amount")
+    })
+  }
+
+  # Run the application
+  shinyApp(ui = ui, server = server)
+  ```
+domain: Programming
+task: Debugging
+source: |-
+  https://forum.posit.co/t/warning-error-in-cant-read-output-plot-when-outputting-linear-model-visualizations/189355
+knowledge: shiny

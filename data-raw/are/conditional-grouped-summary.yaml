@@ -1,0 +1,117 @@
+title: conditional-grouped-summary
+input: >
+  I have a set of data not unlike the following example.
+
+  ```
+  |ID | date | visit | type|
+  |--- | --- | --- | ---|
+  |000000 | 2022-02-21 | 2 | Type_I|
+  |000000 | 2023-02-01 | 1 | Type_I|
+  |000001 | 2023-03-18 | 1 | Type_I|
+  |000001 | 2023-11-03 | 3 | Type_II|
+  |000001 | 2022-01-31 | 2 | Type_II|
+  |000002 | 2022-03-11 | 3 | Type_I|
+  |000002 | 2022-09-04 | 4 | Type_I|
+  |000002 | 2023-01-20 | 2 | Type_I|
+  |000002 | 2022-02-14 | 1 | Type_I|
+  |000003 | 2023-01-08 | 2 | Type_I|
+  |000003 | 2023-10-12 | 3 | Type_I|
+  |000003 | 2023-01-10 | 1 | Type_I|
+  |000004 | 2023-12-21 | 2 | Type_I|
+  |000004 | 2022-09-13 | 3 | Type_I|
+  |000004 | 2023-09-28 | 1 | Type_I|
+  |000004 | 2022-09-08 | 4 | Type_I|
+  |000005 | 2022-05-12 | 3 | Type_I|
+  |000005 | 2022-08-22 | 1 | Type_I|
+  |000005 | 2022-06-20 | 2 | Type_II|
+  |000006 | 2023-08-10 | 1 | Type_I|
+  ```
+
+  In R code:
+
+  ```
+  df <- structure(list(ID = c("000000", "000000", "000001", "000001", 
+  "000001", "000002", "000002", "000002", "000002", "000003", "000003", 
+  "000003", "000004", "000004", "000004", "000004", "000005", "000005", 
+  "000005", "000006"), date = structure(c(19044, 19389, 19434, 
+  19664, 19023, 19062, 19239, 19377, 19037, 19365, 19642, 19367, 
+  19712, 19248, 19628, 19243, 19124, 19226, 19163, 19579), class = "Date"), 
+      visit = c(2L, 1L, 1L, 3L, 2L, 3L, 4L, 2L, 1L, 2L, 3L, 1L, 
+      2L, 3L, 1L, 4L, 3L, 1L, 2L, 1L), type = c("Type_I", "Type_I", 
+      "Type_I", "Type_II", "Type_II", "Type_I", "Type_I", "Type_I", 
+      "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", 
+      "Type_I", "Type_I", "Type_I", "Type_I", "Type_II", "Type_I"
+      )), row.names = c(NA, -20L), class = c("tbl_df", "tbl", "data.frame"
+  ))
+  ```
+
+  I need to set a conditional boolean flag based on the criteria:
+
+  * At least one instance of "Type_II"
+
+  * Two or more cases of "Type_I" that occur within at least 90 days of one
+  another
+
+  So that the output would look something like this:
+
+
+  |ID | Flag|
+  |--- | ---|
+  |000000 | 0|
+  |000001 | 1|
+  |000002 | 1|
+  |000003 | 1|
+  |000004 | 1|
+  |000005 | 1|
+  |000006 | 0|
+
+  How can I do this with the tidyverse?
+target: |-
+  One solution is to `group_by()` and summarize:
+
+  ```
+  df %>%
+    group_by(ID) %>%
+    summarize(
+      Flag = as.numeric(
+        any(type == "Type_II") |
+        any(diff(sort(date[type == "Type_I"])) <= 90)
+      )
+    )
+  ```
+
+  One could also `mutate()` to summarise per record for each ID, then
+  `summarise()` to see if any record per ID meets either one of the criteria:
+
+  ```
+  df |> 
+    arrange(ID, date, visit) |> 
+    # work out individual flags
+    mutate(
+      # flag type_ii records
+      flag_t2 = case_match(type, 'Type_II' ~ T, .default = F),
+      # flag type_i records
+      flag_t1 = case_match(type, 'Type_I' ~ T, .default = F),
+      # flag records within 90 days of previous one
+      flag_90d = date - lag(date, n = 1) <= 90,
+      # calculate overall flag for record
+      Flag = case_when(
+        flag_t2 ~ T,
+        flag_t1 & flag_90d ~ T,
+        .default = F
+      ),
+      .by = ID
+    ) |> 
+    # summarise per ID
+    summarise(
+      Flag = max(Flag),
+      .by = ID
+    )
+  ```
+
+  No need to use the exact same syntax, and either pipe is fine.
+domain: Data analysis
+task: New code
+source: |-
+  https://forum.posit.co/t/dplyr-case-when-summarize-conditional-summary-using-case-when-based-on-date-windows/191261
+knowledge: tidyverse

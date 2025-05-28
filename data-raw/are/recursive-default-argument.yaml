@@ -1,0 +1,34 @@
+title: recursive-default-argument
+input: |-
+  I see:
+
+
+  ```
+  Error:
+  ! promise already under evaluation: recursive default argument reference or
+  earlier problems?
+  ```
+
+  When evaluating the function returned by this function:
+
+  ```
+  generate <- function(chat = ellmer::chat_claude()) {
+    
+    function(input, chat = chat) {
+      ch <- chat$clone()
+      res <- ch$chat(input)
+      list(result = res, chat = ch)
+    }
+  }
+  ```
+
+  How can I fix it?
+target: |-
+  It can be fixed by changing the name of the `chat` argument in one of the
+  functions or assigning the `chat` object in the outer function to a different
+  variable name internally and then supplying that renamed object as the default
+  to the inner function.
+domain: Programming
+task: Debugging
+knowledge: base R
+source: 'https://github.com/simonpcouch/rinspect'

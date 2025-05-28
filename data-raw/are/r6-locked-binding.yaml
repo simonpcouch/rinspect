@@ -1,0 +1,49 @@
+title: r6-locked-binding
+input: |-
+  I'm getting an error about overriding a dynamically created method:
+
+  ```
+  Parent <- R6::R6Class(
+    "Parent",
+    lock_objects = FALSE,
+    public = list(
+      initialize = function() {
+        self[["foo"]] <- function() {
+          print('foo')
+        }
+      }
+    )
+  )
+
+  Child <- R6::R6Class(
+    "Child",
+    inherit = Parent,
+    lock_objects = FALSE,
+    public = list(
+      foo = function() {
+        super$foo()
+      }
+    )
+  )
+
+  child <- Child$new()
+  #> Error in self$foo <- function() { : 
+  #>  cannot change value of locked binding for 'foo'
+  ```
+
+  How do I fix this?
+target: |-
+  To change a locked binding, use `unlockBinding()`, as in:
+
+  ```
+      initialize = function() {
+        unlockBinding("foo", self)
+        self[["foo"]] <- function() {
+          print('foo')
+        }
+      }
+  ```
+domain: Programming
+task: Debugging
+knowledge: {}
+source: 'https://github.com/r-lib/R6/issues/277'

@@ -1,0 +1,30 @@
+title: rlang-paste0-to-cli
+input: |-
+  Translate the following to the use `cli::cli_abort()`:
+
+  ```
+  rlang::abort(paste0(
+    "The workflow has arguments to be tuned that are missing some ",
+    "parameter objects: ",
+    paste0("'", pset$id[!params], "'", collapse = ", ")
+  ))
+  ```
+
+  Collapse it all into one call to the function, and make sure to pluralize correctly.
+target: |-
+  ```
+  cli::cli_abort(
+    "The workflow has {?/an} argument{?s} to be tuned that {?is/are} missing {a/some}
+     parameter object{?s}: {.val {pset$id[!params]}}"
+  )
+  ```
+
+  Notably:
+
+  * There should be a call to `cli::cli_abort()`.
+  * There should be no `paste0()`s left in the call. If the string is split up into multiple lines, it can also end with `\` or `\\`.
+  * Some attempt should be made to pluralize using the {?} syntax.
+domain: Programming
+task: Translation
+knowledge: r-lib
+source: https://github.com/simonpcouch/chores

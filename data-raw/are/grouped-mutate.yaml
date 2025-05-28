@@ -1,0 +1,18 @@
+title: grouped-mutate
+input: |-
+  I get an error using `.by` inside `mutate()`
+
+  ```
+  Error in `mutate()`:
+   In argument: `by = c(id, date)`.
+  Caused by error:
+  ! `by` must be size 2909492 or 1, not 5818984.
+  ```
+
+  How do I fix it?
+target: From `by = c(id, date)`, we can see that the user actually typed `by` rather
+  than `.by`. They need to use `.by`.
+domain: Data analysis
+task: Debugging
+knowledge: tidyverse
+source: https://github.com/tidyverse/dplyr/issues/6930
