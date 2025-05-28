@@ -115,7 +115,7 @@ evaluate whether the solution deserves full, partial, or no credit.</p>
 <span><span class="co">#&gt; Columns: 7</span></span>
 <span><span class="co">#&gt; $ id        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "after-stat-bar-heights"<span style="color: #949494;">, </span>"conditional-grouped-summ…</span></span>
 <span><span class="co">#&gt; $ input     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "This bar chart shows the count of different cuts o…</span></span>
-<span><span class="co">#&gt; $ target    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Preferably: \n\n```\nggplot(data = diamonds) + \n …</span></span>
+<span><span class="co">#&gt; $ target    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Preferably: \n\n\n```\n\nggplot(data = diamonds) +…</span></span>
 <span><span class="co">#&gt; $ domain    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>"Data analysis"<span style="color: #949494;">, </span>…</span></span>
 <span><span class="co">#&gt; $ task      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"New code"<span style="color: #949494;">, </span>"Debugging"<span style="color: #949494;">, </span>"N…</span></span>
 <span><span class="co">#&gt; $ source    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "https://jrnold.github.io/r4ds-exercise-solutions/d…</span></span>
@@ -144,38 +144,52 @@ you can get a taste of a typical problem in this dataset:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are</span><span class="op">$</span><span class="va">input</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; This bar chart shows the count of different cuts of diamonds,</span></span>
-<span><span class="co">#&gt; and each bar is stacked and filled according to clarity:</span></span>
+<span><span class="co">#&gt; and each bar is</span></span>
+<span><span class="co">#&gt; stacked and filled according to clarity:</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
 <span><span class="co">#&gt; geom_bar(mapping = aes(x = cut, fill = clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Could you change this code so that the proportion of diamonds</span></span>
-<span><span class="co">#&gt; with a given cut corresponds to the bar height and not the</span></span>
-<span><span class="co">#&gt; count? Each bar should still be filled according to clarity.</span></span></code></pre>
+<span><span class="co">#&gt; with a given cut</span></span>
+<span><span class="co">#&gt; corresponds to the bar height and not the count? Each bar</span></span>
+<span><span class="co">#&gt; should still be</span></span>
+<span><span class="co">#&gt; filled according to clarity.</span></span></code></pre>
 <p>Here’s the suggested solution:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">are</span><span class="op">$</span><span class="va">target</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Preferably:</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
 <span><span class="co">#&gt; geom_bar(aes(x = cut, y = after_stat(count) /</span></span>
 <span><span class="co">#&gt; sum(after_stat(count)), fill = clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The dot-dot notation (`..count..`) was deprecated in ggplot2</span></span>
-<span><span class="co">#&gt; 3.4.0, but it still works:</span></span>
+<span><span class="co">#&gt; 3.4.0, but it</span></span>
+<span><span class="co">#&gt; still works:</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ```</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ggplot(data = diamonds) +</span></span>
 <span><span class="co">#&gt; geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill =</span></span>
 <span><span class="co">#&gt; clarity))</span></span>
 <span><span class="co">#&gt; ```</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Simply setting `position = "fill" will result in each bar</span></span>
-<span><span class="co">#&gt; having a height of 1 and is not correct.</span></span></code></pre>
+<span><span class="co">#&gt; having a height of 1</span></span>
+<span><span class="co">#&gt; and is not correct.</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="creating-and-evaluating-a-task">Creating and evaluating a task<a class="anchor" aria-label="anchor" href="#creating-and-evaluating-a-task"></a>
