@@ -12,8 +12,8 @@
   },
   {
     "title": "conditional-grouped-summary",
-    "input": "I have a set of data not unlike the following example.\n``` |ID | date | visit | type| |--- | --- | --- | ---| |000000 | 2022-02-21 | 2 | Type_I| |000000 | 2023-02-01 | 1 | Type_I| |000001 | 2023-03-18 | 1 | Type_I| |000001 | 2023-11-03 | 3 | Type_II| |000001 | 2022-01-31 | 2 | Type_II| |000002 | 2022-03-11 | 3 | Type_I| |000002 | 2022-09-04 | 4 | Type_I| |000002 | 2023-01-20 | 2 | Type_I| |000002 | 2022-02-14 | 1 | Type_I| |000003 | 2023-01-08 | 2 | Type_I| |000003 | 2023-10-12 | 3 | Type_I| |000003 | 2023-01-10 | 1 | Type_I| |000004 | 2023-12-21 | 2 | Type_I| |000004 | 2022-09-13 | 3 | Type_I| |000004 | 2023-09-28 | 1 | Type_I| |000004 | 2022-09-08 | 4 | Type_I| |000005 | 2022-05-12 | 3 | Type_I| |000005 | 2022-08-22 | 1 | Type_I| |000005 | 2022-06-20 | 2 | Type_II| |000006 | 2023-08-10 | 1 | Type_I| ```\nIn R code:\n``` df <- structure(list(ID = c(\"000000\", \"000000\", \"000001\", \"000001\",  \"000001\", \"000002\", \"000002\", \"000002\", \"000002\", \"000003\", \"000003\",  \"000003\", \"000004\", \"000004\", \"000004\", \"000004\", \"000005\", \"000005\",  \"000005\", \"000006\"), date = structure(c(19044, 19389, 19434,  19664, 19023, 19062, 19239, 19377, 19037, 19365, 19642, 19367,  19712, 19248, 19628, 19243, 19124, 19226, 19163, 19579), class = \"Date\"), \n    visit = c(2L, 1L, 1L, 3L, 2L, 3L, 4L, 2L, 1L, 2L, 3L, 1L, \n    2L, 3L, 1L, 4L, 3L, 1L, 2L, 1L), type = c(\"Type_I\", \"Type_I\", \n    \"Type_I\", \"Type_II\", \"Type_II\", \"Type_I\", \"Type_I\", \"Type_I\", \n    \"Type_I\", \"Type_I\", \"Type_I\", \"Type_I\", \"Type_I\", \"Type_I\", \n    \"Type_I\", \"Type_I\", \"Type_I\", \"Type_I\", \"Type_II\", \"Type_I\"\n    )), row.names = c(NA, -20L), class = c(\"tbl_df\", \"tbl\", \"data.frame\"\n)) ```\nI need to set a conditional boolean flag based on the criteria:\n* At least one instance of \"Type_II\"\n* Two or more cases of \"Type_I\" that occur within at least 90 days of one another\nSo that the output would look something like this:\n\n|ID | Flag| |--- | ---| |000000 | 0| |000001 | 1| |000002 | 1| |000003 | 1| |000004 | 1| |000005 | 1| |000006 | 0|\nHow can I do this with the tidyverse?\n",
-    "target": "One solution is to `group_by()` and summarize:\n\n```\ndf %>%\n  group_by(ID) %>%\n  summarize(\n    Flag = as.numeric(\n      any(type == \"Type_II\") |\n      any(diff(sort(date[type == \"Type_I\"])) <= 90)\n    )\n  )\n```\n\nOne could also `mutate()` to summarise per record for each ID, then\n`summarise()` to see if any record per ID meets either one of the criteria:\n\n```\ndf |> \n  arrange(ID, date, visit) |> \n  # work out individual flags\n  mutate(\n    # flag type_ii records\n    flag_t2 = case_match(type, 'Type_II' ~ T, .default = F),\n    # flag type_i records\n    flag_t1 = case_match(type, 'Type_I' ~ T, .default = F),\n    # flag records within 90 days of previous one\n    flag_90d = date - lag(date, n = 1) <= 90,\n    # calculate overall flag for record\n    Flag = case_when(\n      flag_t2 ~ T,\n      flag_t1 & flag_90d ~ T,\n      .default = F\n    ),\n    .by = ID\n  ) |> \n  # summarise per ID\n  summarise(\n    Flag = max(Flag),\n    .by = ID\n  )\n```\n\nNo need to use the exact same syntax, and either pipe is fine.",
+    "input": "I have a set of data like this:\n``` |ID | date | visit | type| |--- | --- | --- | ---| |000000 | 2022-02-21 | 2 | Type_I| |000000 | 2023-02-01 | 1 | Type_I| |000001 | 2023-03-18 | 1 | Type_I| |000001 | 2023-11-03 | 3 | Type_II| |000001 | 2022-01-31 | 2 | Type_II| |000002 | 2022-03-11 | 3 | Type_I| |000002 | 2022-09-04 | 4 | Type_I| |000002 | 2023-01-20 | 2 | Type_I| |000002 | 2022-02-14 | 1 | Type_I| |000003 | 2023-01-08 | 2 | Type_I| |000003 | 2023-10-12 | 3 | Type_I| |000003 | 2023-01-10 | 1 | Type_I| |000004 | 2023-12-21 | 2 | Type_I| |000004 | 2022-09-13 | 3 | Type_I| |000004 | 2023-09-28 | 1 | Type_I| |000004 | 2022-09-08 | 4 | Type_I| |000005 | 2022-05-12 | 3 | Type_I| |000005 | 2022-08-22 | 1 | Type_I| |000005 | 2022-06-20 | 2 | Type_II| |000006 | 2023-08-10 | 1 | Type_I| ```\nI need to set a conditional boolean flag based on the criteria:\n* At least one instance of \"Type_II\"\n* Two or more cases of \"Type_I\" that occur within at least 90 days of one another\nSo that the output would look something like this:\n|ID | Flag| |--- | ---| |000000 | 0| |000001 | 1| |000002 | 1| |000003 | 1| |000004 | 1| |000005 | 1| |000006 | 0|\nHow can I do this with the tidyverse?\n",
+    "target": "One solution is to `group_by()` and summarize:\n\n```\ndf %>%\n  group_by(ID) %>%\n  summarize(\n    Flag = as.numeric(\n      any(type == \"Type_II\") |\n      any(diff(sort(date[type == \"Type_I\"])) <= 90)\n    )\n  )\n```\n\nBut it's slightly easier to debug if you use mutate() to first create\nintermediate variables:\n\n```\ndf |> \n  mutate(\n    flag_i = any(diff(sort(date[type == \"Type_I\"])) <= 90),\n    flag_ii = any(type == \"Type_II\"),\n    .by = ID,\n  ) |>\n  summarise(\n    flag = as.numeric(any(flag_i | flag_2)),\n    .by = ID\n  )\n```\n\nNo need to use the exact same syntax, and either pipe is fine.",
     "domain": "Data analysis",
     "task": "New code",
     "source": "https://forum.posit.co/t/dplyr-case-when-summarize-conditional-summary-using-case-when-based-on-date-windows/191261",
@@ -34,8 +34,8 @@
   },
   {
     "title": "curl-http-get",
-    "input": "I have the following CURL command, but when I try to make the request, it gives me an error. And I don't know how to solve it.\n\nCurl:\n\n```\ncurl -X 'GET' \\\n  'xxxxxx' \\\n  -H 'accept: application/json' \\\n  -H 'ApiKey: xxxxxxxx' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"id\": 5,\n  \"fechaInicial\": \"2023-02-01\",\n  \"fechaFinal\": \"2023-05-01\"\n}'\n```\n\nSintaxis:\n\n```\none2<- httr2::request(\"xxxxxx\") %>%\n                req_headers(`accept` = \"application/json\",\n                            `ApiKey`=\"xxxxx\",\n                            `Content-Type`= \"application/json\",\n                           )%>%\n                req_body_json(\n                    list(id = 4, fechaInicial=\"2023-07-01\", fechaFinal=\"2023-09-01\" ) )\n\ncone2 %>% req_perform()\n```\n\nThis is the error:\n\n! HTTP 405 Method Not Allowed\n\nHow do I fix it?",
-    "target": "There's a missing `req_method(\"GET\")`.",
+    "input": "I have the following CURL command, but when I try to make the equivalent httr2\nrequest, it gives me an error.\n\nCurl:\n\n```\ncurl -X 'GET' \\\n  'xxxxxx' \\\n  -H 'accept: application/json' \\\n  -H 'ApiKey: xxxxxxxx' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"id\": 5,\n  \"fechaInicial\": \"2023-02-01\",\n  \"fechaFinal\": \"2023-05-01\"\n}'\n```\n\nIn R:\n\n```\none2 <- httr2::request(\"xxxxxx\") %>%\n  req_headers(\n    `accept` = \"application/json\",\n    `ApiKey` = \"xxxxx\",\n    `Content-Type` = \"application/json\",\n  ) %>%\n  req_body_json(\n    list(id = 4, fechaInicial = \"2023-07-01\", fechaFinal = \"2023-09-01\")\n  )\ncone2 %>% req_perform()\n```\n\nThis is the error:\n! HTTP 405 Method Not Allowed\n\nHow do I fix it?",
+    "target": "There's a missing `req_method(\"GET\")`.\n\nIdeally, will also provide an explanation of the problem: httr2 will \nautomatically switch from GET to POST whenever you supply a body.",
     "domain": "Programming",
     "task": "Debugging",
     "knowledge": [
@@ -45,8 +45,8 @@
   },
   {
     "title": "dropped-level-legend",
-    "input": "I'd like to make a ggplot that includes unused levels in the legend:\n\n```\ndf <- data.frame(x = 1:3,\n                 y = 1:3,\n                 z = factor(letters[1:3], levels = letters[1:4]))\n\nggplot(data = df) +\n  geom_point(aes(x=x, y=y, color = z)) +\n  scale_color_manual(drop = FALSE,\n                     values = c(a = \"red\",\n                                b = \"blue\",\n                                c = \"yellow\",\n                                d = \"green\"))\n```\n\nThis produces a plot that's correct, where \"d\" is included in the values in the legend, except that I'd like to see a green dot next to \"d\" in the legend (instead of the blank spot next to \"d\") in the same way that other values have corresponding colored dots. How can I do that?",
-    "target": "Also add `show.legend = TRUE` to the `geom_point()` layer, like so:\n\n```\nggplot(data = df) +\n  geom_point(aes(x=x, y=y, color = z), show.legend = TRUE) +\n  scale_color_manual(drop = FALSE,\n                     values = c(a = \"red\",\n                                b = \"blue\",\n                                c = \"yellow\",\n                                d = \"green\"))\n```",
+    "input": "I'd like to make a ggplot that includes unused levels in the legend:\n\n```\ndf <- data.frame(\n  x = 1:3,\n  y = 1:3,\n  z = factor(letters[1:3], levels = letters[1:4])\n)\n\nggplot(data = df) +\n  geom_point(aes(x = x, y = y, color = z)) +\n  scale_color_manual(\n    drop = FALSE,\n    values = c(a = \"red\", b = \"blue\", c = \"yellow\", d = \"green\")\n  )\n```\n\nThis produces a plot that's correct, where \"d\" is included in the values in \nthe legend, except that I'd like to see a green dot next to \"d\" in the legend \n(instead of the blank spot next to \"d\") in the same way that other values have \ncorresponding colored dots. How can I do that?",
+    "target": "Also add `show.legend = TRUE` to the `geom_point()` layer, like so:\n\n```\nggplot(data = df) +\n  geom_point(aes(x = x, y = y, color = z), show.legend = TRUE) +\n  scale_color_manual(\n    drop = FALSE,\n    values = c(a = \"red\", b = \"blue\", c = \"yellow\", d = \"green\")\n  )\n```",
     "domain": "Data analysis",
     "task": "New code",
     "knowledge": [
@@ -56,8 +56,8 @@
   },
   {
     "title": "geocode-req-perform",
-    "input": "I am trying to use a geocoding API. My code is as follows:\n\n```\naddress <- \"Prince st., New York 10012\"\napi_key <- \"my_secret_api_key\"\nurl <-\nglue::glue(\"https://geocode.maps.co/search?q={address}&api_key={api_key}\")\nresponse <- httr2::request(url) %>%   \n  httr2::req_perform()\n```\n\nHowever, this does not work. I am getting this error message:\n\n```\n<error/httr2_failure>\nError in `httr2::req_perform()`:\n! Failed to perform HTTP request.\nCaused by error in `curl::curl_fetch_memory()`:\n! URL rejected: Malformed input to a URL function\n---\nBacktrace:\n    ▆\n 1. ├─httr2::request(url) %>% httr2::req_perform()\n 2. └─httr2::req_perform(.)\n 3.   └─base::tryCatch(...)\n 4.     └─base (local) tryCatchList(expr, classes, parentenv, handlers)\n 5.       └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])\n 6.         └─value[[3L]](cond)\n```\n\nHow can I fix this?",
-    "target": "Format the address to result in a valid URL by replacing spaces and, likely,\nremoving punctuation. Something like:\n\n```\naddress <- \"Prince+st+New+York+10012\"\n```\n\nIt would also be correct to pass the URL with the existing `address` to\n`URLencode()` or `url_encode()`.",
+    "input": "I am trying to use a geocoding API. My code is as follows:\n\n```\naddress <- \"Prince st., New York 10012\"\napi_key <- \"my_secret_api_key\"\nurl <- glue::glue(\"https://geocode.maps.co/search?q={address}&api_key={api_key}\")\nresponse <- httr2::request(url) %>%   \n  httr2::req_perform()\n```\n\nHowever, this does not work. I am getting this error message:\n\n```\n<error/httr2_failure>\nError in `httr2::req_perform()`:\n! Failed to perform HTTP request.\nCaused by error in `curl::curl_fetch_memory()`:\n! URL rejected: Malformed input to a URL function\n---\nBacktrace:\n    ▆\n 1. ├─httr2::request(url) %>% httr2::req_perform()\n 2. └─httr2::req_perform(.)\n 3.   └─base::tryCatch(...)\n 4.     └─base (local) tryCatchList(expr, classes, parentenv, handlers)\n 5.       └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])\n 6.         └─value[[3L]](cond)\n```\n\nHow can I fix this?",
+    "target": "You could format `address` to make at a valid URL by replacing spaces, e.g.\n\n```\naddress <- \"Prince+st+New+York+10012\"\n```\n\nOr by using a function to do so:\n\n```\naddress <- URLencode(\"Prince st., New York 10012\")\n```\n\nHowever, the best solution would be to use a function that handles these \nissues for you, e.g. `httr2::req_url_query()`. This would look something\nlike:\n\n```\nlibrary(httr2)\nbase_url <- \"https://geocode.maps.co/search\"\n\nresponse <- request(base_url) |>\n  req_url_query(q = address, api_key = api_key) |>\n  req_perform()\n```",
     "domain": "Data analysis",
     "task": "Debugging",
     "source": "https://forum.posit.co/t/how-to-correctly-use-httr2-to-fetch-data-from-api/186118",
@@ -79,7 +79,7 @@
   {
     "title": "grouped-mutate",
     "input": "I get an error using `.by` inside `mutate()`\n\n```\nError in `mutate()`:\n In argument: `by = c(id, date)`.\nCaused by error:\n! `by` must be size 2909492 or 1, not 5818984.\n```\n\nHow do I fix it?",
-    "target": "From `by = c(id, date)`, we can see that the user actually typed `by` rather than `.by`. They need to use `.by`.",
+    "target": "From `by = c(id, date)`, we can see that the user actually typed `by` \nrather than `.by`. They need to use `.by`.",
     "domain": "Data analysis",
     "task": "Debugging",
     "knowledge": [
@@ -89,8 +89,8 @@
   },
   {
     "title": "implement-nse-arg",
-    "input": "Add a `name` argument after `dataset` that defaults to the name of the `dataset` object in the calling env.\n\n```\ntask_create <- function(\n    dataset,\n    # TODO: maybe it doesn't need to be associated with a dir at all?\n    dir = inspect_log_dir()\n) {\n  check_dataset(dataset)\n\n  dataset$id <- seq_len(nrow(dataset))\n\n  res <-\n    structure(\n      dataset,\n      class = c(\"task\", class(tibble::new_tibble(list())))\n    )\n\n  attr(res, \"dir\") <- dir\n\n  res\n}\n```\n\nStore it as a `name` attribute in `res`.\n\ne.g. in:\n\n```\nx <- task_create(dataset = eval)\n```\n\n`attr(x, \"name)` would be `\"eval\"`.\n",
-    "target": "```\ntask_create <- function(\n    dataset,\n    name = deparse(substitute(dataset)),\n    # TODO: maybe it doesn't need to be associated with a dir at all?\n    dir = inspect_log_dir()\n) {\n  force(name)\n  check_dataset(dataset)\n\n  dataset$id <- seq_len(nrow(dataset))\n\n  res <-\n    structure(\n      dataset,\n      class = c(\"task\", class(tibble::new_tibble(list())))\n    )\n\n  attr(res, \"name\") <- name\n  attr(res, \"dir\") <- dir\n\n  res\n}\n```\n\nNotably:\n\n* `name` should default to `deparse(substitute(dataset))` or something similar\n* `name` needs be `force()`d, or somehow evaluated, before `check_dataset(dataset)` so that the substitution works correctly.\n* At some point, the `name` attribute is set to the value.\n* The rest of the function should be unaffected, e.g. no comments added to code that existed already.",
+    "input": "Add a `name` argument after `dataset` that defaults to the name of the \n`dataset` object in the calling env.\n\n```\ntask_create <- function(\n    dataset,\n    dir = inspect_log_dir()\n) {\n  check_dataset(dataset)\n\n  dataset$id <- seq_len(nrow(dataset))\n\n  res <-\n    structure(\n      dataset,\n      class = c(\"task\", class(tibble::new_tibble(list())))\n    )\n\n  attr(res, \"dir\") <- dir\n\n  res\n}\n```\n\nStore it as a `name` attribute in `res`.\n\ne.g. in:\n\n```\nx <- task_create(dataset = eval)\n```\n\n`attr(x, \"name)` would be `\"eval\"`.\n",
+    "target": "```\ntask_create <- function(\n    dataset,\n    name = deparse(substitute(dataset)),\n    dir = inspect_log_dir()\n) {\n  force(name)\n  check_dataset(dataset)\n\n  dataset$id <- seq_len(nrow(dataset))\n\n  res <-\n    structure(\n      dataset,\n      class = c(\"task\", class(tibble::new_tibble(list())))\n    )\n\n  attr(res, \"name\") <- name\n  attr(res, \"dir\") <- dir\n\n  res\n}\n```\n\nNotably:\n\n* `name` should default to `deparse(substitute(dataset))` or something similar\n* `name` needs be `force()`d, or somehow evaluated, before \n  `check_dataset(dataset)` so that the substitution works correctly.\n* At some point, the `name` attribute is set to the value.\n* The rest of the function should be unaffected, e.g. no comments added to \n  code that existed already.",
     "domain": "Programming",
     "task": "New code",
     "knowledge": [
@@ -101,7 +101,7 @@
   {
     "title": "jitter-one-axis",
     "input": "How do I jitter points with ggplot2 only with respect to the x axis, leaving the y values unchanged?\n",
-    "target": "Either set `geom_jitter(height = 0)` or `geom_point(position = position_jitter(height = 0))`.",
+    "target": "Either set `geom_jitter(height = 0)` or \n`geom_point(position = position_jitter(height = 0))`.",
     "domain": "Data analysis",
     "task": "New code",
     "knowledge": [
@@ -133,7 +133,7 @@
   },
   {
     "title": "pak-dependency-name",
-    "input": "I have an R package that depends on a package called, lets say, spatialstuff (This is how it is defined in its DESCRIPTIONS). However it is found in an org and the repo name is different, eg org/spatial-Stuff (i have no control over this name!).\n\nMy package in its `DESCRIPTION` file has the following lines\n\n```\nImports:\n spatialstuff\nRemotes:\n org/spatial-Stuff\n```\n\nHowever the `pkgdown.yaml` workflow that is run upon pushes (created from `usethis::use_pkgdown_github_pages()`) errors with the following message.\n\nCan someone explain if this is user error or some other error? Thanks\n\n```\n! error in pak subprocess\nCaused by error:\n! Could not solve package dependencies:\ndeps::.: Can't install dependency spatialstuff\n* spatialstuff: Can't find package called spatialstuff.\n* local::.: Can't install dependency spatialstuff\n* any::sessioninfo: dependency conflict\n* any::pkgdown: dependency conflict\n```",
+    "input": "I have an R package that depends on a package called, lets say, spatialstuff \n(This is how it is defined in its DESCRIPTION). However it is found in an \norg and the repo name is different, eg org/spatial-Stuff (i have no control \nover this name!).\n\nMy package in its `DESCRIPTION` file has the following lines\n\n```\nImports:\n spatialstuff\nRemotes:\n org/spatial-Stuff\n```\n\nHowever the `pkgdown.yaml` workflow that is run upon pushes (created from \n`usethis::use_pkgdown_github_pages()`) errors with the following message:\n\n```\n! error in pak subprocess\nCaused by error:\n! Could not solve package dependencies:\ndeps::.: Can't install dependency spatialstuff\n* spatialstuff: Can't find package called spatialstuff.\n* local::.: Can't install dependency spatialstuff\n* any::sessioninfo: dependency conflict\n* any::pkgdown: dependency conflict\n```\n\nHow can I fix this problem?",
     "target": "The user needs to specify the package name explicitly in the Remotes `DESCRIPTION` field using a `<package>=` prefix, e.g. `spatialstuff=org/spatial-Stuff`.\n",
     "domain": "Programming",
     "task": "Debugging",
@@ -149,13 +149,13 @@
     "domain": "Programming",
     "task": "Debugging",
     "knowledge": [
-      {}
+      "base R"
     ],
     "source": "https://github.com/r-lib/R6/issues/277"
   },
   {
     "title": "recursive-default-argument",
-    "input": "I see:\n\n\n```\nError:\n! promise already under evaluation: recursive default argument reference or\nearlier problems?\n```\n\nWhen evaluating the function returned by this function:\n\n```\ngenerate <- function(chat = ellmer::chat_claude()) {\n  \n  function(input, chat = chat) {\n    ch <- chat$clone()\n    res <- ch$chat(input)\n    list(result = res, chat = ch)\n  }\n}\n```\n\nHow can I fix it?",
+    "input": "I see:\n\n```\nError:\n! promise already under evaluation: recursive default argument reference or\nearlier problems?\n```\n\nWhen evaluating the function returned by this function:\n\n```\ngenerate <- function(chat = ellmer::chat_claude()) {\n  \n  function(input, chat = chat) {\n    ch <- chat$clone()\n    res <- ch$chat(input)\n    list(result = res, chat = ch)\n  }\n}\n```\n\nHow can I fix it?",
     "target": "It can be fixed by changing the name of the `chat` argument in one of the\nfunctions or assigning the `chat` object in the outer function to a different\nvariable name internally and then supplying that renamed object as the default\nto the inner function.",
     "domain": "Programming",
     "task": "Debugging",
@@ -166,7 +166,7 @@
   },
   {
     "title": "rlang-paste0-to-cli",
-    "input": "Translate the following to the use `cli::cli_abort()`:\n\n```\nrlang::abort(paste0(\n  \"The workflow has arguments to be tuned that are missing some \",\n  \"parameter objects: \",\n  paste0(\"'\", pset$id[!params], \"'\", collapse = \", \")\n))\n```\n\nCollapse it all into one call to the function, and make sure to pluralize correctly.",
+    "input": "Translate the following to the use `cli::cli_abort()`:\n\n```\nrlang::abort(paste0(\n  \"The workflow has arguments to be tuned that are missing some \",\n  \"parameter objects: \",\n  paste0(\"'\", pset$id[!params], \"'\", collapse = \", \")\n))\n```\n\nCollapse it all into one call to the function, and make sure to pluralize \ncorrectly.",
     "target": "```\ncli::cli_abort(\n  \"The workflow has {?/an} argument{?s} to be tuned that {?is/are} missing {a/some}\n   parameter object{?s}: {.val {pset$id[!params]}}\"\n)\n```\n\nNotably:\n\n* There should be a call to `cli::cli_abort()`.\n* There should be no `paste0()`s left in the call. If the string is split up into multiple lines, it can also end with `\\` or `\\\\`.\n* Some attempt should be made to pluralize using the {?} syntax.",
     "domain": "Programming",
     "task": "Translation",
@@ -188,8 +188,8 @@
   },
   {
     "title": "scoped-partial-match",
-    "input": "Here's a GitHub issue:\n\n<issue>\nGoogle oauth now returns `refresh_token_expires_in` as one of the fields in its response. It looks like this change happened roughly yesterday morning (the warnings first appeared in my log at 5:09am CST, but it hadn't ran since 5:14pm the day before). Because of that, this line in `token_refresh() `now results in a warning (which really should be an error):\n\n```\nout$refresh_token <- out$refresh_token %||% refresh_token\n# Warning message:\n# In out$refresh_token :\n#  partial match of 'refresh_token' to 'refresh_token_expires_in'\n```\n\nSince out has `refresh_token_expires_in` (and not `refresh_token`), adding `refresh_token` doesn't work as expected.\n<\/issue>\n\nAvoid partial matching of `refresh_token` in this function:\n\n```r\ntoken_refresh <- function(client, refresh_token, scope = NULL, token_params = list()) {\n  out <- oauth_client_get_token(\n    client,\n    grant_type = \"refresh_token\",\n    refresh_token = refresh_token,\n    scope = scope,\n    !!!token_params\n  )\n  out$refresh_token <- out$refresh_token %||% refresh_token\n  out\n}\n```",
-    "target": "Change `out$refresh_token <- out$refresh_token %||% refresh_token` to `out[[\"refresh_token\"]] <- out[[\"refresh_token\"]] %||% refresh_token`. No other changes needed.",
+    "input": "Here's a GitHub issue:\n\n<issue>\nGoogle oauth now returns `refresh_token_expires_in` as one of the fields in \nits response. It looks like this change happened roughly yesterday morning \n(the warnings first appeared in my log at 5:09am CST, but it hadn't ran \nsince 5:14pm the day before). Because of that, this line in `token_refresh()`\nnow results in a warning (which really should be an error):\n\n```\nout$refresh_token <- out$refresh_token %||% refresh_token\n# Warning message:\n# In out$refresh_token :\n#  partial match of 'refresh_token' to 'refresh_token_expires_in'\n```\n\nSince out has `refresh_token_expires_in` (and not `refresh_token`), adding \n`refresh_token` doesn't work as expected.\n<\/issue>\n\nAvoid partial matching of `refresh_token` in this function:\n\n```r\ntoken_refresh <- function(client, refresh_token, scope = NULL, token_params = list()) {\n  out <- oauth_client_get_token(\n    client,\n    grant_type = \"refresh_token\",\n    refresh_token = refresh_token,\n    scope = scope,\n    !!!token_params\n  )\n  out$refresh_token <- out$refresh_token %||% refresh_token\n  out\n}\n```",
+    "target": "Change `out$refresh_token <- out$refresh_token %||% refresh_token` to \n`out[[\"refresh_token\"]] <- out[[\"refresh_token\"]] %||% refresh_token`. \n\nNo other changes needed.",
     "domain": "Programming",
     "task": "Debugging",
     "knowledge": [
@@ -199,7 +199,7 @@
   },
   {
     "title": "sequential-str-replace",
-    "input": "I'd like to replace pipes `||` in the `appointment_key` with \"T\" and \"A\".\nDesired outcome is shown in the `result` column:\n\n```\npipe <- tibble::tribble(\n          ~referral_key, ~appointment_key,        ~result,\n            \"OP3349021\", \"4289||10410||1\", \"4289T10410A1\",\n            \"OP3359764\", \"4289||10410||2\", \"4289T10410A2\"\n          )\npipe\n#> # A tibble: 2 x 3\n#>   referral_key appointment_key result      \n#>   <chr>        <chr>           <chr>       \n#> 1 OP3349021    4289||10410||1  4289T10410A1\n#> 2 OP3359764    4289||10410||2  4289T10410A2\n```\n\nHow can I do this with the tidyverse?",
+    "input": "I'd like to replace pipes `||` in the `appointment_key` with \"T\" and \"A\".\nDesired outcome is shown in the `result` column:\n\n```\npipe\n#> # A tibble: 2 x 3\n#>   referral_key appointment_key result      \n#>   <chr>        <chr>           <chr>       \n#> 1 OP3349021    4289||10410||1  4289T10410A1\n#> 2 OP3359764    4289||10410||2  4289T10410A2\n```\n\nHow can I do this with the tidyverse?",
     "target": "Call `str_replace()` twice, once for the first pair of pipes and once for the\nsecond:\n\n```\nlibrary(tidyverse)\n\n# replace pipes\npipe <- pipe |> \n  mutate(\n    # first instance of ||\n    appointment_key = str_replace(\n      string = appointment_key,\n      pattern = '\\\\|\\\\|',\n      replacement = 'T'\n    ),\n    # second instance of ||\n    appointment_key = str_replace(\n      string = appointment_key,\n      pattern = '\\\\|\\\\|',\n      replacement = 'A'\n    ),\n    # optional: test for equivalence\n    equivalent = appointment_key == result\n  )\n```\n\nNotably, `str_replace()` should be called twice, in order. The solution should\nnot use `str_replace_all()`. Using `||` for the `pattern` is fine as long as\n`fixed = TRUE`. A correct solution can either assign to `appointment_key` or\n`result`.",
     "domain": "Data analysis",
     "task": "New code",
@@ -211,7 +211,7 @@
   {
     "title": "sprintf-to-cli",
     "input": "Translate this erroring code to use `cli::cli_abort()`:\n\n```\nabort(sprintf(\"No such '%s' function: `%s()`.\", package, name))\n```\n\nUse cli's inline substitution rather than the `%s` syntax.",
-    "target": "```\ncli::cli_abort(\"No such {.pkg {package}} function: {.fn {name}}.\")\n```\n\nNotably:\n\n* There should be a call to `cli_abort()`\n* The package and function should be substituted inline rather than with `paste0()` or the existing `sprintf()` syntax.",
+    "target": "```\ncli::cli_abort(\"No such {.pkg {package}} function: {.fn {name}}.\")\n```\n\nNotably:\n\n* There should be a call to `cli_abort()`\n* The package and function should be substituted inline rather than with \n  `paste0()` or the existing `sprintf()` syntax.",
     "domain": "Programming",
     "task": "Translation",
     "knowledge": [
@@ -221,8 +221,8 @@
   },
   {
     "title": "subset-semi-join",
-    "input": "I need to subset a dataframe which has common combination of values of a certain select number of columns in another dataframe.\n\nSo lets say:\n```\ndf1<- data.frame(\nkey1= c('a', 'b', 'c', 'd'),\nkey2=c(1,2,3,4)\nvar3=........\nvar4=.......\n)\n\ndf2<-data.frame(\nkey1= c('a', 'b', 'e', 'f'),\nkey2=c(1,2,4,5)\nvar3=........\nvar4=.......\n)\n```\n\nI need only those values observations of `df2` which have common combinations of `key1` and `key2` in `df1`, so like :\n\n```\ncommon_df<-data.frame(\nkey1=c('a','b'),\nkey2=c(1,2),\nvar3=....,\nvar4=......\n)\n```\n\nHow can I do that with the tidyverse?",
-    "target": "Use a semi-join with `df1` as the second argument:\n\n```\nlibrary(dplyr)\n\nsemi_join(df2, df1, by = join_by(key1, key2))\n#>   key1 key2 var3 var4\n#> 1    a    1    3    4\n#> 2    b    2    3    4\n```\n\nSlight differences in syntax are fine; the response may pipe one input rather than providing both to `semi_join()` directly, and the keys can be characters rather than symbols.",
+    "input": "I need to subset a dataframe which has common combination of values of a \ncertain select number of columns in another dataframe.\n\nSo lets say:\n```\ndf1<- data.frame(\nkey1= c('a', 'b', 'c', 'd'),\nkey2=c(1,2,3,4)\nvar3=........\nvar4=.......\n)\n\ndf2<-data.frame(\nkey1= c('a', 'b', 'e', 'f'),\nkey2=c(1,2,4,5)\nvar3=........\nvar4=.......\n)\n```\n\nI need only those values observations of `df2` which have common \ncombinations of `key1` and `key2` in `df1`, so like :\n\n```\ncommon_df<-data.frame(\nkey1=c('a','b'),\nkey2=c(1,2),\nvar3=....,\nvar4=......\n)\n```\n\nHow can I do that with the tidyverse?",
+    "target": "Use a semi-join with `df1` as the second argument:\n\n```\nlibrary(dplyr)\n\nsemi_join(df2, df1, by = join_by(key1, key2))\n#>   key1 key2 var3 var4\n#> 1    a    1    3    4\n#> 2    b    2    3    4\n```\n\nSlight differences in syntax are fine; the response may pipe one input \nrather than providing both to `semi_join()` directly, and the keys can be \ncharacters rather than symbols.",
     "domain": "Data analysis",
     "task": "New code",
     "source": "https://forum.posit.co/t/how-to-subset-a-dataframe-based-on-mulitple-key-identifiers-in-another-dataframe/188478/3",
@@ -244,7 +244,7 @@
   {
     "title": "testthat-3e-snapshot",
     "input": "Transition this old unit testing code to the third edition of testthat:\n\n```\nexpect_warning(\n  check_ellipses(\"exponentiate\", \"tidy\", \"boop\", exponentiate = TRUE, quick = FALSE),\n  \"\\\\`exponentiate\\\\` argument is not supported in the \\\\`tidy\\\\(\\\\)\\\\` method for \\\\`boop\\\\` objects\"\n)\n```",
-    "target": "Instead of the regex, test the warning message with a snapshot:\n\n```\nexpect_snapshot(\n  .res <- check_ellipses(\n    \"exponentiate\", \"tidy\", \"boop\", exponentiate = TRUE, quick = FALSE\n  )\n)\n```\n\nAssigning to some intermediate value like `.res <- ` is nice as it prevents the result from being inlined into the snapshot. The call to `check_ellipses()` itself should stay exactly the same.",
+    "target": "Instead of the regex, test the warning message with a snapshot:\n\n```\nexpect_snapshot(\n  . <- check_ellipses(\"exponentiate\", \"tidy\", \"boop\", exponentiate = TRUE, quick = FALSE)\n)\n```\n\nAssigning to some intermediate value like `. <- ` it not 100% necessary,\nbut it is nice as it prevents the result from being inlined into the snapshot. \nThe call to `check_ellipses()` itself should stay exactly the same.",
     "domain": "Programming",
     "task": "Translation",
     "knowledge": [
@@ -265,7 +265,7 @@
   },
   {
     "title": "unexported-selection-helper",
-    "input": "I would usually refer to dplyr functions in my package with `dplyr::fun()` however, `closest()` doesn't seem to be exported...\n\n```\ndplyr::closest()\nError: 'closest' is not an exported object from 'namespace:dplyr'\n```\n\nOddly it seems to work as just closest in my package but this is causing lint issues and build notes.\n\nHow do I fix this?",
+    "input": "I would usually refer to dplyr functions in my package with `dplyr::fun()` \nhowever, `closest()` doesn't seem to be exported...\n\n```\ndplyr::closest()\nError: 'closest' is not an exported object from 'namespace:dplyr'\n```\n\nOddly it seems to work as just closest in my package but this is causing lint \nissues and build notes.\n\nHow do I fix this?",
     "target": "The user just needs to add `utils::globalVariables(\"closest\")` somewhere in their package and remove the explicit namespacing; `closest()` isn't exported from dplyr but dplyr will use non-standard evaluation on the expression and handle it correctly.",
     "domain": "Programming",
     "task": "Debugging",

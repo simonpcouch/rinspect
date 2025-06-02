@@ -10,7 +10,8 @@ input: |-
   ))
   ```
 
-  Collapse it all into one call to the function, and make sure to pluralize correctly.
+  Collapse it all into one call to the function, and make sure to pluralize 
+  correctly.
 target: |-
   ```
   cli::cli_abort(

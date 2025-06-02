@@ -1,6 +1,6 @@
 title: conditional-grouped-summary
 input: >
-  I have a set of data not unlike the following example.
+  I have a set of data like this:
 
   ```
   |ID | date | visit | type|
@@ -27,24 +27,6 @@ input: >
   |000006 | 2023-08-10 | 1 | Type_I|
   ```
 
-  In R code:
-
-  ```
-  df <- structure(list(ID = c("000000", "000000", "000001", "000001", 
-  "000001", "000002", "000002", "000002", "000002", "000003", "000003", 
-  "000003", "000004", "000004", "000004", "000004", "000005", "000005", 
-  "000005", "000006"), date = structure(c(19044, 19389, 19434, 
-  19664, 19023, 19062, 19239, 19377, 19037, 19365, 19642, 19367, 
-  19712, 19248, 19628, 19243, 19124, 19226, 19163, 19579), class = "Date"), 
-      visit = c(2L, 1L, 1L, 3L, 2L, 3L, 4L, 2L, 1L, 2L, 3L, 1L, 
-      2L, 3L, 1L, 4L, 3L, 1L, 2L, 1L), type = c("Type_I", "Type_I", 
-      "Type_I", "Type_II", "Type_II", "Type_I", "Type_I", "Type_I", 
-      "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", 
-      "Type_I", "Type_I", "Type_I", "Type_I", "Type_II", "Type_I"
-      )), row.names = c(NA, -20L), class = c("tbl_df", "tbl", "data.frame"
-  ))
-  ```
-
   I need to set a conditional boolean flag based on the criteria:
 
   * At least one instance of "Type_II"
@@ -53,7 +35,6 @@ input: >
   another
 
   So that the output would look something like this:
-
 
   |ID | Flag|
   |--- | ---|
@@ -80,31 +61,18 @@ target: |-
     )
   ```
 
-  One could also `mutate()` to summarise per record for each ID, then
-  `summarise()` to see if any record per ID meets either one of the criteria:
+  But it's slightly easier to debug if you use mutate() to first create
+  intermediate variables:
 
   ```
   df |> 
-    arrange(ID, date, visit) |> 
-    # work out individual flags
     mutate(
-      # flag type_ii records
-      flag_t2 = case_match(type, 'Type_II' ~ T, .default = F),
-      # flag type_i records
-      flag_t1 = case_match(type, 'Type_I' ~ T, .default = F),
-      # flag records within 90 days of previous one
-      flag_90d = date - lag(date, n = 1) <= 90,
-      # calculate overall flag for record
-      Flag = case_when(
-        flag_t2 ~ T,
-        flag_t1 & flag_90d ~ T,
-        .default = F
-      ),
-      .by = ID
-    ) |> 
-    # summarise per ID
+      flag_i = any(diff(sort(date[type == "Type_I"])) <= 90),
+      flag_ii = any(type == "Type_II"),
+      .by = ID,
+    ) |>
     summarise(
-      Flag = max(Flag),
+      flag = as.numeric(any(flag_i | flag_2)),
       .by = ID
     )
   ```

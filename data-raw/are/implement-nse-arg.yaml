@@ -1,11 +1,11 @@
 title: implement-nse-arg
 input: |
-  Add a `name` argument after `dataset` that defaults to the name of the `dataset` object in the calling env.
+  Add a `name` argument after `dataset` that defaults to the name of the 
+  `dataset` object in the calling env.
 
   ```
   task_create <- function(
       dataset,
-      # TODO: maybe it doesn't need to be associated with a dir at all?
       dir = inspect_log_dir()
   ) {
     check_dataset(dataset)
@@ -38,7 +38,6 @@ target: |-
   task_create <- function(
       dataset,
       name = deparse(substitute(dataset)),
-      # TODO: maybe it doesn't need to be associated with a dir at all?
       dir = inspect_log_dir()
   ) {
     force(name)
@@ -62,9 +61,11 @@ target: |-
   Notably:
 
   * `name` should default to `deparse(substitute(dataset))` or something similar
-  * `name` needs be `force()`d, or somehow evaluated, before `check_dataset(dataset)` so that the substitution works correctly.
+  * `name` needs be `force()`d, or somehow evaluated, before 
+    `check_dataset(dataset)` so that the substitution works correctly.
   * At some point, the `name` attribute is set to the value.
-  * The rest of the function should be unaffected, e.g. no comments added to code that existed already.
+  * The rest of the function should be unaffected, e.g. no comments added to 
+    code that existed already.
 domain: Programming
 task: New code
 knowledge: base R

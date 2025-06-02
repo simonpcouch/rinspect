@@ -5,8 +5,7 @@ input: |-
   ```
   address <- "Prince st., New York 10012"
   api_key <- "my_secret_api_key"
-  url <-
-  glue::glue("https://geocode.maps.co/search?q={address}&api_key={api_key}")
+  url <- glue::glue("https://geocode.maps.co/search?q={address}&api_key={api_key}")
   response <- httr2::request(url) %>%   
     httr2::req_perform()
   ```
@@ -32,15 +31,30 @@ input: |-
 
   How can I fix this?
 target: |-
-  Format the address to result in a valid URL by replacing spaces and, likely,
-  removing punctuation. Something like:
+  You could format `address` to make at a valid URL by replacing spaces, e.g.
 
   ```
   address <- "Prince+st+New+York+10012"
   ```
 
-  It would also be correct to pass the URL with the existing `address` to
-  `URLencode()` or `url_encode()`.
+  Or by using a function to do so:
+
+  ```
+  address <- URLencode("Prince st., New York 10012")
+  ```
+
+  However, the best solution would be to use a function that handles these 
+  issues for you, e.g. `httr2::req_url_query()`. This would look something
+  like:
+
+  ```
+  library(httr2)
+  base_url <- "https://geocode.maps.co/search"
+
+  response <- request(base_url) |>
+    req_url_query(q = address, api_key = api_key) |>
+    req_perform()
+  ```
 domain: Data analysis
 task: Debugging
 source: |-
