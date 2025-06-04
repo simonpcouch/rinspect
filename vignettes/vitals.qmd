@@ -1,17 +1,18 @@
 ---
 title: "Getting started with vitals"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting started with vitals}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
 ---
 
 ```{r}
 #| include: false
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
   eval = rlang::is_installed("ggplot2")
 )
 
