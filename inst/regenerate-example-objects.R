@@ -35,7 +35,6 @@ regenerate_example_task <- function() {
   )
 
   tsk$eval()
-  tsk <- scrub_providers(tsk)
   save(tsk, file = "inst/test/example-task.rda")
 }
 
@@ -48,7 +47,6 @@ regenerate_example_solver <- function() {
   )
   solver$chat("What's 2+2?")
 
-  solver <- scrub_provider(solver)
   save(solver, file = "inst/test/solver.rda")
 }
 

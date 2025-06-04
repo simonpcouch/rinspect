@@ -46,29 +46,3 @@ regenerate_example_objects <- function() {
 accuracy <- function(...) {
   mean(...) * 100
 }
-
-scrub_provider <- function(chat) {
-  old_provider <- chat$get_provider()
-  dummy_provider <- ellmer::Provider(
-    old_provider@name,
-    old_provider@model,
-    "example.org"
-  )
-  chat$.__enclos_env__$private$provider <- dummy_provider
-  chat
-}
-
-scrub_providers <- function(task) {
-  samples <- task$get_samples()
-
-  if ("solver_chat" %in% names(samples)) {
-    samples$solver_chat <- purrr::map(samples$solver_chat, scrub_provider)
-  }
-  if ("scorer_chat" %in% names(samples)) {
-    samples$scorer_chat <- purrr::map(samples$scorer_chat, scrub_provider)
-  }
-
-  task$.__enclos_env__$private$samples <- samples
-
-  task
-}
