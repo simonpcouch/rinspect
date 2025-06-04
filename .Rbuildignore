@@ -19,3 +19,5 @@ inst/sandbox
 inst/log_dump
 ^[\.]?air\.toml$
 ^\.vscode$
+^vignettes/\.quarto$
+^vignettes/*_files$
