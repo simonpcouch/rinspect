@@ -20,7 +20,7 @@ Depends:
 Imports: 
     cli,
     dplyr,
-    ellmer (>= 0.2.0),
+    ellmer (>= 0.2.1),
     glue,
     httpuv,
     jsonlite,
