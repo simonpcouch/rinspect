@@ -97,7 +97,7 @@ LLM evaluation with vitals happens in two main steps:
 
 ```{r}
 #| label: create-task
-#| eval: !expr should_eval
+#| eval: !expr identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 are_task <- Task$new(
   dataset = are,
   solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
@@ -112,7 +112,7 @@ are_task
 
 ```{r}
 #| label: solve-and-score
-#| eval: !expr should_eval
+#| eval: !expr identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 are_task$eval()
 ```
 
@@ -197,7 +197,7 @@ These questions can be explored by evaluating Tasks against different solvers an
 
 ```{r}
 #| label: are-task-openai
-#| eval: !expr should_eval
+#| eval: !expr identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 are_task_openai <- are_task$clone()
 are_task_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
 ```
@@ -267,7 +267,7 @@ If we had evaluated this model across multiple epochs, the question ID could bec
 This vignette demonstrated the simplest possible evaluation based on the `are` dataset. If you're interested in carrying out more advanced evals, check out the other vignettes in this package!
 
 ```{r}
-#| eval: !expr should_eval
+#| eval: !expr identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 #| include: false
 # deploy the resulting logs inside of the page by bundling them into
 # `pkgdown/assets/`
