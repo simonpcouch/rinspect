@@ -25,12 +25,6 @@ vitals is a framework for large language model evaluation in R. It's specificall
 
 The package is an R port of the widely adopted Python framework [Inspect](https://inspect.ai-safety-institute.org.uk/). While the package doesn't integrate with Inspect directly, it allows users to interface with the [Inspect log viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and provides an on-ramp to transition to Inspect if need be by writing evaluation logs to the same file format.
 
-> **Important**
-> 
-> 🚧 Under construction! 🚧
->
-> vitals is highly experimental and much of its documentation is aspirational.
-
 ## Installation
 
 You can install the developmental version of vitals using:

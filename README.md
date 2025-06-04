@@ -24,13 +24,6 @@ viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and
 provides an on-ramp to transition to Inspect if need be by writing
 evaluation logs to the same file format.
 
-> **Important**
->
-> 🚧 Under construction! 🚧
->
-> vitals is highly experimental and much of its documentation is
-> aspirational.
-
 ## Installation
 
 You can install the developmental version of vitals using:
