@@ -15,4 +15,10 @@ are <- raw |>
   dplyr::arrange(title) |>
   dplyr::rename(id = title)
 
+are |> dplyr::count(domain)
+are |> dplyr::count(task)
+are |>
+  tidyr::unnest_longer(knowledge) |>
+  dplyr::count(knowledge)
+
 usethis::use_data(are, overwrite = TRUE)

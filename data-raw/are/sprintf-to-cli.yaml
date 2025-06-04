@@ -15,7 +15,8 @@ target: |-
   Notably:
 
   * There should be a call to `cli_abort()`
-  * The package and function should be substituted inline rather than with `paste0()` or the existing `sprintf()` syntax.
+  * The package and function should be substituted inline rather than with 
+    `paste0()` or the existing `sprintf()` syntax.
 domain: Programming
 task: Translation
 knowledge: r-lib

@@ -13,13 +13,13 @@ target: |-
 
   ```
   expect_snapshot(
-    .res <- check_ellipses(
-      "exponentiate", "tidy", "boop", exponentiate = TRUE, quick = FALSE
-    )
+    . <- check_ellipses("exponentiate", "tidy", "boop", exponentiate = TRUE, quick = FALSE)
   )
   ```
 
-  Assigning to some intermediate value like `.res <- ` is nice as it prevents the result from being inlined into the snapshot. The call to `check_ellipses()` itself should stay exactly the same.
+  Assigning to some intermediate value like `. <- ` it not 100% necessary,
+  but it is nice as it prevents the result from being inlined into the snapshot. 
+  The call to `check_ellipses()` itself should stay exactly the same.
 domain: Programming
 task: Translation
 knowledge: r-lib

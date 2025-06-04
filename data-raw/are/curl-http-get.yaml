@@ -1,6 +1,7 @@
 title: curl-http-get
 input: |-
-  I have the following CURL command, but when I try to make the request, it gives me an error. And I don't know how to solve it.
+  I have the following CURL command, but when I try to make the equivalent httr2
+  request, it gives me an error.
 
   Curl:
 
@@ -17,26 +18,30 @@ input: |-
   }'
   ```
 
-  Sintaxis:
+  In R:
 
   ```
-  one2<- httr2::request("xxxxxx") %>%
-                  req_headers(`accept` = "application/json",
-                              `ApiKey`="xxxxx",
-                              `Content-Type`= "application/json",
-                             )%>%
-                  req_body_json(
-                      list(id = 4, fechaInicial="2023-07-01", fechaFinal="2023-09-01" ) )
-
+  one2 <- httr2::request("xxxxxx") %>%
+    req_headers(
+      `accept` = "application/json",
+      `ApiKey` = "xxxxx",
+      `Content-Type` = "application/json",
+    ) %>%
+    req_body_json(
+      list(id = 4, fechaInicial = "2023-07-01", fechaFinal = "2023-09-01")
+    )
   cone2 %>% req_perform()
   ```
 
   This is the error:
-
   ! HTTP 405 Method Not Allowed
 
   How do I fix it?
-target: There's a missing `req_method("GET")`.
+target: |-
+  There's a missing `req_method("GET")`.
+
+  Ideally, will also provide an explanation of the problem: httr2 will 
+  automatically switch from GET to POST whenever you supply a body.
 domain: Programming
 task: Debugging
 knowledge: r-lib
