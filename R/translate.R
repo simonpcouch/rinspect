@@ -85,11 +85,22 @@ translate_to_results <- function(
   )
 }
 
-translate_to_plan_steps <- function(name, arguments) {
-  list(list(
+translate_to_plan_steps <- function(name, arguments, system_prompt = NULL) {
+  steps <- list()
+  
+  if (!is.null(system_prompt)) {
+    steps <- append(steps, list(list(
+      solver = "system_message",
+      params = list(template = system_prompt)
+    )))
+  }
+  
+  steps <- append(steps, list(list(
     solver = name,
     params = arguments
-  ))
+  )))
+  
+  steps
 }
 
 translate_to_stats <- function(

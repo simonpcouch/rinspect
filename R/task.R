@@ -353,7 +353,8 @@ Task <- R6::R6Class(
         plan = translate_to_plan(
           steps = translate_to_plan_steps(
             name = private$solver_description(),
-            arguments = private$solutions$arguments
+            arguments = private$solutions$arguments,
+            system_prompt = private$samples$solver_chat[[1]]$get_system_prompt()
           )
         ),
         results = translate_to_results(

@@ -34,7 +34,10 @@ check_log_dir <- function(x, call = caller_env()) {
 # miscellaneous ---------
 solver_chat <- function(sample) {
   solver <- sample$solver_chat[[1]]
-  solver$clone()$set_turns(list())
+  res <- solver$clone()
+  res$set_turns(list())
+  res$set_system_prompt(NULL)
+  res
 }
 
 interactive <- NULL
