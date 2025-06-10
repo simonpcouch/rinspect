@@ -187,7 +187,7 @@ Task <- R6::R6Class(
       self$log(self$dir)
       private$stash_last_task()
 
-      cli::cli_process_done()
+      cli::cli_progress_done()
       if (view) {
         self$view()
       }
