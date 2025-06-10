@@ -50,7 +50,7 @@ are_task <-
   dataset = are,
   solver = generate(),
   scorer = model_graded_qa(
-    scorer_chat = chat_anthropic(model = "claude-3-7-sonnet-latest"), 
+    scorer_chat = chat_anthropic(LLM = "claude-3-7-sonnet-latest"), 
     partial_credit = TRUE
   ),
   name = "An R Eval",
@@ -58,13 +58,13 @@ are_task <-
 )
 
 are_claude <- are_task$clone()
-are_claude$eval(solver_chat = chat_anthropic(model = "claude-sonnet-4-20250514"))
+are_claude$eval(solver_chat = chat_anthropic(LLM = "claude-sonnet-4-20250514"))
 
 are_gpt <- are_task$clone()
-are_gpt$eval(solver_chat = chat_openai(model = "gpt-4.1"))
+are_gpt$eval(solver_chat = chat_openai(LLM = "gpt-4.1"))
 
 are_gemini <- are_task$clone()
-are_gemini$eval(solver_chat = chat_google_gemini(model = "gemini-2.5-pro-preview-05-06"))
+are_gemini$eval(solver_chat = chat_google_gemini(LLM = "gemini-2.5-pro-preview-05-06"))
 ```
 
 ```{r}
@@ -79,8 +79,8 @@ if (should_eval) {
 
 These evaluations look a lot like those from the "Getting started with vitals" vignette from `vignette("vitals", package = "vitals")`, except:
 
-* We evaluate three models, rather than two.
-* We pass `epochs = 3` to `Task$new()` so that each sample in `are` is run through the eval three times.
+* We evaluate three LLMs, rather than two.
+* We set `glue::backtick(paste0("epochs = ", length(unique(are_eval$epoch))))` in `Task$new()` so that each sample in `are` is run through the eval multiple times.
 
 Passing the evaluated tasks to `vitals_bind()` will concatenate the results into a tabular data frame:
 
@@ -92,7 +92,7 @@ are_eval <-
     `GPT 4.1` = are_gpt,
     `Gemini 2.5 Pro` = are_gemini
   ) %>%
-  rename(model = task)
+  rename(LLM = task)
 
 are_eval
 ```
@@ -100,20 +100,20 @@ are_eval
 ```{r}
 #| label: leaders
 #| include: false
-# reorder `model` so that the worst-performing is first
+# reorder `LLM` so that the worst-performing is first
 leaders <-
   are_eval %>%
-  summarize(correct = mean(score == "C"), .by = c(model)) %>%
+  summarize(correct = mean(score == "C"), .by = c(LLM)) %>%
   arrange(correct)
 
 are_eval <- are_eval %>%
-  mutate(model = factor(model, leaders$model))
+  mutate(LLM = factor(LLM, leaders$LLM))
 ```
 
 vitals tries to make it as easy as possible to transform evaluation results into analysis-ready data; `are_eval` is a regular-degular data frame. How does one analyze this sort of data, though? This article will provide some recommendations for analyzing evaluation results using modeling.
 
 * **[ANOVA-Type Models](#anova-type-models)**: Frequentist models using ordinal regression
-  * **[Independent Data](#independent-data)**: Analyze single-epoch results across one covariate (like model or system prompt)
+  * **[Independent Data](#independent-data)**: Analyze single-epoch results across one covariate (like LLM or system prompt)
   * **[Multiple Hierarchies](#multiple-hierarchies)**: Account for repeated measures across epochs using mixed effects models
 * **[Bayesian Hierarchical Models](#bayesian-hierarchical-models)**: More computionally intensive but flexible modeling and natural probability statements
 
@@ -129,6 +129,7 @@ library(cli)
 library(gt)
 library(brms)
 library(RcppEigen)
+library(broom)
 ```
 
 ```{r}
@@ -151,28 +152,29 @@ are_eval |>
         score == "P" ~ "Partially correct",
         score == "C" ~ "Correct"
       ),
+      # align ordering with original factor
       levels = c("Incorrect", "Partially correct", "Correct"),
       ordered = TRUE
     )
   ) |>
-  ggplot(aes(y = model, fill = score)) +
+  ggplot(aes(y = LLM, fill = score)) +
   geom_bar(alpha = 2 / 3) +
   scale_fill_brewer(palette = "Set1")
 ```
 
 In this data:
 
-* We're comparing results from 3 different **tasks**. The separate tasks, in this case, represent three different models, Anthropic's Claude 4 Sonnet, and OpenAI's GPT 4.1, and Google's Gemini 2.5 Pro. We'll refer to the identifier for the task as `p` (shown in `are_eval` as column `model`).
-* Underlying the tasks are a dataset of $n =$ `r nrow(are_eval) / length(unique(are_eval$model))` **samples**. Each sample contains a question to be asked to a model. 
-* Once the model answers a given sample, the answer is assigned one of three qualitative, ordinal **scores**: Incorrect (`I`), Partially correct (`P`), or correct (`C`). We'll denote $Y$ as a discrete random variable representing the scores that take on values $1, 2, \ldots c$ (with $c=3$ here).
+* We're comparing results from 3 different **tasks**. The separate tasks, in this case, represent three different LLMs, Anthropic's Claude 4 Sonnet, and OpenAI's GPT 4.1, and Google's Gemini 2.5 Pro. We'll refer to the identifier for the task as `p` (shown in `are_eval` as column `LLM`).
+* Underlying the tasks are a dataset of $n =$ `r nrow(are_eval) / length(unique(are_eval$LLM))` **samples**. Each sample contains a question to be asked to an LLM. 
+* Once the LLM answers a given sample, the answer is assigned one of three qualitative, ordinal **scores**: Incorrect (`I`), Partially correct (`P`), or correct (`C`). We'll denote $Y$ as a discrete random variable representing the scores that take on values $1, 2, \ldots c$ (with $c=3$ here).
 
 A completely balanced data set would contain $p \times n$ rows (and does in our case).
 
-With this data structure, the `model` is the systematic effect in the data on which we would like to make inferences about (i.e., is accuracy better for one model, etc.). The samples are the *independent experimental units*; statistically, we believe that the results for sample 1 are independent of sample 2 and so on.
+With this data structure, the `LLM` is the systematic effect in the data on which we would like to make inferences about (i.e., is accuracy better for one LLM, etc.). The samples are the *independent experimental units*; statistically, we believe that the results for sample 1 are independent of sample 2 and so on.
 
 There are two potential levels of hierarchy we need to consider when analyzing evaluation data:
 
-* LLMs are not deterministic; given the same prompt, models will not always return the same answer. To measure variation, we run the same sample multiple times, generating a set of $m$ **epochs**. We thus must account for *repeated measures*, where the epochs have no systematic ordering effect. However, we expect a within-sample correlation to occur. This means that we would expect the $m$ data points within a specific sample to be more likely to correlate with one another than with a data point from a different sample.
+* LLMs are not deterministic; given the same prompt, LLMs will not always return the same answer. To measure variation, we run the same sample multiple times, generating a set of $m$ **epochs**. We thus must account for *repeated measures*, where the epochs have no systematic ordering effect. However, we expect a within-sample correlation to occur. This means that we would expect the $m$ data points within a specific sample to be more likely to correlate with one another than with a data point from a different sample.
 * Second, the **rating method** could be variable. Multiple raters might score the LLM output for multiple samples (or sample/epoch combination) to offset the chances of a systematic rater bias. This also could result in a similar within-rater correlation. In our case, we have a single rater, so don't need to account for this in this specific analysis.
 
 The primary data layer in each case is the independent experimental unit: the samples. Each layer below this incurs an additional variance component.
@@ -181,13 +183,11 @@ To make valid inferences, it is crucial to appropriately account for these multi
 
 ## ANOVA-Type Models
 
-The analysis of variance (ANOVA) is a bedrock tool for comparing different groups in a data set. Our outcome scores are categories, so a type of model called a *generalized linear model* can be used to analyze the results. Without ordered categories, we'll focus on an ordinal logistic regression model. There are many different variants of this model but one of the most common is the cumulative probability model. For $k=1\ldots c$ possible values of the scores, there are $c-1$ probabilities $Pr[Y_{i} \ge k]$ for $i=1\ldots n$ samples. For example, $Pr[Y_{i} \ge 2]$ would model the probability of being not completely correct.
-
-<!--# TODO: I _think_ that last probability is actually the probably of being not completely incorrect, i.e. the probability of 2 (Patially Correct) or 3 (Correct) -->
+The analysis of variance (ANOVA) is a bedrock tool for comparing different groups in a data set. Our outcome scores are categories, so a type of model called a *generalized linear model* can be used to analyze the results. Without ordered categories, we'll focus on an ordinal logistic regression model. There are many different variants of this model but one of the most common is the cumulative probability model. For $k=1\ldots c$ possible values of the scores, there are $c-1$ probabilities $Pr[Y_{i} \ge k]$ for $i=1\ldots n$ samples. For example, $Pr[Y_{i} \ge 2]$ would model the probability of being not completely incorrect.
 
 ### Independent Data
 
-Let's first consider the case where each of the rows in `are_eval` are statistically independent, conditional on `model`. Said another way, we can keep only the rows for the first epoch:
+Let's first consider the case where each of the rows in `are_eval` are statistically independent, conditional on `LLM`. Said another way, we can keep only the rows for the first epoch:
 
 ```{r}
 #| label: single-epoch-data
@@ -201,7 +201,7 @@ In this setting, we could visualize scores sample-by-sample for one epoch like s
 ```{r}
 #| label: single_sample
 are_eval_single %>%
-  ggplot(aes(x = model, y = id)) +
+  ggplot(aes(x = LLM, y = id)) +
   geom_raster(aes(fill = score), alpha = 2 / 3) +
   scale_fill_brewer(palette = "Set1") +
   labs(x = NULL, y = NULL) +
@@ -218,11 +218,9 @@ for $i=1\ldots n$ samples evaluated with $j=2\ldots p$ LLMs which produce outcom
 
 This is a *parallel* model because it assumes that the pattern of LLM effectiveness is constant across the different outcome categories; in other words, if Model A is twice as likely as Model B to get a "Correct" vs "Partially correct" answer, then Model A is also twice as likely to get "Partially correct or Correct" vs "Incorrect". It can also referred to as a proportional odds model.
 
-<!--# TODO: is this new "parallel" interpretation correct? -->
-
 The parameters can be estimated using standard maximum likelihood estimation, assuming a multinomial distribution. This enables us to easily calculate the covariance matrix of the parameters and inferential procedures. Because of the properties of maximum likelihood, we can also make inferences on functions of the parameters that are monotonic in nature (e.g., $log(\beta)$, etc).
 
-We've ordered the models above so that the worst-performing model has an index of $j=1$. This parameterization allows for a direct path to inference since the $exp(\beta_j)$ parameters increase the odds that LLM $j$ performs *better* than the worst model. We can easily estimate null hypotheses that test the two models' differences and/or create confidence intervals for the odds.
+We've ordered the LLMs above so that the worst-performing LLM has an index of $j=1$.^[This ordering ensures all $\beta_j$ coefficients have the same sign, simplifying interpretation. Different orderings produce equivalent results but may require inverting odds ratios.] This parameterization allows for a direct path to inference since the $exp(\beta_j)$ parameters increase the odds that LLM $j$ performs *better* than the worst LLM. We can easily estimate null hypotheses that test the two LLMs' differences and/or create confidence intervals for the odds.
 
 <!--# How could we know which is "worst" without accessing data first? Is it okay to do so? -->
 
@@ -230,7 +228,7 @@ The model structure is more simple in the one-epoch case:
 
 ```{r}
 #| label: single-model
-single_mod <- clm(score ~ model, data = are_eval_single)
+single_mod <- clm(score ~ LLM, data = are_eval_single)
 ```
 
 ```{r}
@@ -238,15 +236,15 @@ single_mod <- clm(score ~ model, data = are_eval_single)
 #| echo: false
 single_coef <- tidy(single_mod, conf.int = TRUE, conf.level = 0.9) %>%
 	mutate(
-		model = gsub("model", "", term),
+		LLM = gsub("LLM", "", term),
 		parameter = ifelse(coef.type == "intercept", "theta", "beta")
 	)
 
 single_pred <- 
-  predict(single_mod, newdata = leaders %>% select(model))$fit %>% 
+  predict(single_mod, newdata = leaders %>% select(LLM))$fit %>% 
   as_tibble() %>% 
-  bind_cols(leaders %>% select(model)) %>% 
-  relocate(model)
+  bind_cols(leaders %>% select(LLM)) %>% 
+  relocate(LLM)
 
 single_anova <- anova(single_mod, type = "I")
 ```
@@ -258,7 +256,7 @@ The estimates are as follows:
 #| eval: false
 tidy(single_mod, conf.int = TRUE, conf.level = 0.9) %>%
   mutate(
-    model = gsub("model", "", term),
+    LLM = gsub("LLM", "", term),
     parameter = ifelse(coef.type == "intercept", "theta", "beta")
   ) 
 ```
@@ -268,15 +266,15 @@ tidy(single_mod, conf.int = TRUE, conf.level = 0.9) %>%
 #| echo: false
 tidy(single_mod, conf.int = TRUE, conf.level = 0.9) %>%
   mutate(
-    model = gsub("model", "", term),
+    LLM = gsub("LLM", "", term),
     parameter = ifelse(coef.type == "intercept", "theta", "beta")
   ) %>%
-  select(model, parameter, estimate, std.error) %>%
+  select(LLM, parameter, estimate, std.error) %>%
   gt() %>% 
   fmt_number(columns = c(estimate, std.error), n_sigfig = 3)
 ```
 
-The first point of inference is to determine if there is a difference between *any* of the models. This is determined by fitting a submodel with no $\beta$ parameters. The difference in likelihood values between the models can be compared to an appropriate $\chi^2$ distribution to produce a p-value for the null hypothesis that all of the $\beta_j$ values are equal. For our analysis that excludes all but one epoch, the p-value is `r signif(single_anova[1, "Pr(>Chisq)"], digits = 3)`, indicating that there is not evidence that the models have different accuracies for these data.
+The first point of inference is to determine if there is a difference between *any* of the LLMs. This is determined by fitting a submodel with no $\beta$ parameters. The difference in likelihood values between the models can be compared to an appropriate $\chi^2$ distribution to produce a p-value for the null hypothesis that all of the $\beta_j$ values are equal. For our analysis that excludes all but one epoch, the p-value is `r signif(single_anova[1, "Pr(>Chisq)"], digits = 3)`, indicating that there is not evidence that the models have different accuracies for these data.
 
 Despite this, let's look at how the coefficients can be interpreted. The table below shows the exponentiated coefficients and 90% confidence intervals. Maximum likelihood estimation enables the use of monotonic transformations of estimates.
 
@@ -284,8 +282,8 @@ Despite this, let's look at how the coefficients can be interpreted. The table b
 #| label: single-coef-summary
 #| eval: false
 single_coef %>% 
-  filter(!grepl("\\|", model)) %>% 
-  select(model, estimate, lower = conf.low, upper = conf.high) %>% 
+  filter(!grepl("\\|", LLM)) %>% 
+  select(LLM, estimate, lower = conf.low, upper = conf.high) %>% 
   mutate(
     estimate = exp(estimate),
     lower = exp(lower),
@@ -297,8 +295,8 @@ single_coef %>%
 #| label: single-coef-print
 #| echo: false
 single_coef %>% 
-  filter(!grepl("\\|", model)) %>% 
-  select(model, estimate, lower = conf.low, upper = conf.high) %>% 
+  filter(!grepl("\\|", LLM)) %>% 
+  select(LLM, estimate, lower = conf.low, upper = conf.high) %>% 
   mutate(
     estimate = exp(estimate),
     lower = exp(lower),
@@ -308,18 +306,18 @@ single_coef %>%
   fmt_number(columns = c(estimate, lower, upper), n_sigfig = 3)
 ```
 
-These are the odds ratios for the different models. Recall that, for the model fit, the LLMs were indexed with `r leaders$model[1]` in the first position. The estimates above are the increase in the odds of being more correct than `r leaders$model[1]`. The fact that all of the intervals include 1.0 indicates that there is not enough evidence to believe that there are differences in any of these LLMs.
+These are the odds ratios for the different LLMs. Recall that, for the model fit, the LLMs were indexed with `r leaders$LLM[1]` in the first position. The estimates above are the increase in the odds of being more correct than `r leaders$LLM[1]`. The fact that all of the intervals include 1.0 indicates that there is not enough evidence to believe that there are differences in any of these LLMs.
 
 ### Multiple Hierarchies
 
-How does the analysis change when we incorporate the samples from every epoch? To illustrate the structure we'd like to model, we can visualize the variation in scores for each sample and model similarly to before:
+How does the analysis change when we incorporate the samples from every epoch? To illustrate the structure we'd like to model, we can visualize the variation in scores for each sample and LLM similarly to before:
 
 ```{r}
 #| label: multiple-sample
 are_eval %>%
   ggplot(aes(x = epoch, y = id)) +
   geom_raster(aes(fill = score), alpha = 2 / 3) +
-  facet_wrap(~ model, ncol = 3) +
+  facet_wrap(~ LLM, ncol = 3) +
   scale_fill_brewer(palette = "Set1") +
   labs(x = "Epoch", y = NULL) +
   theme(
@@ -328,7 +326,7 @@ are_eval %>%
   )
 ```
 
-We can extend the cumulative logistic model to account for additional data hierarchies by incorporating random effects due to specific random variables. In the case of `are_eval`, we've evaluated the model with `epochs = 3`, so that there are three replicates of each sample. We are not interested in making inferential statements about the specific replicates; they are nuisance variables that we must account for in the analyses but are adjacent to our goals. A common approach is to add a random effect to the model that, on average, has zero effect on the model's prediction function. Instead, it helps model the variability of the data.
+We can extend the cumulative logistic model to account for additional data hierarchies by incorporating random effects due to specific random variables. In the case of `are_eval`, we've evaluated the model with `r glue::backtick(paste0("epochs = ", length(unique(are_eval$epoch))))`, so that there are three replicates of each sample. We are not interested in making inferential statements about the specific replicates; they are nuisance variables that we must account for in the analyses but are adjacent to our goals. A common approach is to add a random effect to the model that, on average, has zero effect on the model's prediction function. Instead, it helps model the variability of the data.
 
 Let's adjust our model equation and add a random intercept term due to replicates:
 
@@ -340,15 +338,15 @@ where $\alpha_{\ell}$ reflects a random variation in the intercept for each cate
 
 A more complex estimation method is needed to solve the maximum likelihood equations. However, the model shown above is not overly complex and, with more than two epochs, should not be difficult to train. We can still conduct the same inferential methods as previously shown, and, as a bonus, we can use our estimates of the $\alpha_{\ell}$ to help us understand which samples are most difficult for the LLMs to correctly solve.
 
-To model this structure, we first fit two models. The first is as before, additionally incorporating the random effect `(1|id)`. Note that the random effect is for the question ID rather than the epoch. The second, null model does not account for the `model`.
+To model this structure, we first fit two models. The first is as before, additionally incorporating the random effect `(1|id)`. Note that the random effect is for the question ID rather than the epoch. The second, null model does not account for the `LLM`.
 
 ```{r}
 #| label: two-models
-multiple_mod <- clmm(score ~ model + (1|id), data = are_eval, Hess = TRUE)
+multiple_mod <- clmm(score ~ LLM + (1|id), data = are_eval, Hess = TRUE)
 multiple_null <- clmm(score ~ 1 + (1|id), data = are_eval, Hess = TRUE)
 ```
 
-Comparing these two model fits, then, shows us the effect of incorporating the `model` variable on the fit:
+Comparing these two model fits, then, shows us the effect of incorporating the `LLM` variable on the fit:
 
 ```{r}
 #| label: multiple-model-process
@@ -358,7 +356,7 @@ multiple_coef <-
   multiple_mod %>% 
   tidy(conf.int = TRUE, conf.level = 0.9) %>% 
   mutate(
-    model = gsub("model", "", term),
+    LLM = gsub("LLM", "", term),
     parameter = ifelse(coef.type == "intercept", "theta", "beta")
   ) 
 ```
@@ -367,21 +365,21 @@ multiple_coef <-
 #| label: multiple-anova-print
 #| echo: false
 multiple_coef %>% 
-  select(model, parameter, estimate, std.error) %>% 
+  select(LLM, parameter, estimate, std.error) %>% 
   gt() %>% 
   fmt_number(columns = c(estimate, std.error), n_sigfig = 3)
 ```
 
-In this case, the increased number of data points results in a much smaller p-value for the overall test for any difference by model (`r format(multiple_lrt[2, "Pr(>Chisq)"], digits = 3, scientific = FALSE)`). Notice that the parameter estimates are larger in magnitude, and the standard errors are fairly small relative to the point estimates.
+In this case, the increased number of data points results in a much smaller p-value for the overall test for any difference by LLM (`r format(multiple_lrt[2, "Pr(>Chisq)"], digits = 3, scientific = FALSE)`). Notice that the parameter estimates are larger in magnitude, and the standard errors are fairly small relative to the point estimates.
 
-For this analysis, the odds ratios indicate that the other two models improved accuracy relative to `r leaders$model[1]`, but the overlap of the 90% confidence intervals with 1 suggests that there are no statistically significant differences from the other models.
+For this analysis, the odds ratios indicate that the other two models improved accuracy relative to `r leaders$LLM[1]`, but the overlap of the 90% confidence intervals with 1 suggests that there are no statistically significant differences from the other LLMs.
 
 ```{r}
 #| label: multiple-coef-print
 #| echo: false
 multiple_coef %>% 
-  filter(!grepl("\\|", model)) %>% 
-  select(model, estimate, lower = conf.low, upper = conf.high) %>% 
+  filter(!grepl("\\|", LLM)) %>% 
+  select(LLM, estimate, lower = conf.low, upper = conf.high) %>% 
   mutate(
     estimate = exp(estimate),
     lower = exp(lower),
@@ -391,7 +389,7 @@ multiple_coef %>%
   fmt_number(columns = c(estimate, lower, upper), n_sigfig = 3)
 ```
 
-Running this evaluation across multiple epochs also allows us to ask more interesting questions about the evaluation itself (rather than models' performance on it alone), too. **Are some questions harder than others?**
+Running this evaluation across multiple epochs also allows us to ask more interesting questions about the evaluation itself (rather than LLMs' performance on it alone), too. **Are some questions harder than others?**
 
 Since we included `(1|id)` in our model structure, the model estimates random effects $\widehat{\alpha}_{\ell}$ for each question.
 
@@ -453,7 +451,7 @@ The fitting algorithm uses Markov chain Monte Carlo (MCMC) to selectively sample
 #| eval: !expr identical(Sys.getenv("VITALS_SHOULD_EVAL"), "true")
 multiple_bayes <-
   brm(
-    score ~ model + (1|id),
+    score ~ LLM + (1|id),
     data = are_eval,
     family = cumulative(link = "logit", threshold = "flexible"),
     prior = c(set_prior(prior = "student_t(1, 0, 1)", class = "Intercept")),
@@ -483,19 +481,19 @@ all_post <- as_draws_df(multiple_bayes)
 
 bayes_regression_param <- 
   all_post %>%
-  select(contains("b_model")) %>% 
+  select(contains("b_LLM")) %>% 
   pivot_longer(
     cols = c(everything()),
     names_to = "param_name",
     values_to = "value"
   ) %>% 
   mutate(
-    model = 
+    LLM = 
       case_when(
-        param_name == "b_modelGemini2.5Pro" ~ "Gemini 2.5 Pro",
-        param_name == "b_modelClaude4Sonnet" ~ "Claude 4 Sonnet"
+        param_name == "b_LLMGemini2.5Pro" ~ "Gemini 2.5 Pro",
+        param_name == "b_LLMClaude4Sonnet" ~ "Claude 4 Sonnet"
       ),
-    model = factor(model)
+    LLM = factor(LLM)
   ) 
 
 bayes_reg_summary <- 
@@ -507,7 +505,7 @@ bayes_reg_summary <-
     mean_odds = mean(exp(value)),
     lower_odds = quantile(exp(value), 0.05),
     upper_odds = quantile(exp(value), 0.95),
-    .by = c(model)
+    .by = c(LLM)
   )
 ```
 
@@ -516,19 +514,19 @@ The model results in fitted distributions for each parameter (rather than a sing
 ```{r}
 #| label: posterior
 #| warning: false
-post_claude <- bayes_regression_param$value[bayes_regression_param$model == "Claude 4 Sonnet"]
+post_claude <- bayes_regression_param$value[bayes_regression_param$LLM == "Claude 4 Sonnet"]
 o2_le_zero <- mean(abs(post_claude) < 0.05) * 100
 
 bayes_regression_param %>% 
   ggplot(aes(x = value)) + 
   geom_vline(xintercept = 0, lty = 2, col = "red") +
-  geom_density(aes(col = model), linewidth = 1, alpha = 1 / 2) +
+  geom_density(aes(col = LLM), linewidth = 1, alpha = 1 / 2) +
   labs(x = expression(hat(beta))) +
   theme(legend.position = "top") + 
   scale_color_brewer(palette = "Set2")
 ```
 
-Since these parameters measure model effectiveness (relative to the baseline model of `r leaders$model[1]`), we can tell what our model thinks that likely values are. It suggests that the GPT 4.1 performs on par with Gemini 2.5 Pro and slightly worse than Claude 4 Sonnet.
+Since these parameters measure LLM effectiveness (relative to the baseline LLM of `r leaders$LLM[1]`), we can tell what our model thinks that likely values are. It suggests that the GPT 4.1 performs on par with Gemini 2.5 Pro and slightly worse than Claude 4 Sonnet.
 
 Bayesian analysis does not take the same worldview as null hypothesis-driven inference, so there is no p-value to report. We can see from the figure that a small area in these posterior distributions is near zero. For example, only `r signif(o2_le_zero, digits = 3)`% of the Claude 4 Sonnet posterior is within $\pm 0.05$.
 
@@ -557,12 +555,12 @@ bayes_reg_summary %>%
     starts_with("lower") ~ "5% Percentile",
     starts_with("upper") ~ "95% Percentile"
     ) %>% 
-  fmt_number(columns = c(-model), n_sigfig = 3)
+  fmt_number(columns = c(-LLM), n_sigfig = 3)
 ```
 
 The percentile columns are credible intervals which allow us to make statements such as:
 
-> We believe that the true odds ratio comparing `r leaders$model[1]` to Claude 4 Sonnet has a 90% probability of falling between `r signif(bayes_reg_summary$lower_odds[2], 3)` and `r signif(bayes_reg_summary$upper_odds[2], 3)`.
+> We believe that the true odds ratio comparing `r leaders$LLM[1]` to Claude 4 Sonnet has a 90% probability of falling between `r signif(bayes_reg_summary$lower_odds[2], 3)` and `r signif(bayes_reg_summary$upper_odds[2], 3)`.
 
 This is a much more straightforward definition than confidence intervals.
 
