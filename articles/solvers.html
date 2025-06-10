@@ -38,7 +38,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/solvers.html">Custom solvers and tool calling</a></li>
-    <li><a class="dropdown-item" href="../articles/writing-your-own.html">Writing your own evals for your LLM product</a></li>
+    <li><a class="dropdown-item" href="../articles/writing-evals.html">Writing evals for your LLM product</a></li>
   </ul>
 </li>
       </ul>
@@ -155,8 +155,8 @@ function.</p>
 <span><span class="co">#&gt;     list(result = purrr::map_chr(res, function(c) c$last_turn()@text), </span></span>
 <span><span class="co">#&gt;         solver_chat = res)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5609d7a8c5d8&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x5609d7a8b500&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;bytecode: 0x5606e70f3ab0&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x5606e70f8988&gt;</span></span></code></pre></div>
 <p>While, in documentation, I’ve mostly written “<code><a href="../reference/generate.html">generate()</a></code>
 just calls <code>$chat()</code>,” there are a couple extra tricks up
 <code><a href="../reference/generate.html">generate()</a></code>’s sleeves:</p>
