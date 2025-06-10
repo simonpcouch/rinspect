@@ -342,7 +342,7 @@ Task <- R6::R6Class(
           task_id = private$task_id,
           dataset = list(
             samples = length(unique(samples$id)),
-            sample_ids = as.list(seq_len(length(unique(samples$id)))),
+            sample_ids = as.list(samples$id),
             shuffled = FALSE
           ),
           model = private$solver_description(),
@@ -796,7 +796,9 @@ check_dataset <- function(dataset, call = caller_env()) {
 
 # Must be a named list of functions.
 check_metrics <- function(metrics, call = caller_env()) {
-  if (is.null(metrics)) return()
+  if (is.null(metrics)) {
+    return()
+  }
 
   if (
     !is.list(metrics) ||
