@@ -342,7 +342,7 @@ Task <- R6::R6Class(
           task_id = private$task_id,
           dataset = list(
             samples = length(unique(samples$id)),
-            sample_ids = as.list(samples$id),
+            sample_ids = as.list(seq_len(length(unique(samples$id)))),
             shuffled = FALSE
           ),
           model = private$solver_description(),
