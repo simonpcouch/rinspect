@@ -1,7 +1,7 @@
 ---
-title: "Writing your own evals for your LLM product"
+title: "Writing evals for your LLM product"
 vignette: >
-  %\VignetteIndexEntry{Writing your own evals for your LLM product}
+  %\VignetteIndexEntry{Writing evals for your LLM product}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 knitr:
