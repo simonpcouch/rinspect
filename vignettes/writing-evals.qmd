@@ -13,6 +13,7 @@ bibliography: references.bib
 
 ```{r}
 #| label: setup
+#| eval: false
 library(vitals)
 ```
 
