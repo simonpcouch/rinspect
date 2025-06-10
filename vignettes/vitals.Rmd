@@ -2,7 +2,7 @@
 title: "Getting started with vitals"
 vignette: >
   %\VignetteIndexEntry{Getting started with vitals}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 knitr:
   opts_chunk:
