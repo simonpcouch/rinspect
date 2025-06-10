@@ -112,10 +112,19 @@ are_eval <- are_eval %>%
 
 vitals tries to make it as easy as possible to transform evaluation results into analysis-ready data; `are_eval` is a regular-degular data frame. How does one analyze this sort of data, though? This article will provide some recommendations for analyzing evaluation results using modeling.
 
-* **[ANOVA-Type Models](#anova-type-models)**: Frequentist models using ordinal regression
-  * **[Independent Data](#independent-data)**: Analyze single-epoch results across one covariate (like LLM or system prompt)
-  * **[Multiple Hierarchies](#multiple-hierarchies)**: Account for repeated measures across epochs using mixed effects models
-* **[Bayesian Hierarchical Models](#bayesian-hierarchical-models)**: More computionally intensive but flexible modeling and natural probability statements
+Our experimental design lends itself to an analysis of variance (ANOVA) where we want to compare two or more mutually exclusive groups (like those formed by splitting the data up by LLM or system prompt) to see if there is a difference. We often call these grouping variables covariates. 
+
+Our data might add some complications; basic ANOVA models assume that each sample (i.e. row of a dataset) is independent of the others. The sample is the _independent experimental unit_, and determines whether our data is in one of two classes: 
+
+* **[Independent Data](#independent-data)**: Each sample is evaluated once per covariate combination (i.e., a single epoch). 
+* **[Multiple Hierarchies](#multiple-hierarchies)**: Samples for the same covariate combination are evaluated multiple times, resulting in repeated measures (multiple epochs). 
+
+Independent data can be analyzed without much complication using ordinary statistical methods (e.g., linear or multinomial regression). 
+
+With one or more hierarchies, we need to account for correlated data. Ignoring this issue will under-power the statistical analysis. Models that account for this hierarchical structure have many names, and they can be estimated in multiple ways.
+
+- **Frequentist Methods**, such as mixed models, assume that the model parameters are fixed. They produce confidence intervals and p-values and are outlined in the first part of this article.
+- **[Bayesian Methods](#bayesian-hierarchical-models)**, such as Bayesian hierarchical models, are more flexible and computationally intensive. They produce posterior probabilities and credible intervals. 
 
 Before we go further, we'll need a few additional packages:
 
