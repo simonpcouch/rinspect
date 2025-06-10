@@ -41,6 +41,7 @@ Suggests:
     ordinal,
     rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw,
     tidyverse, gt, brms, RcppEigen, broom
 Config/testthat/edition: 3
