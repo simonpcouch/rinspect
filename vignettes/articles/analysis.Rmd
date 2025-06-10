@@ -80,7 +80,7 @@ if (should_eval) {
 These evaluations look a lot like those from the "Getting started with vitals" vignette from `vignette("vitals", package = "vitals")`, except:
 
 * We evaluate three LLMs, rather than two.
-* We set `glue::backtick(paste0("epochs = ", length(unique(are_eval$epoch))))` in `Task$new()` so that each sample in `are` is run through the eval multiple times.
+* We set `r glue::backtick(paste0("epochs = ", length(unique(are_eval$epoch))))` in `Task$new()` so that each sample in `are` is run through the eval multiple times.
 
 Passing the evaluated tasks to `vitals_bind()` will concatenate the results into a tabular data frame:
 
