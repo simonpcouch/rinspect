@@ -2,7 +2,7 @@
 title: "Writing evals for your LLM product"
 vignette: >
   %\VignetteIndexEntry{Writing evals for your LLM product}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 knitr:
   opts_chunk:
