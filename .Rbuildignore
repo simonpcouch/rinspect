@@ -21,3 +21,5 @@ inst/log_dump
 ^\.vscode$
 ^vignettes/\.quarto$
 ^vignettes/*_files$
+^vignettes/articles/\.quarto$
+^vignettes/articles/*_files$
