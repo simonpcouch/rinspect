@@ -80,7 +80,7 @@ target: |-
     )
   ```
 
-  But it's slightly easier to debug if you use mutate() to first create
+  One can also use mutate() to first create
   intermediate variables:
 
   ```
