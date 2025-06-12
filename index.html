@@ -13,8 +13,8 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Large Language Model Evaluation for R">
-<meta name="description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their LLM-based apps, the package includes facilities for prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
-<meta property="og:description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their LLM-based apps, the package includes facilities for prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
+<meta name="description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their large language model-based products, the package supports prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
+<meta property="og:description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their large language model-based products, the package supports prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
 <meta property="og:image" content="https://vitals.tidyverse.org/logo.png">
 <script defer data-domain="vitals.tidyverse.org,all.tidyverse.org" src="https://plausible.io/js/plausible.js"></script>
 </head>
@@ -66,7 +66,12 @@
 </div>
 <!-- badges: start -->
 
-<p>vitals is a framework for large language model evaluation in R. It’s specifically aimed at <a href="https://ellmer.tidyverse.org/" class="external-link">ellmer</a> users who want to measure the effectiveness of their LLM-based apps.</p>
+<p>vitals is a framework for large language model evaluation in R. It’s specifically aimed at <a href="https://ellmer.tidyverse.org/" class="external-link">ellmer</a> users who want to measure the effectiveness of their LLM products like <a href="https://posit.co/blog/custom-chat-app/" class="external-link">custom chat apps</a> and <a href="https://github.com/posit-dev/querychat" class="external-link">querychat</a> apps. You can use it to:</p>
+<ul>
+<li>Measure whether changes in your prompts or additions of new tools improve performance in your LLM product</li>
+<li>Compare how different models affect performance, cost, and/or latency of your LLM product</li>
+<li>Surface problematic behaviors in your LLM product</li>
+</ul>
 <p>The package is an R port of the widely adopted Python framework <a href="https://inspect.ai-safety-institute.org.uk/" class="external-link">Inspect</a>. While the package doesn’t integrate with Inspect directly, it allows users to interface with the <a href="https://inspect.ai-safety-institute.org.uk/log-viewer.html" class="external-link">Inspect log viewer</a> and provides an on-ramp to transition to Inspect if need be by writing evaluation logs to the same file format.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -94,7 +99,7 @@
 <span></span>
 <span><span class="va">tsk</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Task.html">Task</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  dataset <span class="op">=</span> <span class="va">simple_addition</span>, </span>
-<span>  solver <span class="op">=</span> <span class="fu"><a href="reference/generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"claude-3-7-sonnet-latest"</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>  solver <span class="op">=</span> <span class="fu"><a href="reference/generate.html">generate</a></span><span class="op">(</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"claude-sonnet-4-20250514"</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>  scorer <span class="op">=</span> <span class="fu"><a href="reference/scorer_model.html">model_graded_qa</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Tasks are composed of three main components:</p>
