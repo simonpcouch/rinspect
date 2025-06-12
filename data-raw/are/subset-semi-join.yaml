@@ -43,7 +43,9 @@ target: |-
   #> 2    b    2    3    4
   ```
 
-  Slight differences in syntax are fine; the response may pipe one input rather than providing both to `semi_join()` directly, and the keys can be characters rather than symbols.
+  Slight differences in syntax are fine; the response may pipe one input 
+  rather than providing both to `semi_join()` directly, and the keys can be 
+  characters rather than symbols.
 domain: Data analysis
 task: New code
 source: https://forum.posit.co/t/how-to-subset-a-dataframe-based-on-mulitple-key-identifiers-in-another-dataframe/188478/3

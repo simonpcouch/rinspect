@@ -22,12 +22,11 @@ target: |-
 
   ```
   ggplot(data = df) +
-    geom_point(aes(x=x, y=y, color = z), show.legend = TRUE) +
-    scale_color_manual(drop = FALSE,
-                       values = c(a = "red",
-                                  b = "blue",
-                                  c = "yellow",
-                                  d = "green"))
+    geom_point(aes(x = x, y = y, color = z), show.legend = TRUE) +
+    scale_color_manual(
+      drop = FALSE,
+      values = c(a = "red", b = "blue", c = "yellow", d = "green")
+    )
   ```
 domain: Data analysis
 task: New code

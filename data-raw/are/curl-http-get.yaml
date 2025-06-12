@@ -36,7 +36,11 @@ input: |-
   ! HTTP 405 Method Not Allowed
 
   How do I fix it?
-target: There's a missing `req_method("GET")`.
+target: |-
+  There's a missing `req_method("GET")`.
+
+  Ideally, will also provide an explanation of the problem: httr2 will 
+  automatically switch from GET to POST whenever you supply a body.
 domain: Programming
 task: Debugging
 knowledge: r-lib

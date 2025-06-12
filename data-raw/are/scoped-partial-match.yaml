@@ -30,8 +30,11 @@ input: |-
     out
   }
   ```
-target: Change `out$refresh_token <- out$refresh_token %||% refresh_token` to `out[["refresh_token"]]
-  <- out[["refresh_token"]] %||% refresh_token`. No other changes needed.
+target: |-
+  Change `out$refresh_token <- out$refresh_token %||% refresh_token` to 
+  `out[["refresh_token"]] <- out[["refresh_token"]] %||% refresh_token`. 
+  
+  No other changes needed.
 domain: Programming
 task: Debugging
 knowledge: base R
