@@ -1,12 +1,14 @@
 test_that("vitals_bind works", {
-  skip_on_covr()
+  task_1 <- example_task()
+  task_2 <- example_task()
 
-  load(here::here("vignettes/data/are_task.rda"))
-  load(here::here("vignettes/data/are_task_openai.rda"))
-
-  res <- vitals_bind(are_task, are_task_openai)
+  res <- vitals_bind(task_1, task_2)
 
   expect_s3_class(res, "tbl_df")
   expect_named(res, c("task", "id", "score", "metadata"))
-  expect_equal(nrow(res), nrow(are_task$get_samples()) * 2)
+  expect_equal(nrow(res), nrow(task_1$get_samples()) * 2)
+  expect_equal(sort(unique(res$task)), c("task_1", "task_2"))
+
+  res_named <- vitals_bind(boop = task_1, bop = task_2)
+  expect_equal(sort(unique(res_named$task)), c("boop", "bop"))
 })
