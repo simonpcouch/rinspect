@@ -1,6 +1,6 @@
 title: conditional-grouped-summary
 input: >
-  I have a set of data like this:
+  I have a set of data not unlike the following example.
 
   ```
   |ID | date | visit | type|
@@ -27,6 +27,24 @@ input: >
   |000006 | 2023-08-10 | 1 | Type_I|
   ```
 
+  In R code:
+
+  ```
+  df <- structure(list(ID = c("000000", "000000", "000001", "000001", 
+  "000001", "000002", "000002", "000002", "000002", "000003", "000003", 
+  "000003", "000004", "000004", "000004", "000004", "000005", "000005", 
+  "000005", "000006"), date = structure(c(19044, 19389, 19434, 
+  19664, 19023, 19062, 19239, 19377, 19037, 19365, 19642, 19367, 
+  19712, 19248, 19628, 19243, 19124, 19226, 19163, 19579), class = "Date"), 
+      visit = c(2L, 1L, 1L, 3L, 2L, 3L, 4L, 2L, 1L, 2L, 3L, 1L, 
+      2L, 3L, 1L, 4L, 3L, 1L, 2L, 1L), type = c("Type_I", "Type_I", 
+      "Type_I", "Type_II", "Type_II", "Type_I", "Type_I", "Type_I", 
+      "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", "Type_I", 
+      "Type_I", "Type_I", "Type_I", "Type_I", "Type_II", "Type_I"
+      )), row.names = c(NA, -20L), class = c("tbl_df", "tbl", "data.frame"
+  ))
+  ```
+
   I need to set a conditional boolean flag based on the criteria:
 
   * At least one instance of "Type_II"
@@ -35,6 +53,7 @@ input: >
   another
 
   So that the output would look something like this:
+
 
   |ID | Flag|
   |--- | ---|

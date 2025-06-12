@@ -5,7 +5,8 @@ input: |-
   ```
   address <- "Prince st., New York 10012"
   api_key <- "my_secret_api_key"
-  url <- glue::glue("https://geocode.maps.co/search?q={address}&api_key={api_key}")
+  url <-
+  glue::glue("https://geocode.maps.co/search?q={address}&api_key={api_key}")
   response <- httr2::request(url) %>%   
     httr2::req_perform()
   ```

@@ -4,6 +4,11 @@ input: |-
   Desired outcome is shown in the `result` column:
 
   ```
+  pipe <- tibble::tribble(
+            ~referral_key, ~appointment_key,        ~result,
+              "OP3349021", "4289||10410||1", "4289T10410A1",
+              "OP3359764", "4289||10410||2", "4289T10410A2"
+            )
   pipe
   #> # A tibble: 2 x 3
   #>   referral_key appointment_key result      

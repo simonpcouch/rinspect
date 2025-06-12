@@ -1,7 +1,6 @@
 title: subset-semi-join
 input: |-
-  I need to subset a dataframe which has common combination of values of a 
-  certain select number of columns in another dataframe.
+  I need to subset a dataframe which has common combination of values of a certain select number of columns in another dataframe.
 
   So lets say:
   ```
@@ -20,8 +19,7 @@ input: |-
   )
   ```
 
-  I need only those values observations of `df2` which have common 
-  combinations of `key1` and `key2` in `df1`, so like :
+  I need only those values observations of `df2` which have common combinations of `key1` and `key2` in `df1`, so like :
 
   ```
   common_df<-data.frame(

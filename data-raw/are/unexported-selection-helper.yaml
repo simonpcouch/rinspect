@@ -1,15 +1,13 @@
 title: unexported-selection-helper
 input: |-
-  I would usually refer to dplyr functions in my package with `dplyr::fun()` 
-  however, `closest()` doesn't seem to be exported...
+  I would usually refer to dplyr functions in my package with `dplyr::fun()` however, `closest()` doesn't seem to be exported...
 
   ```
   dplyr::closest()
   Error: 'closest' is not an exported object from 'namespace:dplyr'
   ```
 
-  Oddly it seems to work as just closest in my package but this is causing lint 
-  issues and build notes.
+  Oddly it seems to work as just closest in my package but this is causing lint issues and build notes.
 
   How do I fix this?
 target: The user just needs to add `utils::globalVariables("closest")` somewhere in

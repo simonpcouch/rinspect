@@ -3,11 +3,7 @@ input: |-
   Here's a GitHub issue:
 
   <issue>
-  Google oauth now returns `refresh_token_expires_in` as one of the fields in 
-  its response. It looks like this change happened roughly yesterday morning 
-  (the warnings first appeared in my log at 5:09am CST, but it hadn't ran 
-  since 5:14pm the day before). Because of that, this line in `token_refresh()`
-  now results in a warning (which really should be an error):
+  Google oauth now returns `refresh_token_expires_in` as one of the fields in its response. It looks like this change happened roughly yesterday morning (the warnings first appeared in my log at 5:09am CST, but it hadn't ran since 5:14pm the day before). Because of that, this line in `token_refresh() `now results in a warning (which really should be an error):
 
   ```
   out$refresh_token <- out$refresh_token %||% refresh_token
@@ -16,8 +12,7 @@ input: |-
   #  partial match of 'refresh_token' to 'refresh_token_expires_in'
   ```
 
-  Since out has `refresh_token_expires_in` (and not `refresh_token`), adding 
-  `refresh_token` doesn't work as expected.
+  Since out has `refresh_token_expires_in` (and not `refresh_token`), adding `refresh_token` doesn't work as expected.
   </issue>
 
   Avoid partial matching of `refresh_token` in this function:

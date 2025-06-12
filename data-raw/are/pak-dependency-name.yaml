@@ -1,9 +1,6 @@
 title: pak-dependency-name
 input: |-
-  I have an R package that depends on a package called, lets say, spatialstuff 
-  (This is how it is defined in its DESCRIPTION). However it is found in an 
-  org and the repo name is different, eg org/spatial-Stuff (i have no control 
-  over this name!).
+  I have an R package that depends on a package called, lets say, spatialstuff (This is how it is defined in its DESCRIPTIONS). However it is found in an org and the repo name is different, eg org/spatial-Stuff (i have no control over this name!).
 
   My package in its `DESCRIPTION` file has the following lines
 
@@ -14,8 +11,9 @@ input: |-
    org/spatial-Stuff
   ```
 
-  However the `pkgdown.yaml` workflow that is run upon pushes (created from 
-  `usethis::use_pkgdown_github_pages()`) errors with the following message:
+  However the `pkgdown.yaml` workflow that is run upon pushes (created from `usethis::use_pkgdown_github_pages()`) errors with the following message.
+
+  Can someone explain if this is user error or some other error? Thanks
 
   ```
   ! error in pak subprocess
@@ -27,9 +25,6 @@ input: |-
   * any::sessioninfo: dependency conflict
   * any::pkgdown: dependency conflict
   ```
-
-  How can I fix this problem?
-
 target: >
   The user needs to specify the package name explicitly in the Remotes `DESCRIPTION`
   field using a `<package>=` prefix, e.g. `spatialstuff=org/spatial-Stuff`.

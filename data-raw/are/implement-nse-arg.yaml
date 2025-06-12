@@ -1,11 +1,11 @@
 title: implement-nse-arg
 input: |
-  Add a `name` argument after `dataset` that defaults to the name of the 
-  `dataset` object in the calling env.
+  Add a `name` argument after `dataset` that defaults to the name of the `dataset` object in the calling env.
 
   ```
   task_create <- function(
       dataset,
+      # TODO: maybe it doesn't need to be associated with a dir at all?
       dir = inspect_log_dir()
   ) {
     check_dataset(dataset)
