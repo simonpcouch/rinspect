@@ -424,9 +424,8 @@ by taking the differences in values of \verb{$token_usage()} over time.
 }
 
 \subsection{Returns}{
-The sum of the cost of solving and scoring the evaluation.
-The sum only includes the cost from the most recent runs of the
-solver and scorer.
+A tibble displaying the cost of solving and scoring the
+evaluation by model, separately for the solver and scorer.
 }
 }
 \if{html}{\out{<hr>}}

@@ -4,13 +4,14 @@ Version: 0.0.0.9002
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5676-5107")),
+    person("Max", "Kuhn", , "max@posit.co", role = "ctb"),
     person("Posit Software, PBC", role = c("cph", "fnd"),
            comment = c(ROR = "03wc8by49"))
   )
 Description: A port of 'Inspect', a widely adopted 'Python' framework for
     large language model evaluation. Specifically aimed at 'ellmer' users
-    who want to measure the effectiveness of their LLM-based apps, the
-    package includes facilities for prompt engineering, tool usage,
+    who want to measure the effectiveness of their large language model-based
+    products, the package supports prompt engineering, tool usage,
     multi-turn dialog, and model graded evaluations.
 License: MIT + file LICENSE
 URL: https://github.com/tidyverse/vitals, https://vitals.tidyverse.org
@@ -20,7 +21,7 @@ Depends:
 Imports: 
     cli,
     dplyr,
-    ellmer (>= 0.2.0),
+    ellmer (>= 0.2.1),
     glue,
     httpuv,
     jsonlite,
@@ -40,9 +41,9 @@ Suggests:
     ordinal,
     rmarkdown,
     testthat (>= 3.0.0)
-VignetteBuilder: 
-    knitr
-Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw
+VignetteBuilder: knitr
+Config/Needs/website: tidyverse/tidytemplate, rmarkdown, posit-dev/btw,
+    tidyverse, gt, brms, RcppEigen, broom
 Config/testthat/edition: 3
 Config/usethis/last-upkeep: 2025-04-25
 Encoding: UTF-8

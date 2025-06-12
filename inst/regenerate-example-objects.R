@@ -14,6 +14,11 @@ regenerate_example_objects <- function() {
   cli::cli_progress_step("Regenerating `are` with custom solvers")
   regenerate_are_custom_solvers()
 
+  cli::cli_progress_step(
+    "Regenerating `are` with 3 epochs for analysis article"
+  )
+  regenerate_are_3e_analysis()
+
   cli::cli_progress_done()
 }
 
@@ -35,7 +40,6 @@ regenerate_example_task <- function() {
   )
 
   tsk$eval()
-  tsk <- scrub_providers(tsk)
   save(tsk, file = "inst/test/example-task.rda")
 }
 
@@ -48,7 +52,6 @@ regenerate_example_solver <- function() {
   )
   solver$chat("What's 2+2?")
 
-  solver <- scrub_provider(solver)
   save(solver, file = "inst/test/solver.rda")
 }
 
@@ -80,6 +83,21 @@ regenerate_are_custom_solvers <- function() {
 
   withr::local_envvar(VITALS_SHOULD_EVAL = "true")
   rmarkdown::render('vignettes/articles/solvers.Rmd')
+}
+
+# An R Eval on 3 epoch x 3 models, via the analysis article -----------------
+regenerate_are_3e_analysis <- function() {
+  json_files <- list.files(
+    "vignettes/articles/data/analysis/logs",
+    pattern = "\\.json$",
+    full.names = TRUE
+  )
+  if (length(json_files) > 0) {
+    file.remove(json_files)
+  }
+
+  withr::local_envvar(VITALS_SHOULD_EVAL = "true")
+  rmarkdown::render("vignettes/articles/analysis.qmd")
 }
 
 regenerate_example_objects()

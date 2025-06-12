@@ -14,7 +14,16 @@ status](https://www.r-pkg.org/badges/version/vitals)](https://CRAN.R-project.org
 
 vitals is a framework for large language model evaluation in R. It’s
 specifically aimed at [ellmer](https://ellmer.tidyverse.org/) users who
-want to measure the effectiveness of their LLM-based apps.
+want to measure the effectiveness of their LLM products like [custom
+chat apps](https://posit.co/blog/custom-chat-app/) and
+[querychat](https://github.com/posit-dev/querychat) apps. You can use it
+to:
+
+- Measure whether changes in your prompts or additions of new tools
+  improve performance in your LLM product
+- Compare how different models affect performance, cost, and/or latency
+  of your LLM product
+- Surface problematic behaviors in your LLM product
 
 The package is an R port of the widely adopted Python framework
 [Inspect](https://inspect.ai-safety-institute.org.uk/). While the
@@ -23,13 +32,6 @@ interface with the [Inspect log
 viewer](https://inspect.ai-safety-institute.org.uk/log-viewer.html) and
 provides an on-ramp to transition to Inspect if need be by writing
 evaluation logs to the same file format.
-
-> **Important**
->
-> 🚧 Under construction! 🚧
->
-> vitals is highly experimental and much of its documentation is
-> aspirational.
 
 ## Installation
 
@@ -59,7 +61,7 @@ simple_addition <- tibble(
 
 tsk <- Task$new(
   dataset = simple_addition, 
-  solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")), 
+  solver = generate(chat_anthropic(model = "claude-sonnet-4-20250514")), 
   scorer = model_graded_qa()
 )
 ```

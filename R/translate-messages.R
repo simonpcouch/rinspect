@@ -1,5 +1,5 @@
 translate_to_messages <- function(chat) {
-  turns <- chat$get_turns()
+  turns <- chat$get_turns(include_system_prompt = TRUE)
   model <- chat$get_model()
   purrr::map(turns, translate_to_message, model = model)
 }
@@ -10,7 +10,11 @@ translate_to_message <- function(turn, model) {
 
   message <- list(id = generate_id())
 
-  if (role == "user") {
+  if (role == "system") {
+    message$content <- turn@text
+    message$role <- role
+    return(message)
+  } else if (role == "user") {
     if (
       length(turn@contents) == 1 &&
         inherits(turn@contents[[1]], "ellmer::ContentToolResult")

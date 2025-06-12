@@ -17,24 +17,32 @@ input: |-
 target: |-
   Preferably: 
 
-
   ```
-
   ggplot(data = diamonds) + 
     geom_bar(aes(x = cut, y = after_stat(count) / sum(after_stat(count)), fill = clarity))
   ```
 
-
-  The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0, but it
-  still works:
-
+  or:
 
   ```
+  ggplot(data = diamonds) +
+    geom_bar(mapping = aes(x = cut, y = ..prop.., group = clarity, fill = clarity))
+  ```
 
+  or:
+
+  ```
+  ggplot(data = diamonds) +
+    geom_bar(mapping = aes(x = cut, y = after_stat(count / sum(count)), group = clarity, fill = clarity))
+  ```
+
+  The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0, but it
+  still works and should receive full credit:
+
+  ```
   ggplot(data = diamonds) + 
     geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill = clarity))
   ```
-
 
   Simply setting `position = "fill" will result in each bar having a height of 1
   and is not correct.

@@ -187,7 +187,7 @@ Task <- R6::R6Class(
       self$log(self$dir)
       private$stash_last_task()
 
-      cli::cli_process_done()
+      cli::cli_progress_done()
       if (view) {
         self$view()
       }
@@ -353,7 +353,8 @@ Task <- R6::R6Class(
         plan = translate_to_plan(
           steps = translate_to_plan_steps(
             name = private$solver_description(),
-            arguments = private$solutions$arguments
+            arguments = private$solutions$arguments,
+            system_prompt = private$samples$solver_chat[[1]]$get_system_prompt()
           )
         ),
         results = translate_to_results(
@@ -795,7 +796,9 @@ check_dataset <- function(dataset, call = caller_env()) {
 
 # Must be a named list of functions.
 check_metrics <- function(metrics, call = caller_env()) {
-  if (is.null(metrics)) return()
+  if (is.null(metrics)) {
+    return()
+  }
 
   if (
     !is.list(metrics) ||
