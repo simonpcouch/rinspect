@@ -109,7 +109,7 @@ copy_dir_contents <- function(source_dir, dest_dir) {
   }
 }
 
-copy_log_files <- function(log_dir, target_dir) {
+copy_log_files <- function(log_dir, target_dir, call = caller_env()) {
   if (!dir.exists(log_dir)) {
     cli::cli_abort("The log directory {.file {log_dir}} doesn't exist.")
   }
@@ -123,7 +123,8 @@ copy_log_files <- function(log_dir, target_dir) {
 
   if (length(log_files) == 0) {
     cli::cli_abort(
-      "The log directory {.file {log_dir}} doesn't contain any JSON log files."
+      "The log directory {.file {log_dir}} doesn't contain any JSON log files.",
+      call = call
     )
   }
 
