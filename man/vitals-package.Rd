@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-A port of 'Inspect', a widely adopted 'Python' framework for large language model evaluation. Specifically aimed at 'ellmer' users who want to measure the effectiveness of their LLM-based apps, the package includes facilities for prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.
+A port of 'Inspect', a widely adopted 'Python' framework for large language model evaluation. Specifically aimed at 'ellmer' users who want to measure the effectiveness of their large language model-based products, the package supports prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.
 }
 \seealso{
 Useful links:
@@ -24,6 +24,7 @@ Useful links:
 
 Other contributors:
 \itemize{
+  \item Max Kuhn \email{max@posit.co} [contributor]
   \item Posit Software, PBC (03wc8by49) [copyright holder, funder]
 }
 
