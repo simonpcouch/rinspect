@@ -25,6 +25,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Max Kuhn \email{max@posit.co} [contributor]
+  \item Hadley Wickham \email{hadley@posit.co} (\href{https://orcid.org/0000-0003-4757-117X}{ORCID}) [contributor]
   \item Posit Software, PBC (03wc8by49) [copyright holder, funder]
 }
 
