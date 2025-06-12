@@ -7,6 +7,13 @@
       ! '`output_dir`' already exists.
       i Choose another output directory or use overwrite = TRUE.
 
+---
+
+    Code
+      result <- vitals_bundle(log_dir = log_dir, output_dir = output_dir, overwrite = TRUE)
+    Message
+      v Bundle '***' created!
+
 # vitals_bundle errors informatively
 
     Code

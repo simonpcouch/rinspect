@@ -13,10 +13,13 @@ test_that("vitals_bundle creates a valid bundle", {
   )
   unlink(output_dir, recursive = TRUE)
 
-  result <- vitals_bundle(
-    log_dir = log_dir,
-    output_dir = output_dir,
-    overwrite = TRUE
+  expect_snapshot(
+    result <- vitals_bundle(
+      log_dir = log_dir,
+      output_dir = output_dir,
+      overwrite = TRUE
+    ),
+    transform = function(x) gsub("'[^']*'", "'***'", x)
   )
 
   expect_equal(result, output_dir)
