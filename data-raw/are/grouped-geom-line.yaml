@@ -1,0 +1,53 @@
+title: grouped-geom-line
+input: |-
+  Here's some data on median duration of unemployment, in weeks:
+
+  ```
+  unemployment
+  # A tibble: 172 × 3
+     month  year uempmed
+     <dbl> <dbl>   <dbl>
+   1     1  2001     5.8
+   2     2  2001     6.1
+   3     3  2001     6.6
+   4     4  2001     5.9
+   5     5  2001     6.3
+   6     6  2001     6  
+   7     7  2001     6.8
+   8     8  2001     6.9
+   9     9  2001     7.2
+  10    10  2001     7.3
+  # ℹ 162 more rows
+  # ℹ Use `print(n = ...)` to see more rows
+  ```
+
+  I want to plot monthly median duration of unemployment with a separate line and color for each year.
+  The following gives me a single line.
+
+  ```
+  ggplot(unemployment, aes(x = month, y = uempmed, color = year)) +
+    geom_line()
+  ```
+
+  How do I fix this?
+target: |-
+  You need to use the `group` aesthetic to indicate which observations should be connected together.
+  Since you want a separate line for each year, you need to set `group = year` in your aesthetic mappings.
+
+  ```
+  ggplot(unemployment, aes(x = month, y = uempmed, group = year, color = year)) +
+    geom_line()
+  ```  
+
+  If you want year to be treated as a discrete variable for the legend, you can also transform year to a factor.
+
+  ```
+  ggplot(unemployment, aes(x = month, y = uempmed, group = year, color = as.factor(year))) +
+    geom_line()
+  ```
+
+  However note that a discrete scale for more than eight levels is usually not recommended.
+domain: Data analysis
+task: New code
+source: NA
+knowledge: tidyverse
