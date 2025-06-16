@@ -44,7 +44,7 @@ target: |-
     geom_bar(aes(x = cut, y = ..count.. / sum(..count..), fill = clarity))
   ```
 
-  Simply setting `position = "fill" will result in each bar having a height of 1
+  Simply setting `position = "fill"` will result in each bar having a height of 1
   and is not correct.
 domain: Data analysis
 task: New code
