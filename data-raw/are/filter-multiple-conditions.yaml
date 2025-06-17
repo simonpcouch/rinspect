@@ -1,0 +1,43 @@
+title: filter-multiple-conditions
+input: |-
+  Here's some data on midwest counties:
+
+  ```
+  midwest
+  # A tibble: 437 × 5
+       PID county    state percbelowpoverty percollege
+     <int> <chr>     <chr>            <dbl>      <dbl>
+   1   561 ADAMS     IL               13.2        19.6
+   2   562 ALEXANDER IL               32.2        11.2
+   3   563 BOND      IL               12.1        17.0
+   4   564 BOONE     IL                7.21       17.3
+   5   565 BROWN     IL               13.5        14.5
+   6   566 BUREAU    IL               10.4        18.9
+   7   567 CALHOUN   IL               15.1        11.9
+   8   568 CARROLL   IL               11.7        16.2
+   9   569 CASS      IL               13.9        14.1
+  10   570 CHAMPAIGN IL               15.6        41.3
+  # ℹ 427 more rows
+  # ℹ Use `print(n = ...)` to see more rows
+  ```
+
+  `percbelowpoverty` is percent of people below poverty line.
+  `percollege` is percent college educated.
+
+  Write a single tidyverse pipeline to identify the counties that satisfy either of the following condition:
+
+  - more than 40% with college education and less than 20% living below poverty
+  - more than 40% living below poverty and less than 10% with college education
+target: |-
+  This can be achieved with a `filter` with two conditions with the "or" operator, `|`, between them.
+
+  ```
+  midwest |>
+    filter(
+      (percollege > 40 & percbelowpoverty < 20) | (percollege < 10 & percbelowpoverty > 40)
+    )
+  ```
+domain: Data analysis
+task: New code
+source: NA
+knowledge: tidyverse
