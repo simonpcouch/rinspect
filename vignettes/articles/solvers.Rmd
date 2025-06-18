@@ -91,7 +91,7 @@ The function that `generate` outputs takes in a list of `inputs` and outputs a l
 * `result` is the final result from the solver. In this case, `purrr::map_chr(res, function(c) c$last_turn()@text)` just grabs the text from the last assistant run and returns it. `result` is a vector of length equal to `inputs`—it should be able to be tacked onto `task$get_samples()` as another column.
 * `solver_chat` is a list of chats that led to the `result`. This may seem redundant with `result`, but is important to supply to vitals so that the package can log what happened during the solving process and display it in the log viewer.
 
-We will work with a slightly modified version of `generate()` that equips models with the ability to peruse R package documentation before answering. We will do so using the btw package, available on GitHub at <https://posit-dev.github.io/btw/>. Among other things, btw provides a function `btw_register_tools()` that registers an ellmer chat with tools to explore documentation.
+We will work with a slightly modified version of `generate()` that equips models with the ability to peruse R package documentation before answering. We will do so using the btw package, available on GitHub at <https://posit-dev.github.io/btw/>. Among other things, btw provides a function `btw_tools()` that returns a list of tools that can be registered with an ellmer chat.
 
 ```{r}
 #| include: false
@@ -102,7 +102,7 @@ ch <- sonnet_3_7$clone()
 #| label: btw-register
 #| eval: false
 ch <- sonnet_3_7$clone()
-btw_register_tools(ch, tools = "docs")
+ch$set_tools(btw_tools(tools = "docs"))
 ```
 
 ```
@@ -112,7 +112,7 @@ btw_register_tools(ch, tools = "docs")
 ✔ Registered tool btw_tool_docs_vignette
 ```
 
-`btw_register_tools()` modifies the chat object in place, so I can use the chat's `$chat()` method to interact with it like before. As an example, after registering btw with a Claude Sonnet 3.7 chat object, I can ask it about this package. At the time of writing, vitals is not on CRAN, and Claude Sonnet 3.7 completed training several months before I started working on it. Nonetheless, the model is able to tell me about how custom solvers work:
+I can use the chat's `$chat()` method to interact with it like before. As an example, after registering btw with a Claude Sonnet 3.7 chat object, I can ask it about this package, vitals. At the time of writing, vitals is not on CRAN, and Claude Sonnet 3.7 completed training several months before I started working on it. Nonetheless, the model is able to tell me about how custom solvers work:
 
 ```{r}
 #| label: btw-chat
@@ -148,13 +148,13 @@ ch$chat("How do custom solvers work in vitals?")
 
 Pretty spot-on. But will this capability help the models better answer questions in R? `are` is built from questions about base R and popular packages like dplyr and shiny, information about which is presumably baked into their weights.
 
-The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_register_tools()` before calling `ellmer::parallel_chat()`.
+The implementation of our custom solver looks almost exactly like `generate()`s implementation, except we add a call to `btw_tools()` before calling `ellmer::parallel_chat()`.
 
 ```{r}
 #| label: btw-solver
 btw_solver <- function(inputs, ..., solver_chat) {
   ch <- solver_chat$clone()
-  btw_register_tools(ch, tools = "docs")
+  ch$set_tools(btw_tools(tools = "docs"))
   res <- ellmer::parallel_chat(ch, as.list(inputs))
   list(
     result = purrr::map_chr(res, function(c) c$last_turn()@text), 
