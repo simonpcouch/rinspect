@@ -1,10 +1,10 @@
 {
-  "2025-04-29T14-36-27-05-00_An-R-Eval_e4763d5da8fe03a6cf4a90.json": {
+  "2025-06-18T10-09-15-05-00_An-R-Eval_e4763d5da8fe03a6cf4a90.json": {
     "version": 2,
     "status": "success",
     "eval": {
-      "run_id": "d4gqMthEMFnuV76oZQuQ2N",
-      "created": "2025-04-29T14:36:27-05:00",
+      "run_id": "9OuNZvfQNjZyUh0GA95pb5",
+      "created": "2025-06-18T10:09:15-05:00",
       "task": "An-R-Eval",
       "task_id": "e4763d5da8fe03a6cf4a90",
       "task_version": 0,
@@ -12,11 +12,11 @@
       "task_attribs": {},
       "task_args": {},
       "dataset": {
-        "samples": 26,
-        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+        "samples": 29,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
         "shuffled": false
       },
-      "model": "claude-3-7-sonnet-latest",
+      "model": "generate(chat_anthropic()) (claude-3-7-sonnet-latest)",
       "model_args": {},
       "config": {},
       "revision": {
@@ -45,7 +45,7 @@
       "name": "plan",
       "steps": [
         {
-          "solver": "generate(chat_anthropic(model = \"claude-3-7-sonnet-latest\"))",
+          "solver": "generate(chat_anthropic()) (claude-3-7-sonnet-latest)",
           "params": {
             "1": "self$get_samples()$input"
           }
@@ -54,17 +54,17 @@
       "config": {}
     },
     "results": {
-      "total_samples": 26,
-      "completed_samples": 26,
+      "total_samples": 29,
+      "completed_samples": 29,
       "scores": [
         {
-          "name": "model_graded_qa(partial_credit = TRUE)",
-          "scorer": "model_graded_qa(partial_credit = TRUE)",
+          "name": "model_graded_qa(partial_credit = TRUE) (claude-3-7-sonnet-latest)",
+          "scorer": "model_graded_qa(partial_credit = TRUE) (claude-3-7-sonnet-latest)",
           "params": {},
           "metrics": {
             "accuracy": {
               "name": "accuracy",
-              "value": 59.6154,
+              "value": 68.9655,
               "params": {
                 "1": "numeric_scores"
               }
@@ -74,25 +74,25 @@
       ]
     },
     "stats": {
-      "started_at": "2025-04-29T14:35:51-05:00",
-      "completed_at": "2025-04-29T14:36:27-05:00",
+      "started_at": "2025-06-18T10:08:01-05:00",
+      "completed_at": "2025-06-18T10:09:15-05:00",
       "model_usage": {
         "claude-3-7-sonnet-latest": {
-          "input_tokens": 11493,
+          "input_tokens": 9626,
           "cache_creation_input_tokens": 0,
           "cache_read_input_tokens": 0,
-          "output_tokens": 10454,
-          "total_tokens": 21947
+          "output_tokens": 11155,
+          "total_tokens": 20781
         }
       }
     }
   },
-  "2025-04-29T14-37-06-05-00_An-R-Eval_e4763d5da8fe03a6cf4a90.json": {
+  "2025-06-18T10-10-05-05-00_An-R-Eval_e4763d5da8fe03a6cf4a90.json": {
     "version": 2,
     "status": "success",
     "eval": {
-      "run_id": "xIsvIYsYbTRO9Hw9QnVEJ3",
-      "created": "2025-04-29T14:37:06-05:00",
+      "run_id": "1SWTAP63mA3wnsKJYxeKAh",
+      "created": "2025-06-18T10:10:05-05:00",
       "task": "An-R-Eval",
       "task_id": "e4763d5da8fe03a6cf4a90",
       "task_version": 0,
@@ -100,11 +100,11 @@
       "task_attribs": {},
       "task_args": {},
       "dataset": {
-        "samples": 26,
-        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+        "samples": 29,
+        "sample_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
         "shuffled": false
       },
-      "model": "gpt-4o",
+      "model": "generate(chat_anthropic(\"claude-3-7-sonnet-latest\")) (gpt-4o)",
       "model_args": {},
       "config": {},
       "revision": {
@@ -133,7 +133,7 @@
       "name": "plan",
       "steps": [
         {
-          "solver": "generate(chat_anthropic(model = \"claude-3-7-sonnet-latest\"))",
+          "solver": "generate(chat_anthropic(\"claude-3-7-sonnet-latest\")) (gpt-4o)",
           "params": {
             "1": "self$get_samples()$input",
             "solver_chat": "chat_openai(model = \"gpt-4o\")"
@@ -143,17 +143,17 @@
       "config": {}
     },
     "results": {
-      "total_samples": 26,
-      "completed_samples": 26,
+      "total_samples": 29,
+      "completed_samples": 29,
       "scores": [
         {
-          "name": "model_graded_qa(partial_credit = TRUE)",
-          "scorer": "model_graded_qa(partial_credit = TRUE)",
+          "name": "model_graded_qa(partial_credit = TRUE) (gpt-4o)",
+          "scorer": "model_graded_qa(partial_credit = TRUE) (gpt-4o)",
           "params": {},
           "metrics": {
             "accuracy": {
               "name": "accuracy",
-              "value": 48.0769,
+              "value": 51.7241,
               "params": {
                 "1": "numeric_scores"
               }
@@ -163,15 +163,15 @@
       ]
     },
     "stats": {
-      "started_at": "2025-04-29T14:36:27-05:00",
-      "completed_at": "2025-04-29T14:37:06-05:00",
+      "started_at": "2025-06-18T10:09:16-05:00",
+      "completed_at": "2025-06-18T10:10:05-05:00",
       "model_usage": {
         "gpt-4o": {
-          "input_tokens": 9893,
+          "input_tokens": 8718,
           "cache_creation_input_tokens": 0,
           "cache_read_input_tokens": 0,
-          "output_tokens": 10305,
-          "total_tokens": 20198
+          "output_tokens": 10444,
+          "total_tokens": 19162
         }
       }
     }
