@@ -33,6 +33,9 @@
 #' @examples
 #' # Quality assurance -----------------------------
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -52,6 +55,9 @@
 #'
 #' # Factual response -------------------------------
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -173,15 +179,20 @@ qa_extract_grade <- function(response, pattern, partial_credit = FALSE) {
     regexec(pattern, response, perl = TRUE)
   )[[1]][2]
 
-  if (is.na(grade_letter)) return(NA)
+  if (is.na(grade_letter)) {
+    return(NA)
+  }
 
   toupper(grade_letter)
 }
 
 qa_default_instructions <- function(partial_credit = FALSE) {
   partial_letter <- if (partial_credit) ", P, or " else " or "
-  partial_prompt <- if (partial_credit)
-    '"P" for partially correct answers,' else ""
+  partial_prompt <- if (partial_credit) {
+    '"P" for partially correct answers,'
+  } else {
+    ""
+  }
 
   glue::glue(
     "After assessing the submitted answer, reply with 'GRADE: $LETTER' where

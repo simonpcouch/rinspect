@@ -37,6 +37,9 @@
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -64,11 +67,12 @@ detect_includes <- function(case_sensitive = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...)
+      function(...) {
         detect_includes_impl(
           list(...),
           case_sensitive = case_sensitive
         )
+      }
     )
 
     list(
@@ -114,12 +118,13 @@ detect_match <- function(
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...)
+      function(...) {
         detect_match_impl(
           list(...),
           location = location,
           case_sensitive = case_sensitive
         )
+      }
     )
 
     list(
@@ -170,13 +175,14 @@ detect_pattern <- function(pattern, case_sensitive = FALSE, all = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...)
+      function(...) {
         detect_pattern_impl(
           list(...),
           pattern = pattern,
           case_sensitive = case_sensitive,
           all = all
         )
+      }
     )
 
     list(
@@ -234,11 +240,12 @@ detect_exact <- function(case_sensitive = FALSE) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...)
+      function(...) {
         detect_exact_impl(
           list(...),
           case_sensitive = case_sensitive
         )
+      }
     )
 
     list(
@@ -281,11 +288,12 @@ detect_answer <- function(format = c("line", "word", "letter")) {
   function(samples) {
     results <- purrr::pmap(
       samples,
-      function(...)
+      function(...) {
         detect_answer_impl(
           list(...),
           format = format
         )
+      }
     )
 
     list(

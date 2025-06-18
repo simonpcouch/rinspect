@@ -16,6 +16,9 @@
 #'
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
 #'   library(ellmer)
 #'   library(tibble)
 #'
