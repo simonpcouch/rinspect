@@ -52,3 +52,26 @@ rsconnect::deployApp(tmp_dir)
 }\if{html}{\out{</div>}}
 }
 
+\examples{
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  library(ellmer)
+  library(tibble)
+
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+
+  tsk$eval()
+
+  output_dir <- tempdir()
+  vitals_bundle(output_dir = output_dir, overwrite = TRUE)
+}
+
+}

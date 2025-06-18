@@ -90,6 +90,19 @@
 #'   # evaluate the task (runs solver and scorer) and opens
 #'   # the results in the Inspect log viewer (if interactive)
 #'   tsk$eval()
+#'
+#'   # $eval() is shorthand for:
+#'   tsk$solve()
+#'   tsk$score()
+#'   tsk$measure()
+#'   tsk$log()
+#'   tsk$view()
+#'
+#'   # get the evaluation results as a data frame
+#'   tsk$get_samples()
+#'
+#'   # view the task directory with $view() or vitals_view()
+#'   vitals_view()
 #' }
 #'
 #' @export

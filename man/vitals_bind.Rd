@@ -22,3 +22,31 @@ their \verb{$get_samples()} together, adding a \code{task} column to identify th
 row. The resulting tibble nests additional columns into a \code{metadata} column
 and is ready for further analysis.
 }
+\examples{
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  library(ellmer)
+  library(tibble)
+
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  tsk1 <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+  tsk1$eval()
+
+  tsk2 <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = detect_includes()
+  )
+  tsk2$eval()
+
+  combined <- vitals_bind(model_graded = tsk1, string_detection = tsk2)
+}
+
+}
