@@ -10,6 +10,7 @@
 #' @param port Port to serve on. Defaults to 7576, one greater than the Python
 #' implementation.
 #'
+#' @return The server object (invisibly)
 #' @export
 vitals_view <- function(
   dir = vitals_log_dir(),

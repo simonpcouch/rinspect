@@ -14,6 +14,9 @@ vitals_view(dir = vitals_log_dir(), host = "127.0.0.1", port = 7576)
 \item{port}{Port to serve on. Defaults to 7576, one greater than the Python
 implementation.}
 }
+\value{
+The server object (invisibly)
+}
 \description{
 vitals bundles the Inspect log viewer, an interactive app for exploring
 evaluation logs. Supply a path to a directory of tasks written to json.

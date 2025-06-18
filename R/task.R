@@ -114,6 +114,8 @@ Task <- R6::R6Class(
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
+    #'
+    #' @return A new Task object.
     initialize = function(
       dataset,
       solver,
@@ -279,6 +281,7 @@ Task <- R6::R6Class(
     #' @description
     #' Applies metrics to a scored Task.
     #'
+    #' @return The Task object (invisibly)
     measure = function() {
       if (!private$scored) {
         cli::cli_abort(

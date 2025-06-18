@@ -163,6 +163,9 @@ precedence over the value in \verb{$new()}.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+A new Task object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-eval"></a>}}
@@ -270,6 +273,9 @@ Applies metrics to a scored Task.
 \if{html}{\out{<div class="r">}}\preformatted{Task$measure()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The Task object (invisibly)
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-log"></a>}}
