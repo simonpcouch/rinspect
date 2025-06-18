@@ -35,6 +35,12 @@ evaluation logs to the same file format.
 
 ## Installation
 
+Install the vitals package from CRAN with:
+
+``` r
+install.packages("vitals")
+```
+
 You can install the developmental version of vitals using:
 
 ``` r
@@ -97,7 +103,7 @@ I wanted to evaluate `chat_openai()` on this task rather than
 
 ``` r
 tsk_openai <- tsk$clone()
-tsk_openai$eval(solver_chat = chat_openai(model = "gpt-4o"))
+tsk_openai$eval(solver_chat = chat_openai(model = "gpt-4.1"))
 ```
 
 For an applied example, see the “Getting started with vitals” vignette
