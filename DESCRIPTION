@@ -1,5 +1,5 @@
 Package: vitals
-Title: Large Language Model Evaluation for R
+Title: Large Language Model Evaluation
 Version: 0.0.0.9002
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),

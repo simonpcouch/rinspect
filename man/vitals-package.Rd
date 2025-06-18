@@ -4,7 +4,7 @@
 \name{vitals-package}
 \alias{vitals}
 \alias{vitals-package}
-\title{vitals: Large Language Model Evaluation for R}
+\title{vitals: Large Language Model Evaluation}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
