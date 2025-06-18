@@ -22,7 +22,7 @@ cat <- function(x, width = 0.9 * getOption("width")) {
   base::cat(wrapped, sep = "\n")
 }
 
-withr::local_envvar(list(VITALS_LOG_DIR = "vignettes/data/logs/"))
+withr::local_envvar(list(VITALS_LOG_DIR = here::here("vignettes/data/logs/")))
 
 # don't set this as the default `eval`, but use it as a
 # flag for the computationally intensive steps
@@ -191,7 +191,7 @@ Claude answered fully correctly in `r sum(are_task_data$score == "C")` out of `r
 * Are there any models that are cheaper than Claude that would do just as well? Or even a local model?
 * Are there other models available that would do better out of the box?
 * Would Claude do better if I allow it to "reason" briefly before answering?
-* Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::btw_register_tools()`](https://posit-dev.github.io/btw/reference/btw_register_tools.html) if you're interested in this.)
+* Would Claude do better if I gave it tools that'd allow it to peruse documentation and/or run R code before answering? (See [`btw::btw_tools()`](https://posit-dev.github.io/btw/reference/btw_tools.html) if you're interested in this.)
 
 These questions can be explored by evaluating Tasks against different solvers and scorers. For example, to compare Claude's performance with OpenAI's GPT-4o, we just need to clone the object and then run `$eval()` with a different solver `chat`:
 

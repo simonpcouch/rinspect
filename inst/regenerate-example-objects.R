@@ -58,7 +58,7 @@ regenerate_example_solver <- function() {
 # An R Eval on 1 epoch, via the intro vignette ------------------------
 regenerate_are_1e <- function() {
   json_files <- list.files(
-    "vignettes/vignettes/data/logs",
+    "vignettes/data/logs",
     pattern = "\\.json$",
     full.names = TRUE
   )
@@ -73,7 +73,7 @@ regenerate_are_1e <- function() {
 # An R Eval on 1 epoch, via the intro vignette ------------------------
 regenerate_are_custom_solvers <- function() {
   json_files <- list.files(
-    "vignettes/articles/data/solvers",
+    "vignettes/articles/data/solvers/logs",
     pattern = "\\.json$",
     full.names = TRUE
   )
