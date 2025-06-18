@@ -1,0 +1,553 @@
+{
+  "version": 2,
+  "status": "success",
+  "eval": {
+    "run_id": "ZMJDkTVMWTk61j7Q4byiWk",
+    "created": "2025-06-18T15:26:31+00:00",
+    "task": "simple-addition",
+    "task_id": "4be39e48547460f824ccd8",
+    "task_version": 0,
+    "task_file": "",
+    "task_attribs": {},
+    "task_args": {},
+    "dataset": {
+      "samples": 2,
+      "sample_ids": [
+        1,
+        2
+      ],
+      "shuffled": false
+    },
+    "model": "generate(solver_chat = chat_anthropic()) (claude-3-7-sonnet-latest)",
+    "model_args": {},
+    "config": {},
+    "revision": {
+      "type": "git",
+      "origin": "https://github.com/UKGovernmentBEIS/inspect_ai.git",
+      "commit": "9140d8a2"
+    },
+    "packages": {
+      "inspect_ai": "0.3.63"
+    },
+    "scorers": [
+      {
+        "name": "detect_includes()",
+        "options": {},
+        "metrics": [
+          {
+            "name": "mean",
+            "options": {}
+          }
+        ],
+        "metadata": {}
+      }
+    ]
+  },
+  "plan": {
+    "name": "plan",
+    "steps": [
+      {
+        "solver": "generate(solver_chat = chat_anthropic()) (claude-3-7-sonnet-latest)",
+        "params": {
+          "1": "self$get_samples()$input"
+        }
+      }
+    ],
+    "config": {}
+  },
+  "results": {
+    "total_samples": 2,
+    "completed_samples": 2,
+    "scores": [
+      {
+        "name": "detect_includes()",
+        "scorer": "detect_includes()",
+        "params": {},
+        "metrics": {
+          "accuracy": {
+            "name": "accuracy",
+            "value": 100,
+            "params": {
+              "1": "numeric_scores"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "stats": {
+    "started_at": "2025-06-18T15:26:28+00:00",
+    "completed_at": "2025-06-18T15:26:31+00:00",
+    "model_usage": {
+      "claude-3-7-sonnet-latest": {
+        "input_tokens": 28,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 25,
+        "total_tokens": 53
+      }
+    }
+  },
+  "samples": [
+    {
+      "id": 1,
+      "epoch": 1,
+      "input": "What's 2+2?",
+      "target": "4",
+      "messages": [
+        {
+          "id": "asIVP4KNISTplGAnL54Xlx",
+          "content": "What's 2+2?",
+          "source": "input",
+          "role": "user"
+        },
+        {
+          "id": "BL5VdisgpRrIAzZ1ijUToo",
+          "content": [
+            {
+              "type": "text",
+              "text": "2+2 = 4."
+            }
+          ],
+          "source": "generate",
+          "role": "assistant"
+        }
+      ],
+      "output": {
+        "model": "claude-3-7-sonnet-latest",
+        "choices": [
+          {
+            "message": {
+              "id": "m9HzOkF05UKtXbdClHujZ6",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "2+2 = 4."
+                }
+              ],
+              "source": "generate",
+              "role": "assistant"
+            },
+            "stop_reason": "stop"
+          }
+        ],
+        "usage": {
+          "input_tokens": 14,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0,
+          "output_tokens": 12,
+          "total_tokens": 26
+        },
+        "time": 1
+      },
+      "scores": {
+        "detect_includes()": {
+          "value": "C",
+          "answer": "2+2 = 4.",
+          "explanation": "detect_includes()",
+          "metadata": {
+            "scorer_metadata": {
+              "matched": true,
+              "answer": "2+2 = 4."
+            }
+          }
+        }
+      },
+      "metadata": {},
+      "store": {},
+      "events": [
+        {
+          "timestamp": "2025-06-18T15:26:31.082936+00:00",
+          "working_start": 0,
+          "event": "step",
+          "action": "begin",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.083022+00:00",
+          "working_start": 0,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 2+2?",
+            "target": "4",
+            "id": 1
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "V3rqsxvyzieCv7vGEghBs6",
+                "content": "What's 2+2?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": {},
+            "store": {},
+            "output": {
+              "model": "claude-3-7-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.083098+00:00",
+          "working_start": 1.3188,
+          "event": "step",
+          "action": "end",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.083396+00:00",
+          "working_start": 0,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.083735+00:00",
+          "working_start": 1.3188,
+          "event": "model",
+          "model": "claude-3-7-sonnet-latest",
+          "input": [
+            {
+              "id": "2KfTkgPY1bPB7zLD3BIiqa",
+              "content": "What's 2+2?",
+              "source": "input",
+              "role": "user"
+            }
+          ],
+          "tools": [],
+          "tool_choice": "none",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-7-sonnet-latest",
+            "choices": [
+              {
+                "message": {
+                  "id": "L9yCmiWTLPLikz7dxR8lwg",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "2+2 = 4."
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-7-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            ],
+            "usage": {
+              "input_tokens": 14,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0,
+              "output_tokens": 12
+            },
+            "time": 0.6594
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 2+2?"
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "tool_choice": "none",
+              "model": "claude-3-7-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "kewV8ekGeHOGhYqzXdzCNp"
+              }
+            },
+            "response": {
+              "id": "msg_gJ0rwwzhGVbdG6fADTvrv8",
+              "content": [
+                {
+                  "citations": {},
+                  "text": "2+2 = 4.",
+                  "type": "text"
+                }
+              ],
+              "model": "claude-3-7-sonnet-latest",
+              "role": "assistant",
+              "stop_reason": "end_turn",
+              "stop_sequence": {},
+              "type": "message",
+              "usage": {
+                "input_tokens": 14,
+                "input_tokens_cache_write": 0,
+                "input_tokens_cache_read": 0,
+                "output_tokens": 12
+              }
+            },
+            "time": 0.6594
+          },
+          "completed": "2025-06-18T15:26:31.083900+00:00",
+          "working_time": 0.6594
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.083952+00:00",
+          "working_start": 1.3188,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "generate"
+        }
+      ],
+      "model_usage": {
+        "claude-3-7-sonnet-latest": {
+          "input_tokens": 14,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 12,
+          "total_tokens": 26
+        }
+      },
+      "attachments": {}
+    },
+    {
+      "id": 2,
+      "epoch": 1,
+      "input": "What's 2+3?",
+      "target": "5",
+      "messages": [
+        {
+          "id": "9kqcbEB5oRTGPI00mcoYKy",
+          "content": "What's 2+3?",
+          "source": "input",
+          "role": "user"
+        },
+        {
+          "id": "z75Vj4uCJajyndzieivFhk",
+          "content": [
+            {
+              "type": "text",
+              "text": "2 + 3 = 5"
+            }
+          ],
+          "source": "generate",
+          "role": "assistant"
+        }
+      ],
+      "output": {
+        "model": "claude-3-7-sonnet-latest",
+        "choices": [
+          {
+            "message": {
+              "id": "px1a33XGCin4s5YvpqJbmK",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "2 + 3 = 5"
+                }
+              ],
+              "source": "generate",
+              "role": "assistant"
+            },
+            "stop_reason": "stop"
+          }
+        ],
+        "usage": {
+          "input_tokens": 14,
+          "input_tokens_cache_write": 0,
+          "input_tokens_cache_read": 0,
+          "output_tokens": 13,
+          "total_tokens": 27
+        },
+        "time": 1
+      },
+      "scores": {
+        "detect_includes()": {
+          "value": "C",
+          "answer": "2 + 3 = 5",
+          "explanation": "detect_includes()",
+          "metadata": {
+            "scorer_metadata": {
+              "matched": true,
+              "answer": "2 + 3 = 5"
+            }
+          }
+        }
+      },
+      "metadata": {},
+      "store": {},
+      "events": [
+        {
+          "timestamp": "2025-06-18T15:26:31.085791+00:00",
+          "working_start": 0,
+          "event": "step",
+          "action": "begin",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.085872+00:00",
+          "working_start": 2.6375,
+          "event": "sample_init",
+          "sample": {
+            "input": "What's 2+3?",
+            "target": "5",
+            "id": 2
+          },
+          "state": {
+            "messages": [
+              {
+                "id": "a0jJx0wWoW07wcNlUsRSlv",
+                "content": "What's 2+3?",
+                "source": "input",
+                "role": "user"
+              }
+            ],
+            "tools": [],
+            "tool_choice": {},
+            "store": {},
+            "output": {
+              "model": "claude-3-7-sonnet-latest",
+              "choices": []
+            },
+            "completed": false,
+            "metadata": {}
+          }
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.085942+00:00",
+          "working_start": 3.9563,
+          "event": "step",
+          "action": "end",
+          "name": "init"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.086205+00:00",
+          "working_start": 0,
+          "event": "step",
+          "action": "begin",
+          "type": "solver",
+          "name": "generate"
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.086553+00:00",
+          "working_start": 3.9563,
+          "event": "model",
+          "model": "claude-3-7-sonnet-latest",
+          "input": [
+            {
+              "id": "LrL95Qxl0UWEobWI1yXfh0",
+              "content": "What's 2+3?",
+              "source": "input",
+              "role": "user"
+            }
+          ],
+          "tools": [],
+          "tool_choice": "none",
+          "config": {
+            "max_tokens": 4096
+          },
+          "output": {
+            "model": "claude-3-7-sonnet-latest",
+            "choices": [
+              {
+                "message": {
+                  "id": "cPAFy2mVC03PtnwAZ5LRoG",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "2 + 3 = 5"
+                    }
+                  ],
+                  "source": "generate",
+                  "role": "assistant",
+                  "model": "claude-3-7-sonnet-latest"
+                },
+                "stop_reason": "stop"
+              }
+            ],
+            "usage": {
+              "input_tokens": 14,
+              "input_tokens_cache_write": 0,
+              "input_tokens_cache_read": 0,
+              "output_tokens": 13
+            },
+            "time": 0.6594
+          },
+          "call": {
+            "request": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What's 2+3?"
+                    }
+                  ]
+                }
+              ],
+              "tools": [],
+              "tool_choice": "none",
+              "model": "claude-3-7-sonnet-latest",
+              "max_tokens": 4096,
+              "extra_headers": {
+                "x-irid": "LfkXlVfxA18VI8wNwuLJtO"
+              }
+            },
+            "response": {
+              "id": "msg_Jk9k4yCRhToFQJxb20BtpC",
+              "content": [
+                {
+                  "citations": {},
+                  "text": "2 + 3 = 5",
+                  "type": "text"
+                }
+              ],
+              "model": "claude-3-7-sonnet-latest",
+              "role": "assistant",
+              "stop_reason": "end_turn",
+              "stop_sequence": {},
+              "type": "message",
+              "usage": {
+                "input_tokens": 14,
+                "input_tokens_cache_write": 0,
+                "input_tokens_cache_read": 0,
+                "output_tokens": 13
+              }
+            },
+            "time": 0.6594
+          },
+          "completed": "2025-06-18T15:26:31.086712+00:00",
+          "working_time": 0.6594
+        },
+        {
+          "timestamp": "2025-06-18T15:26:31.086761+00:00",
+          "working_start": 3.9563,
+          "event": "step",
+          "action": "end",
+          "type": "solver",
+          "name": "generate"
+        }
+      ],
+      "model_usage": {
+        "claude-3-7-sonnet-latest": {
+          "input_tokens": 14,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 13,
+          "total_tokens": 27
+        }
+      },
+      "attachments": {}
+    }
+  ]
+}
