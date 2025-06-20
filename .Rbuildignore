@@ -23,3 +23,5 @@ inst/log_dump
 ^vignettes/*_files$
 ^vignettes/articles/\.quarto$
 ^vignettes/articles/*_files$
+
+inst/test/inspect/logs

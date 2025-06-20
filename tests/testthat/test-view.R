@@ -1,16 +1,25 @@
 test_that("vitals_view() works with .json from Python Inspect", {
   log_dir <- system.file("test/inspect/logs", package = "vitals")
+  if (identical(log_dir, "")) {
+    skip("Test log files not available")
+  }
   expect_condition(vitals_view(log_dir), class = "vitals_viewer_start")
 })
 
 test_that("vitals_view() restarts with existing server", {
   log_dir <- system.file("test/inspect/logs", package = "vitals")
+  if (identical(log_dir, "")) {
+    skip("Test log files not available")
+  }
   suppressMessages(vitals_view(log_dir))
   expect_condition(vitals_view(log_dir), class = "vitals_viewer_start")
 })
 
 test_that("vitals_view() errors informatively on failure to restart", {
   log_dir <- system.file("test/inspect/logs", package = "vitals")
+  if (identical(log_dir, "")) {
+    skip("Test log files not available")
+  }
   suppressMessages(vitals_view(log_dir))
 
   testthat::local_mocked_bindings(

@@ -59,6 +59,9 @@ default \code{template} to evaluate correctness.
 \examples{
 # Quality assurance -----------------------------
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  # set the log directory to a temporary directory
+  withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+
   library(ellmer)
   library(tibble)
 
@@ -78,6 +81,9 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
 
 # Factual response -------------------------------
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  # set the log directory to a temporary directory
+  withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+
   library(ellmer)
   library(tibble)
 

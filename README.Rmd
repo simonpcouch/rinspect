@@ -31,6 +31,12 @@ The package is an R port of the widely adopted Python framework [Inspect](https:
 
 ## Installation
 
+Install the vitals package from CRAN with:
+
+```r
+install.packages("vitals")
+```
+
 You can install the developmental version of vitals using:
 
 ```r

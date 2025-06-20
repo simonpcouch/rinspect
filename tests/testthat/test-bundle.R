@@ -5,6 +5,9 @@ test_that("vitals_bundle creates a valid bundle", {
   }
 
   log_dir <- system.file("test/inspect/logs", package = "vitals")
+  if (identical(log_dir, "")) {
+    skip("Test log files not available")
+  }
 
   dir.create(output_dir)
   expect_snapshot(
