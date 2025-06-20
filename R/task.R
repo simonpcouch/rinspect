@@ -691,7 +691,7 @@ Task <- R6::R6Class(
             accuracy = logged(accuracy)(numeric_scores)
           )
       } else if (is.numeric(self$get_samples()$score)) {
-        if (any(is.na(numeric_scores))) {
+        if (any(is.na(self$get_samples()$score))) {
           return()
         }
         private$metric_results <-
