@@ -682,12 +682,18 @@ Task <- R6::R6Class(
       ) {
         # map factor to numeric for a simple accuracy (#51, #53)
         numeric_scores <- as.numeric(self$get_samples()$score) - 1
+        if (any(is.na(numeric_scores))) {
+          return()
+        }
         numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
         private$metric_results <-
           list2(
             accuracy = logged(accuracy)(numeric_scores)
           )
       } else if (is.numeric(self$get_samples()$score)) {
+        if (any(is.na(numeric_scores))) {
+          return()
+        }
         private$metric_results <-
           list2(
             accuracy = logged(accuracy)(self$get_samples()$score)
