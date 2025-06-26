@@ -14,6 +14,36 @@
 #' column indicating the source and a nested `metadata` column containing
 #' additional fields.
 #'
+#' @examples
+#' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
+#'   library(ellmer)
+#'   library(tibble)
+#'
+#'   simple_addition <- tibble(
+#'     input = c("What's 2+2?", "What's 2+3?"),
+#'     target = c("4", "5")
+#'   )
+#'
+#'   tsk1 <- Task$new(
+#'     dataset = simple_addition,
+#'     solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+#'     scorer = model_graded_qa()
+#'   )
+#'   tsk1$eval()
+#'
+#'   tsk2 <- Task$new(
+#'     dataset = simple_addition,
+#'     solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+#'     scorer = detect_includes()
+#'   )
+#'   tsk2$eval()
+#'
+#'   combined <- vitals_bind(model_graded = tsk1, string_detection = tsk2)
+#' }
+#'
 #' @export
 vitals_bind <- function(...) {
   x <- dots_list(..., .named = TRUE)

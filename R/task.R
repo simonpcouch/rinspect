@@ -72,6 +72,9 @@
 #' scoring.
 #' @examples
 #' if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+#'   # set the log directory to a temporary directory
+#'   withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+#'
 #'   library(ellmer)
 #'   library(tibble)
 #'
@@ -90,6 +93,19 @@
 #'   # evaluate the task (runs solver and scorer) and opens
 #'   # the results in the Inspect log viewer (if interactive)
 #'   tsk$eval()
+#'
+#'   # $eval() is shorthand for:
+#'   tsk$solve()
+#'   tsk$score()
+#'   tsk$measure()
+#'   tsk$log()
+#'   tsk$view()
+#'
+#'   # get the evaluation results as a data frame
+#'   tsk$get_samples()
+#'
+#'   # view the task directory with $view() or vitals_view()
+#'   vitals_view()
 #' }
 #'
 #' @export
@@ -114,6 +130,8 @@ Task <- R6::R6Class(
     #' @param name A name for the evaluation task. Defaults to
     #' `deparse(substitute(dataset))`.
     #' @param dir Directory where logs should be stored.
+    #'
+    #' @return A new Task object.
     initialize = function(
       dataset,
       solver,
@@ -279,6 +297,7 @@ Task <- R6::R6Class(
     #' @description
     #' Applies metrics to a scored Task.
     #'
+    #' @return The Task object (invisibly)
     measure = function() {
       if (!private$scored) {
         cli::cli_abort(
@@ -663,12 +682,18 @@ Task <- R6::R6Class(
       ) {
         # map factor to numeric for a simple accuracy (#51, #53)
         numeric_scores <- as.numeric(self$get_samples()$score) - 1
+        if (any(is.na(numeric_scores))) {
+          return()
+        }
         numeric_scores <- numeric_scores / max(numeric_scores, na.rm = TRUE)
         private$metric_results <-
           list2(
             accuracy = logged(accuracy)(numeric_scores)
           )
       } else if (is.numeric(self$get_samples()$score)) {
+        if (any(is.na(self$get_samples()$score))) {
+          return()
+        }
         private$metric_results <-
           list2(
             accuracy = logged(accuracy)(self$get_samples()$score)

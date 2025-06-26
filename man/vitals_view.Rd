@@ -14,8 +14,50 @@ vitals_view(dir = vitals_log_dir(), host = "127.0.0.1", port = 7576)
 \item{port}{Port to serve on. Defaults to 7576, one greater than the Python
 implementation.}
 }
+\value{
+The server object (invisibly)
+}
 \description{
 vitals bundles the Inspect log viewer, an interactive app for exploring
 evaluation logs. Supply a path to a directory of tasks written to json.
 For individual \link{Task} objects, use the \verb{$view()} method instead.
+}
+\examples{
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  # set the log directory to a temporary directory
+  withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+
+  library(ellmer)
+  library(tibble)
+
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # create a new Task
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+
+  # evaluate the task (runs solver and scorer) and opens
+  # the results in the Inspect log viewer (if interactive)
+  tsk$eval()
+
+  # $eval() is shorthand for:
+  tsk$solve()
+  tsk$score()
+  tsk$measure()
+  tsk$log()
+  tsk$view()
+
+  # get the evaluation results as a data frame
+  tsk$get_samples()
+
+  # view the task directory with $view() or vitals_view()
+  vitals_view()
+}
+
 }

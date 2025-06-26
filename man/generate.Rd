@@ -26,3 +26,42 @@ asynchronous HTTP requests using \code{\link[ellmer:parallel_chat]{ellmer::paral
 can be passed directory to the \code{solver} argument of \link{Task}'s \verb{$new()}
 method.
 }
+\examples{
+if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  # set the log directory to a temporary directory
+  withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+
+  library(ellmer)
+  library(tibble)
+
+  simple_addition <- tibble(
+    input = c("What's 2+2?", "What's 2+3?"),
+    target = c("4", "5")
+  )
+
+  # create a new Task
+  tsk <- Task$new(
+    dataset = simple_addition,
+    solver = generate(chat_anthropic(model = "claude-3-7-sonnet-latest")),
+    scorer = model_graded_qa()
+  )
+
+  # evaluate the task (runs solver and scorer) and opens
+  # the results in the Inspect log viewer (if interactive)
+  tsk$eval()
+
+  # $eval() is shorthand for:
+  tsk$solve()
+  tsk$score()
+  tsk$measure()
+  tsk$log()
+  tsk$view()
+
+  # get the evaluation results as a data frame
+  tsk$get_samples()
+
+  # view the task directory with $view() or vitals_view()
+  vitals_view()
+}
+
+}

@@ -17,12 +17,14 @@ example_ellmer_solver <- function() {
 
 # a log actually written by Python Inspect
 example_inspect_log <- function() {
-  eval_log_read(
-    system.file(
-      "test/inspect/logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
-      package = "vitals"
-    )
+  log_path <- system.file(
+    "test/inspect/logs/2025-03-24T10-39-36-05-00_simple-arithmetic_fQ9mYnqZFhtEuUenPpJgKL.json",
+    package = "vitals"
   )
+  if (identical(log_path, "")) {
+    testthat::skip("Test log files not available")
+  }
+  eval_log_read(log_path)
 }
 
 example_task <- function(solved = TRUE, scored = TRUE) {

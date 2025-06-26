@@ -19,6 +19,7 @@
 #' See the documentation for the `solver` argument in [Task] for more
 #' information on the return type.
 #'
+#' @inherit Task examples
 #' @export
 generate <- function(solver_chat = NULL) {
   chat <- solver_chat

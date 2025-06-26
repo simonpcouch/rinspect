@@ -1,5 +1,6 @@
-## R CMD check results
+**Comments for CRAN team**
 
-0 errors | 0 warnings | 1 note
+There's 1 NOTE as this is an initial release.
 
-* This is a new release.
+There are not references describing the methods in this package to cite in
+the Description field.

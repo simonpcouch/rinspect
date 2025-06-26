@@ -23,6 +23,9 @@ recommended for expert use.
 }
 \examples{
 if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
+  # set the log directory to a temporary directory
+  withr::local_envvar(VITALS_LOG_DIR = withr::local_tempdir())
+
   library(ellmer)
   library(tibble)
 
@@ -41,6 +44,19 @@ if (!identical(Sys.getenv("ANTHROPIC_API_KEY"), "")) {
   # evaluate the task (runs solver and scorer) and opens
   # the results in the Inspect log viewer (if interactive)
   tsk$eval()
+
+  # $eval() is shorthand for:
+  tsk$solve()
+  tsk$score()
+  tsk$measure()
+  tsk$log()
+  tsk$view()
+
+  # get the evaluation results as a data frame
+  tsk$get_samples()
+
+  # view the task directory with $view() or vitals_view()
+  vitals_view()
 }
 
 }
@@ -163,6 +179,9 @@ precedence over the value in \verb{$new()}.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+A new Task object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-eval"></a>}}
@@ -270,6 +289,9 @@ Applies metrics to a scored Task.
 \if{html}{\out{<div class="r">}}\preformatted{Task$measure()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The Task object (invisibly)
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Task-log"></a>}}
