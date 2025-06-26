@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Large Language Model Evaluation for R • vitals</title>
+<title>Large Language Model Evaluation • vitals</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Source_Sans_Pro-0.4.10/font.css" rel="stylesheet">
 <link href="deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Large Language Model Evaluation for R">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Large Language Model Evaluation">
 <meta name="description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their large language model-based products, the package supports prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
 <meta property="og:description" content="A port of Inspect, a widely adopted Python framework for large language model evaluation. Specifically aimed at ellmer users who want to measure the effectiveness of their large language model-based products, the package supports prompt engineering, tool usage, multi-turn dialog, and model graded evaluations.">
 <meta property="og:image" content="https://vitals.tidyverse.org/logo.png">
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="index.html">vitals</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="articles/writing-evals.html">Writing evals for your LLM product</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -76,22 +77,25 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the developmental version of vitals using:</p>
+<p>Install the vitals package from CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"vitals"</span><span class="op">)</span></span></code></pre></div>
+<p>You can install the developmental version of vitals using:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"tidyverse/vitals"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>LLM evaluation with vitals is composed of two main steps.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidyverse/vitals" class="external-link">vitals</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>First, create an evaluation <strong>task</strong> with the <code>Task$new()</code> method.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simple_addition</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"What's 2+2?"</span>, <span class="st">"What's 2+3?"</span>, <span class="st">"What's 2+4?"</span><span class="op">)</span>,</span>
 <span>  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"4"</span>, <span class="st">"5"</span>, <span class="st">"6"</span><span class="op">)</span></span>
@@ -114,20 +118,21 @@
 <ol start="2" style="list-style-type: decimal">
 <li>Evaluate the task.</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tsk</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><code>$eval()</code> will run the solver, run the scorer, and then situate the results in a persistent log file that can be explored interactively with the Inspect log viewer.</p>
 <p><img src="reference/figures/log_viewer.png" alt="A screenshot of the Inspect log viewer, an interactive app displaying information on the 3 samples evaluated in this eval." width="100%"></p>
 <p>Any arguments to the solver or scorer can be passed to <code>$eval()</code>, allowing for straightforward parameterization of tasks. For example, if I wanted to evaluate <code><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">chat_openai()</a></code> on this task rather than <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic()</a></code>, I could write:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tsk_openai</span> <span class="op">&lt;-</span> <span class="va">tsk</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">tsk_openai</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span>solver_chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">chat_openai</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4o"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">tsk_openai</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span>solver_chat <span class="op">=</span> <span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">chat_openai</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"gpt-4.1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>For an applied example, see the “Getting started with vitals” vignette at <code><a href="articles/vitals.html">vignette("vitals", package = "vitals")</a></code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=vitals" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/tidyverse/vitals/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/tidyverse/vitals/issues" class="external-link">Report a bug</a></li>
 </ul>
@@ -165,14 +170,7 @@
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://CRAN.R-project.org/package=vitals" class="external-link"><img src="https://www.r-pkg.org/badges/version/vitals" alt="CRAN status"></a></li>
-<li><a href="https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/tidyverse/vitals/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-</ul>
-</div>
+
 
   </aside>
 </div>

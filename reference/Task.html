@@ -35,7 +35,7 @@ recommended for expert use."><meta property="og:image" content="https://vitals.t
 
     <a class="navbar-brand me-2" href="../index.html">vitals</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,7 @@ recommended for expert use."><meta property="og:image" content="https://vitals.t
     <li><a class="dropdown-item" href="../articles/solvers.html">Custom solvers and tool calling</a></li>
     <li><a class="dropdown-item" href="../articles/writing-evals.html">Writing evals for your LLM product</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/tidyverse/vitals/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -62,7 +63,7 @@ recommended for expert use."><meta property="og:image" content="https://vitals.t
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Creating and evaluating tasks</h1>
-      <small class="dont-index">Source: <a href="https://github.com/tidyverse/vitals/blob/main/R/task.R" class="external-link"><code>R/task.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/tidyverse/vitals/blob/v0.1.0/R/task.R" class="external-link"><code>R/task.R</code></a></small>
       <div class="d-none name"><code>Task.Rd</code></div>
     </div>
 
@@ -204,6 +205,10 @@ precedence over the value in <code>$new()</code>.</p></dd>
 
 </dl><p></p></div>
 </div>
+<div class="section">
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<p>A new Task object.</p>
+</div>
 
 </div><p></p><hr><a id="method-Task-eval"></a><div class="section">
 <h3 id="method-eval-">Method <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code><a class="anchor" aria-label="anchor" href="#method-eval-"></a></h3>
@@ -237,7 +242,7 @@ TRUE if interactive, FALSE otherwise).</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -251,7 +256,7 @@ function called across several tasks.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
+<h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>A tibble representing the evaluation. Based on the <code>dataset</code>,
 <code>epochs</code> may duplicate rows, and the solver and scorer will append
 columns to this data.</p>
@@ -280,7 +285,7 @@ precedence over the value in <code>$new()</code>.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
+<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -301,7 +306,7 @@ its results.</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -312,6 +317,10 @@ its results.</p><div class="section">
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Task</span><span class="op">$</span><span class="fu">measure</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<p>The Task object (invisibly)</p>
+</div>
 
 </div><p></p><hr><a id="method-Task-log"></a><div class="section">
 <h3 id="method-log-">Method <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code><a class="anchor" aria-label="anchor" href="#method-log-"></a></h3>
@@ -331,7 +340,7 @@ automatically in <code>$eval()</code>.</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
 <p>The path to the logged file, invisibly.</p>
 </div>
 
@@ -343,7 +352,7 @@ automatically in <code>$eval()</code>.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -376,7 +385,7 @@ outputs a valid solver that just passes inputs to ellmer Chat objects'
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
+<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -412,7 +421,7 @@ for examples.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
 <p>The Task object (invisibly)</p>
 </div>
 
@@ -433,7 +442,7 @@ for examples.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
+<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
 <p>The Task (invisibly)</p>
 </div>
 
@@ -449,7 +458,7 @@ by taking the differences in values of <code>$token_usage()</code> over time.</p
 </div>
 
 <div class="section">
-<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
+<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
 <p>A tibble displaying the cost of solving and scoring the
 evaluation by model, separately for the solver and scorer.</p>
 </div>
@@ -477,6 +486,9 @@ evaluation by model, separately for the solver and scorer.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"ANTHROPIC_API_KEY"</span><span class="op">)</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># set the log directory to a temporary directory</span></span></span>
+<span class="r-in"><span>  <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_envvar.html" class="external-link">local_envvar</a></span><span class="op">(</span>VITALS_LOG_DIR <span class="op">=</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">local_tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -495,16 +507,33 @@ evaluation by model, separately for the solver and scorer.</p>
 <span class="r-in"><span>  <span class="co"># evaluate the task (runs solver and scorer) and opens</span></span></span>
 <span class="r-in"><span>  <span class="co"># the results in the Inspect log viewer (if interactive)</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># $eval() is shorthand for:</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">solve</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">score</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">measure</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">view</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># get the evaluation results as a data frame</span></span></span>
+<span class="r-in"><span>  <span class="va">tsk</span><span class="op">$</span><span class="fu">get_samples</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># view the task directory with $view() or vitals_view()</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="vitals_view.html">vitals_view</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Solving</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[2.8s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Solving <span style="color: #B2B2B2;">[2.3s]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Scoring</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Scoring <span style="color: #B2B2B2;">[4.8s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Scoring <span style="color: #B2B2B2;">[3.8s]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 1 -&gt; 1 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■                </span>  50%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [working] (0 + 0) -&gt; 0 -&gt; 2 | <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100%</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Inspect Viewer running at: <span style="color: #0000BB; font-style: italic;">&lt;http://127.0.0.1:7576&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Inspect Viewer running at: <span style="color: #0000BB; font-style: italic;">&lt;http://127.0.0.1:7576&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
