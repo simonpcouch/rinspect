@@ -87,19 +87,25 @@ translate_to_results <- function(
 
 translate_to_plan_steps <- function(name, arguments, system_prompt = NULL) {
   steps <- list()
-  
+
   if (!is.null(system_prompt)) {
-    steps <- append(steps, list(list(
-      solver = "system_message",
-      params = list(template = system_prompt)
-    )))
+    steps <- append(
+      steps,
+      list(list(
+        solver = "system_message",
+        params = list(template = system_prompt)
+      ))
+    )
   }
-  
-  steps <- append(steps, list(list(
-    solver = name,
-    params = arguments
-  )))
-  
+
+  steps <- append(
+    steps,
+    list(list(
+      solver = name,
+      params = arguments
+    ))
+  )
+
   steps
 }
 
@@ -145,11 +151,13 @@ translate_to_sample <- function(sample, scores, timestamps) {
   turns <- chat$get_turns()
   list(
     id = sample$id,
-    epoch = if ("epoch" %in% colnames(sample)) sample$epoch else {
+    epoch = if ("epoch" %in% colnames(sample)) {
+      sample$epoch
+    } else {
       1
     },
     input = input_string(sample$input[[1]]),
-    target = sample$target,
+    target = as.character(sample$target),
     messages = translate_to_messages(chat),
     output = translate_to_output(chat),
     scores = dots_list(
