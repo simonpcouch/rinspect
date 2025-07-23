@@ -234,6 +234,7 @@ Task <- R6::R6Class(
     #'
     #' @return The Task object (invisibly)
     solve = function(..., epochs = NULL) {
+      withr::local_envvar(IN_VITALS_EVAL = "true")
       check_number_whole(epochs, min = 1, allow_null = TRUE)
 
       if (private$solved) {
@@ -274,6 +275,7 @@ Task <- R6::R6Class(
     #'
     #' @return The Task object (invisibly)
     score = function(...) {
+      withr::local_envvar(IN_VITALS_EVAL = "true")
       if (!private$solved) {
         cli::cli_alert_warning(
           "Task has not been solved yet. Run task$solve() first."
