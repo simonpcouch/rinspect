@@ -20,7 +20,7 @@
 #' or more targets.
 #'
 #' @param case_sensitive Logical, whether comparisons are case sensitive.
-#' @param location Where to look for match: one of `"begin"`, `"end"`,
+#' @param location Where to look for match: one of `"end"`, `"begin"`,
 #' `"any"`, or `"exact"`. Defaults to `"end"`.
 #' @param pattern Regular expression pattern to extract answer.
 #' @param all Logical: for multiple captures, whether all must match.
@@ -109,7 +109,7 @@ detect_includes_impl <- function(sample, case_sensitive) {
 #' @rdname scorer_detect
 #' @export
 detect_match <- function(
-  location = c("end", "begin", "end", "any"),
+  location = c("end", "begin", "any", "exact"),
   case_sensitive = FALSE
 ) {
   location <- arg_match(location)
