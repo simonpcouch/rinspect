@@ -500,8 +500,11 @@ create_model_event <- function(turn, sample) {
       request = list(
         messages = request_messages,
         tools = tools_list,
-        tool_choice = if (length(tools_list) > 0) list(type = "auto") else
-          "none",
+        tool_choice = if (length(tools_list) > 0) {
+          list(type = "auto")
+        } else {
+          "none"
+        },
         model = solver_chat$get_model(),
         max_tokens = 4096,
         extra_headers = list(
@@ -572,6 +575,7 @@ create_scorer_begin_event <- function(timestamp, working_start) {
 create_scoring_model_event <- function(turn, sample, timestamp) {
   user_id <- generate_id()
   scorer_chat <- sample$scorer_chat[[1]]
+  scorer_user_turn <- scorer_chat$get_turns()[[1]]
 
   list(list(
     timestamp = events_timestamp(timestamp),
@@ -581,7 +585,7 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
     input = list(
       list(
         id = user_id,
-        content = turn@text,
+        content = scorer_user_turn@text,
         role = "user"
       )
     ),
@@ -650,19 +654,23 @@ create_scoring_model_event <- function(turn, sample, timestamp) {
 }
 
 create_score_event <- function(turn, sample, timestamp) {
+  solver_chat <- sample$solver_chat[[1]]
+  solver_turn <- solver_chat$last_turn()
+  scorer_user_turn <- sample$scorer_chat[[1]]$get_turns()[[1]]
+
   list(list(
     timestamp = events_timestamp(timestamp),
     working_start = attr(turn, "working_start"),
     event = "score",
     score = list(
       value = "C",
-      answer = turn@text,
+      answer = solver_turn@text,
       explanation = turn@text,
       metadata = list(
         grading = list(
           list(
             id = generate_id(),
-            content = turn@text,
+            content = scorer_user_turn@text,
             role = "user"
           ),
           list(
