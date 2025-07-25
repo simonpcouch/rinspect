@@ -12,7 +12,7 @@
 detect_includes(case_sensitive = FALSE)
 
 detect_match(
-  location = c("end", "begin", "end", "any"),
+  location = c("end", "begin", "any", "exact"),
   case_sensitive = FALSE
 )
 
@@ -25,7 +25,7 @@ detect_answer(format = c("line", "word", "letter"))
 \arguments{
 \item{case_sensitive}{Logical, whether comparisons are case sensitive.}
 
-\item{location}{Where to look for match: one of \code{"begin"}, \code{"end"},
+\item{location}{Where to look for match: one of \code{"end"}, \code{"begin"},
 \code{"any"}, or \code{"exact"}. Defaults to \code{"end"}.}
 
 \item{pattern}{Regular expression pattern to extract answer.}
